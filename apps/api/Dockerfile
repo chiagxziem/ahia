@@ -1,10 +1,10 @@
-FROM oven/bun:1.2.20 AS base
+FROM oven/bun:1.3.3 AS base
 
 FROM base AS builder
 WORKDIR /app
 
 # Install turbo globally
-RUN bun add -g turbo@^2.5.8
+RUN bun add -g turbo@^2.6.1
 
 # Copy everything
 COPY . .
@@ -17,6 +17,7 @@ FROM base AS installer
 WORKDIR /app
 
 # Copy pruned files from builder
+COPY --from=builder /app/out/json/ .
 COPY --from=builder /app/out/full/ .
 
 # Install dependencies with bun
