@@ -24,7 +24,7 @@ COPY --from=builder /app/out/full/ .
 RUN bun install --frozen-lockfile
 
 # Build the app
-RUN bunx turbo run build 
+RUN bunx turbo run build
 
 # Production stage with only essential files
 FROM base AS runner
