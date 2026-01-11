@@ -1,11 +1,11 @@
 import { createMiddleware } from "hono/factory";
 
-import type { AppBindings } from "@/lib/types";
-import { errorResponse } from "@/utils/api-response";
-import HttpStatusCodes from "@/utils/http-status-codes";
+import HttpStatusCodes from "@/lib/http-status-codes";
+import { errorResponse } from "@/lib/utils";
+import type { AppEnv } from "@/types";
 
 const checkRole = (requiredRole: string | string[]) => {
-  return createMiddleware<AppBindings>(async (c, next) => {
+  return createMiddleware<AppEnv>(async (c, next) => {
     const user = c.get("user");
 
     if (!user || !user.role) {

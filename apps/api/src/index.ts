@@ -1,36 +1,40 @@
-import createApp from "@/lib/create-app";
-import configureOpenAPI from "@/lib/openapi";
-import { createSuperadmin } from "./queries/admin-queries";
-import adminRouter from "./routes/admin/admin.index";
-import authRouter from "./routes/auth/auth.index";
-import cartRouter from "./routes/cart/cart.index";
-import categoriesRouter from "./routes/categories/categories.index";
-import ordersRouter from "./routes/orders/orders.index";
-import productsRouter from "./routes/products/products.index";
-import stripeWebhookRouter from "./routes/stripe/stripe.index";
-import superadminRouter from "./routes/superadmin/superadmin.index";
-import userRouter from "./routes/user/user.index";
+import { createApp } from "@/app";
+import { createSuperadmin } from "@/queries/admin-queries";
+import admin from "@/routes/admin/admin.route";
+import cart from "@/routes/cart/cart.route";
+import categories from "@/routes/categories/categories.route";
+import orders from "@/routes/orders/orders.route";
+import products from "@/routes/products/products.route";
+import stripeWebhook from "@/routes/stripe/stripe.route";
+import superadmin from "@/routes/superadmin/superadmin.route";
+import user from "@/routes/user/user.route";
+import env from "./lib/env";
 
 const app = createApp();
 
-const routers = [
-  authRouter,
-  userRouter,
-  superadminRouter,
-  adminRouter,
-  categoriesRouter,
-  productsRouter,
-  cartRouter,
-  ordersRouter,
-  stripeWebhookRouter,
-];
+// Register routers
+app
+  .route("/categories", categories)
+  .route("/products", products)
+  .route("/orders", orders)
+  .route("/cart", cart)
+  .route("/stripe-webhook", stripeWebhook)
+  .route("/admin", admin)
+  .route("/superadmin", superadmin)
+  .route("/user", user);
 
-configureOpenAPI(app);
+// Create superadmin if not exists
+if (env.NODE_ENV !== "test") {
+  createSuperadmin()
+    .then(() => {
+      console.log("Superadmin check completed");
+    })
+    .catch((err) => {
+      console.error("Failed to check/create superadmin:", err);
+    });
+}
 
-routers.forEach((router) => {
-  app.route("/api", router);
-});
-
-createSuperadmin();
-
-export default app;
+export default {
+  port: 8000,
+  fetch: app.fetch,
+};

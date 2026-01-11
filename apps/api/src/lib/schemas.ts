@@ -1,4 +1,4 @@
-import { z } from "@hono/zod-openapi";
+import z from "zod";
 
 export const CreateProductSchema = z.object({
   name: z.string().min(1),
@@ -11,38 +11,30 @@ export const CreateProductSchema = z.object({
   sizes: z
     .string()
     .optional()
-    .openapi({
-      example: JSON.stringify([{ name: "S", inStock: true }]),
-      description:
-        'JSON stringified array of size objects, e.g. [{"name":"S","inStock":true}]',
-    }),
+    .describe(
+      `JSON stringified array of size objects, e.g. [{"name":"S","inStock":true}]`,
+    ),
   colors: z
     .string()
     .optional()
-    .openapi({
-      example: JSON.stringify([{ name: "Blue", inStock: true }]),
-      description:
-        'JSON stringified array of color objects, e.g. [{"name":"Red","inStock":true}]',
-    }),
+    .describe(
+      `JSON stringified array of color objects, e.g. [{"name":"Red","inStock":true}]`,
+    ),
   createdBy: z.string().min(1),
   categoryIds: z
     .string()
     .min(1)
-    .openapi({
-      example: JSON.stringify(["123e4567-e89b-12d3-a456-426614174000"]),
-      description:
-        'JSON stringified array of category ID strings, e.g. ["123e4567-e89b-12d3-a456-426614174000"]',
-    }),
+    .describe(
+      `JSON stringified array of category ID strings, e.g. ["123e4567-e89b-12d3-a456-426614174000"]`,
+    ),
   images: z
-    .union([z.instanceof(File), z.array(z.instanceof(File)).min(1).max(3)])
+    // Use z.any() for file uploads to compatible with basic OpenAPI generation
+    // Manual validation is performed in the route handler
+    .union([z.any(), z.array(z.any())])
     .transform((val) => {
+      // Ensure we always return an array
+      if (val === undefined || val === null) return [];
       return Array.isArray(val) ? val : [val];
-    })
-    .openapi({
-      type: "array",
-      items: { type: "string", format: "binary" },
-      minItems: 1,
-      maxItems: 3,
     }),
 });
 
@@ -57,46 +49,36 @@ export const UpdateProductSchema = z.object({
   sizes: z
     .string()
     .optional()
-    .openapi({
-      example: JSON.stringify([{ name: "S", inStock: true }]),
-      description:
-        'JSON stringified array of size objects, e.g. [{"name":"S","inStock":true}]',
-    }),
+    .describe(
+      `JSON stringified array of size objects, e.g. [{"name":"S","inStock":true}]`,
+    ),
   colors: z
     .string()
     .optional()
-    .openapi({
-      example: JSON.stringify([{ name: "Blue", inStock: true }]),
-      description:
-        'JSON stringified array of color objects, e.g. [{"name":"Red","inStock":true}]',
-    }),
+    .describe(
+      `JSON stringified array of color objects, e.g. [{"name":"Red","inStock":true}]`,
+    ),
   categoryIds: z
     .string()
     .optional()
-    .openapi({
-      example: JSON.stringify(["123e4567-e89b-12d3-a456-426614174000"]),
-      description:
-        'JSON stringified array of category ID strings, e.g. ["123e4567-e89b-12d3-a456-426614174000"]',
-    }),
-  keepImageKeys: z.string().optional().openapi({
-    example: '["products/uuid1.jpg", "products/uuid2.png"]',
-    description: "JSON array of image keys to keep",
-  }),
+    .describe(
+      `JSON stringified array of category ID strings, e.g. ["123e4567-e89b-12d3-a456-426614174000"]`,
+    ),
+  keepImageKeys: z
+    .string()
+    .optional()
+    .describe(`JSON array of image keys to keep`),
   newImages: z
-    .union([z.instanceof(File), z.array(z.instanceof(File)).min(1).max(3)])
+    // Use z.any() for file uploads to compatible with basic OpenAPI generation
+    .union([z.any(), z.array(z.any())])
     .transform((val) => {
+      if (val === undefined || val === null) return [];
       return Array.isArray(val) ? val : [val];
     })
-    .optional()
-    .openapi({
-      type: "array",
-      items: { type: "string", format: "binary" },
-      minItems: 1,
-      maxItems: 3,
-    }),
+    .optional(),
 });
 
-export const SizeColorSchema = z.object({
+export const InStockSchema = z.object({
   name: z.string().min(1, { error: "Name is required" }),
   inStock: z.boolean(),
 });

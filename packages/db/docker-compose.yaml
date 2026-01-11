@@ -1,13 +1,12 @@
-name: ahianeo-db
+name: ahia
 
 services:
-  postgres:
-    image: postgres:17.5
-    container_name: ahianeo-pg
+  pg:
+    image: postgres:18-alpine
     ports:
-      - "5433:5432"
+      - "5434:5432"
     environment:
-      POSTGRES_DB: ahianeo
+      POSTGRES_DB: ahia
       POSTGRES_USER: user
       POSTGRES_PASSWORD: secret
     volumes:

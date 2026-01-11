@@ -1,6 +1,6 @@
 import type { NotFoundHandler } from "hono";
 
-import HttpStatusCodes from "@/utils/http-status-codes";
+import HttpStatusCodes from "@/lib/http-status-codes";
 
 const notFoundRoute: NotFoundHandler = (c) => {
   return c.json(

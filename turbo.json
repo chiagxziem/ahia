@@ -18,7 +18,7 @@
       "dependsOn": ["^check-types"]
     },
     "dev": {
-      "dependsOn": ["@repo/db#db:up"],
+      "dependsOn": ["^db:generate", "^db:up"],
       "cache": false,
       "persistent": true
     },
@@ -48,6 +48,10 @@
     },
     "db:migrate": {
       "cache": false
+    },
+    "db:push": {
+      "cache": false,
+      "persistent": true
     },
     "db:studio": {
       "cache": false

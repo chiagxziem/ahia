@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.7/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -7,16 +7,21 @@
     "defaultBranch": "main"
   },
   "files": {
+    "ignoreUnknown": true,
     "includes": [
       "**/*.{ts,tsx,js,jsx,json,jsonc,md}",
+      "!node_modules",
+      "!.next",
+      "!dist",
+      "!build",
       "!**/generated/**/*.{ts,tsx,js,jsx,json,jsonc,md}",
+      "!**/migrations/**/*.{json,jsonc}",
       "!**/*.gen.{ts,tsx,js,jsx,json,jsonc,md}",
       "!**/worker-configuration.d.ts",
       "!!**/dist/**/*.{ts,tsx,js,jsx,json,jsonc,md}",
       "!!**/build/**/*.{ts,tsx,js,jsx,json,jsonc,md}",
       "!!**/.output/**/*.{ts,tsx,js,jsx,json,jsonc,md}"
-    ],
-    "ignoreUnknown": true
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -28,6 +33,9 @@
     "rules": {
       "recommended": true,
       "a11y": "warn",
+      "style": {
+        "noHeadElement": "off"
+      },
       "nursery": {
         "useSortedClasses": {
           "level": "info",
@@ -38,8 +46,13 @@
         }
       },
       "suspicious": {
-        "noArrayIndexKey": "warn"
+        "noArrayIndexKey": "warn",
+        "noUnknownAtRules": "warn"
       }
+    },
+    "domains": {
+      "next": "recommended",
+      "react": "recommended"
     }
   },
   "assist": {

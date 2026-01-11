@@ -4,30 +4,29 @@
   "private": true,
   "exports": {
     ".": "./src/index.ts",
-    "./schemas/*": "./src/db/schemas/*.ts",
-    "./validators/*": "./src/db/validators/*.ts"
+    "./schemas/*": "./src/schemas/*.ts",
+    "./validators/*": "./src/validators/*.ts"
   },
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:delete": "docker compose down -v",
-    "db:psql": "docker exec -it ahianeo-pg psql -U user -d ahianeo",
+    "db:psql": "docker exec -it ahia-pg psql -U user -d ahia",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "drizzle-orm": "^0.44.7",
-    "drizzle-seed": "^0.3.1",
+    "@t3-oss/env-core": "^0.13.10",
+    "drizzle-orm": "^0.45.1",
     "drizzle-zod": "^0.8.3",
     "pg": "^8.16.3",
-    "zod": "^4.1.13"
+    "zod": "^4.3.5"
   },
   "devDependencies": {
-    "@repo/tsconfig": "workspace:*",
-    "@types/bun": "^1.3.3",
-    "@types/pg": "^8.15.6",
-    "drizzle-kit": "^0.31.7"
+    "@types/bun": "^1.3.5",
+    "@types/pg": "^8.16.0",
+    "drizzle-kit": "^0.31.8"
   }
 }

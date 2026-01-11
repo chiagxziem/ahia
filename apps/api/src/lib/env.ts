@@ -1,46 +1,33 @@
-import z, { type ZodError } from "zod";
+import { createEnv } from "@t3-oss/env-core";
+import z from "zod";
 
-const EnvSchema = z.object({
-  PORT: z.coerce.number(),
-  NODE_ENV: z
-    .enum(["development", "production", "test"])
-    .default("development"),
-  FRONTEND_URL: z.url().default("http://localhost:3000"),
-  DATABASE_URL: z.url(),
-  SUPERADMIN_EMAIL: z.email(),
-  AUTH_COOKIE: z.string().min(1),
-  BETTER_AUTH_SECRET: z.string().min(1),
-  BETTER_AUTH_URL: z.url(),
-  RESEND_API_KEY: z.string().min(1),
-  RESEND_DOMAIN: z.string().min(1),
-  CLOUDFLARE_R2_ACCOUNT_ID: z.string().min(1),
-  CLOUDFLARE_R2_ACCESS_KEY_ID: z.string().min(1),
-  CLOUDFLARE_R2_SECRET_ACCESS_KEY: z.string().min(1),
-  CLOUDFLARE_R2_BUCKET_NAME: z.string().min(1),
-  CLOUDFLARE_R2_PUBLIC_URL: z.url(),
-  STRIPE_SECRET_KEY: z.string().min(1),
-  STRIPE_PUBLISHABLE_KEY: z.string().min(1),
-  STRIPE_WEBHOOK_SECRET: z.string().min(1),
+const env = createEnv({
+  server: {
+    NODE_ENV: z
+      .enum(["development", "production", "test"])
+      .default("development"),
+    API_URL: z.url(),
+    WEB_URL: z.url(),
+    OPENAPI_SERVER_URL: z.url(),
+    DOMAIN: z.string().optional(),
+    DATABASE_URL: z.url(),
+    SUPERADMIN_EMAIL: z.email(),
+    BETTER_AUTH_SECRET: z.string().min(1),
+    // Comma-separated list of allowed CORS origins (e.g., "http://localhost:3120,https://app.example.com")
+    CORS_ORIGINS: z.string().optional(),
+    RESEND_API_KEY: z.string().min(1),
+    RESEND_DOMAIN: z.string().min(1),
+    CLOUDFLARE_R2_ACCOUNT_ID: z.string().min(1),
+    CLOUDFLARE_R2_ACCESS_KEY_ID: z.string().min(1),
+    CLOUDFLARE_R2_SECRET_ACCESS_KEY: z.string().min(1),
+    CLOUDFLARE_R2_BUCKET_NAME: z.string().min(1),
+    CLOUDFLARE_R2_PUBLIC_URL: z.url(),
+    STRIPE_SECRET_KEY: z.string().min(1),
+    STRIPE_PUBLISHABLE_KEY: z.string().min(1),
+    STRIPE_WEBHOOK_SECRET: z.string().min(1),
+  },
+  runtimeEnv: process.env,
+  emptyStringAsUndefined: true,
 });
-
-export type Env = z.infer<typeof EnvSchema>;
-
-let env: Env;
-
-try {
-  const parsedEnv = EnvSchema.parse(process.env);
-
-  env = {
-    ...parsedEnv,
-    AUTH_COOKIE:
-      parsedEnv.NODE_ENV === "production"
-        ? `__Secure-${parsedEnv.AUTH_COOKIE}`
-        : parsedEnv.AUTH_COOKIE,
-  };
-} catch (e) {
-  const error = e as ZodError;
-  console.error(z.prettifyError(error));
-  process.exit(1);
-}
 
 export default env;

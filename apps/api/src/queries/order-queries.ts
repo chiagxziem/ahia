@@ -1,6 +1,6 @@
 import { db, desc, eq, sql } from "@repo/db";
-import { order, orderItem } from "@repo/db/schemas/order-schema";
-import { product } from "@repo/db/schemas/product-schema";
+import { order, orderItem } from "@repo/db/schemas/order.schema";
+import { product } from "@repo/db/schemas/product.schema";
 
 /**
  * Get all orders with customer information (admin only)

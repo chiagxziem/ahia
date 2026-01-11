@@ -1,12 +1,12 @@
 import { db } from "@repo/db";
-import type { User } from "@repo/db/validators/user-validators";
+import type { User } from "@repo/db/validators/user.validator";
 
 import { auth } from "@/lib/auth";
 import { sendAccountCreatedEmail } from "@/lib/email";
 import env from "@/lib/env";
-import type { Role } from "@/lib/types";
+import { generatePassword } from "@/lib/utils";
 import { getUserByEmail } from "@/queries/user-queries";
-import { generatePassword } from "@/utils/strings";
+import type { Role } from "@/types";
 
 export const createUser = async (user: {
   name: string;

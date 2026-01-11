@@ -18,7 +18,7 @@ export const sendVerificationEmail = async ({
   url,
 }: SendEmail) => {
   const verificationUrl =
-    url ?? `${env.FRONTEND_URL}/auth/verify-email?token=${token}`;
+    url ?? `${env.WEB_URL}/auth/verify-email?token=${token}`;
 
   await resend.emails.send({
     from: `Ahianeo <ahianeo@${env.RESEND_DOMAIN}>`,
@@ -40,7 +40,7 @@ export const sendResetPasswordEmail = async ({
   url,
 }: SendEmail) => {
   const resetPasswordUrl =
-    url ?? `${env.FRONTEND_URL}/auth/reset-password?token=${token}`;
+    url ?? `${env.WEB_URL}/auth/reset-password?token=${token}`;
 
   await resend.emails.send({
     from: `Ahianeo <ahianeo@${env.RESEND_DOMAIN}>`,

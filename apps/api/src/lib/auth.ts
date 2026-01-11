@@ -1,17 +1,16 @@
 import { db } from "@repo/db";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin as adminPlugin, bearer, openAPI } from "better-auth/plugins";
+import { admin as adminPlugin, bearer } from "better-auth/plugins";
 
-import { sendResetPasswordEmail, sendVerificationEmail } from "@/lib/email";
-import { ac, admin, superadmin, user } from "@/lib/permissions";
-import { createCartForUser } from "@/queries/cart-queries";
+import { createCartForUser } from "../queries/cart-queries";
+import { sendResetPasswordEmail, sendVerificationEmail } from "./email";
+import { ac, admin, superadmin, user } from "./permissions";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
-  basePath: "/api/better-auth",
 
   emailAndPassword: {
     enabled: true,
@@ -46,8 +45,37 @@ export const auth = betterAuth({
     },
   },
 
+  trustedOrigins: ["http://localhost:3000", "http://localhost:8000"],
+
+  session: {
+    expiresIn: 60 * 60 * 24 * 30,
+  },
+
+  advanced: {
+    database: { generateId: "uuid" },
+    cookies: {
+      session_token: {
+        name: "ahia_auth_session",
+        attributes: {
+          path: "/",
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          domain:
+            process.env.NODE_ENV === "production"
+              ? process.env.DOMAIN
+              : undefined,
+          expires: new Date(Date.now() + 60 * 60 * 24 * 30 * 1000),
+        },
+      },
+    },
+  },
+
+  experimental: {
+    joins: true,
+  },
+
   plugins: [
-    openAPI(),
     bearer(),
     adminPlugin({
       ac,

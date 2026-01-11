@@ -1,5 +1,5 @@
 import { db, eq } from "@repo/db";
-import { cart, cartItem } from "@repo/db/schemas/cart-schema";
+import { cart, cartItem } from "@repo/db/schemas/cart.schema";
 
 /**
  * Creates a new cart for the specified user
