@@ -21,7 +21,7 @@ export const sendVerificationEmail = async ({
     url ?? `${env.WEB_URL}/auth/verify-email?token=${token}`;
 
   await resend.emails.send({
-    from: `Ahianeo <ahianeo@${env.RESEND_DOMAIN}>`,
+    from: `Ahia <ahia@${env.RESEND_DOMAIN}>`,
     to,
     subject: "Verify your email address",
     html: `
@@ -43,7 +43,7 @@ export const sendResetPasswordEmail = async ({
     url ?? `${env.WEB_URL}/auth/reset-password?token=${token}`;
 
   await resend.emails.send({
-    from: `Ahianeo <ahianeo@${env.RESEND_DOMAIN}>`,
+    from: `Ahia <ahia@${env.RESEND_DOMAIN}>`,
     to,
     subject: "Reset your password",
     html: `
@@ -67,7 +67,7 @@ export const sendAccountCreatedEmail = async ({
   password: string;
 }) => {
   await resend.emails.send({
-    from: `Ahianeo <ahianeo@${env.RESEND_DOMAIN}>`,
+    from: `Ahia <ahia@${env.RESEND_DOMAIN}>`,
     to,
     subject: `Your ${role} account has been created`,
     html: `

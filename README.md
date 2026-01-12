@@ -1,6 +1,6 @@
-# Ahianeo
+# Ahia
 
-Ahianeo is a eCommerce website I'm building for the major purpose of showing that I can indeed build one. When everything's completed, it'll have an API, an admin panel, and a storefront.
+Ahia is a eCommerce website I'm building for the major purpose of showing that I can indeed build one. When everything's completed, it'll have an API, an admin panel, and a storefront.
 
 ## Stack
 
