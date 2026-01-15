@@ -1,6 +1,5 @@
-import { db } from "@repo/db";
 import { validator } from "hono-openapi";
-import type Stripe from "stripe";
+import type { Stripe } from "stripe";
 import { z } from "zod";
 
 import { createRouter } from "@/app";
@@ -15,6 +14,8 @@ import {
   restoreStock,
   updateOrderStatus,
 } from "@/queries/order-queries";
+import { db } from "@repo/db";
+
 import { stripeWebhookDoc } from "./stripe.docs";
 
 const stripeWebhook = createRouter();
@@ -141,10 +142,7 @@ stripeWebhook.post(
 
     if (!signature) {
       return c.json(
-        errorResponse(
-          "BAD_REQUEST",
-          "Missing Stripe signature in request headers",
-        ),
+        errorResponse("BAD_REQUEST", "Missing Stripe signature in request headers"),
         HttpStatusCodes.BAD_REQUEST,
       );
     }
@@ -163,21 +161,15 @@ stripeWebhook.post(
       switch (event.type) {
         // Checkout Session Events
         case "checkout.session.completed":
-          await handleCheckoutSuccess(
-            event.data.object as Stripe.Checkout.Session,
-          );
+          await handleCheckoutSuccess(event.data.object as Stripe.Checkout.Session);
           break;
 
         case "checkout.session.expired":
-          await handleCheckoutExpired(
-            event.data.object as Stripe.Checkout.Session,
-          );
+          await handleCheckoutExpired(event.data.object as Stripe.Checkout.Session);
           break;
 
         case "checkout.session.async_payment_failed":
-          await handleCheckoutCancelled(
-            event.data.object as Stripe.Checkout.Session,
-          );
+          await handleCheckoutCancelled(event.data.object as Stripe.Checkout.Session);
           break;
 
         default:

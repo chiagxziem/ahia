@@ -1,10 +1,10 @@
 import { Scalar } from "@scalar/hono-api-reference";
 import { Hono } from "hono";
+import { openAPIRouteHandler } from "hono-openapi";
 import { compress } from "hono/compress";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
-import { openAPIRouteHandler } from "hono-openapi";
 
 import { auth } from "@/lib/auth";
 import env from "@/lib/env";
@@ -12,6 +12,7 @@ import emojiFavicon from "@/middleware/emoji-favicon";
 import errorHandler from "@/middleware/error-handler";
 import notFoundRoute from "@/middleware/not-found-route";
 import type { AppEnv } from "@/types";
+
 import { apiRateLimiter, authRateLimiter } from "./lib/rate-limit";
 
 export const createRouter = () => {
@@ -44,9 +45,7 @@ export const createApp = () => {
       xFrameOptions: "DENY",
       xXssProtection: "1",
       strictTransportSecurity:
-        env.NODE_ENV === "production"
-          ? "max-age=31536000; includeSubDomains"
-          : false,
+        env.NODE_ENV === "production" ? "max-age=31536000; includeSubDomains" : false,
       referrerPolicy: "strict-origin-when-cross-origin",
     }),
   );

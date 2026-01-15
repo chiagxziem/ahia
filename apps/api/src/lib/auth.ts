@@ -1,7 +1,8 @@
-import { db } from "@repo/db";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin as adminPlugin, bearer } from "better-auth/plugins";
+
+import { db } from "@repo/db";
 
 import { createCartForUser } from "../queries/cart-queries";
 import { sendResetPasswordEmail, sendVerificationEmail } from "./email";
@@ -61,10 +62,7 @@ export const auth = betterAuth({
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
-          domain:
-            process.env.NODE_ENV === "production"
-              ? process.env.DOMAIN
-              : undefined,
+          domain: process.env.NODE_ENV === "production" ? process.env.DOMAIN : undefined,
           expires: new Date(Date.now() + 60 * 60 * 24 * 30 * 1000),
         },
       },

@@ -35,6 +35,4 @@ export const CreateCheckoutResponseSchema = z.object({
 
 export type OrderItemSelect = z.infer<typeof OrderItemSelectSchema>;
 export type OrderSelect = z.infer<typeof OrderSelectSchema>;
-export type CreateCheckoutResponse = z.infer<
-  typeof CreateCheckoutResponseSchema
->;
+export type CreateCheckoutResponse = z.infer<typeof CreateCheckoutResponseSchema>;

@@ -2,10 +2,10 @@
 
 Backend API for the Ahia application.
 
-* Built with Hono.
-* Uses PostgreSQL for data storage.
-* Deployed using Docker.
-* [OpenAPI Docs with Scalar](https://api.ahia.gozman.xyz/api/reference)
+- Built with Hono.
+- Uses PostgreSQL for data storage.
+- Deployed using Docker.
+- [OpenAPI Docs with Scalar](https://api.ahia.gozman.xyz/api/reference)
 
 ## Getting Started
 

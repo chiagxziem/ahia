@@ -1,4 +1,4 @@
-import type z from "zod";
+import type { z } from "zod";
 
 /**
  * Helper function to create a success response for API routes.
@@ -6,10 +6,7 @@ import type z from "zod";
  * @param details - Additional details about the response.
  * @returns An object representing the success response.
  */
-export const successResponse = <TData, TDetails extends string>(
-  data: TData,
-  details: TDetails,
-) => {
+export const successResponse = <TData, TDetails extends string>(data: TData, details: TDetails) => {
   return {
     status: "success" as const,
     details,
@@ -24,11 +21,7 @@ export const successResponse = <TData, TDetails extends string>(
  * @param fields - Optional fields to include in the error response.
  * @returns An object representing the error response.
  */
-export const errorResponse = (
-  code: string,
-  details: string,
-  fields?: Record<string, string>,
-) => {
+export const errorResponse = (code: string, details: string, fields?: Record<string, string>) => {
   return {
     status: "error",
     error: {
@@ -79,8 +72,7 @@ export const parseJsonField = <T>(
  * @returns A random password.
  */
 export const generatePassword = (length = 16) => {
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   return Array.from(crypto.getRandomValues(new Uint32Array(length)))
     .map((x) => chars[x % chars.length])
     .join("");

@@ -8,6 +8,7 @@ import products from "@/routes/products/products.route";
 import stripeWebhook from "@/routes/stripe/stripe.route";
 import superadmin from "@/routes/superadmin/superadmin.route";
 import user from "@/routes/user/user.route";
+
 import env from "./lib/env";
 
 const app = createApp();
@@ -26,9 +27,7 @@ app
 // Create superadmin if not exists
 if (env.NODE_ENV !== "test") {
   createSuperadmin()
-    .then(() => {
-      console.log("Superadmin check completed");
-    })
+    .then(() => console.log("Superadmin check completed"))
     .catch((err) => {
       console.error("Failed to check/create superadmin:", err);
     });

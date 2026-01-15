@@ -1,7 +1,6 @@
-import { CreateUserSchema } from "@repo/db/validators/user.validator";
 import { APIError } from "better-auth/api";
-import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { validator } from "hono-openapi";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { z } from "zod";
 
 import { createRouter } from "@/app";
@@ -13,11 +12,9 @@ import checkRole from "@/middleware/check-role";
 import { validationHook } from "@/middleware/validation-hook";
 import { createUser as createUserByAdmin } from "@/queries/admin-queries";
 import { getUserByEmail, getUserById } from "@/queries/user-queries";
-import {
-  changeUserRoleDoc,
-  createUserDoc,
-  deleteUserDoc,
-} from "./superadmin.docs";
+import { CreateUserSchema } from "@repo/db/validators/user.validator";
+
+import { changeUserRoleDoc, createUserDoc, deleteUserDoc } from "./superadmin.docs";
 
 const superadmin = createRouter().use(authed).use(checkRole("superadmin"));
 
@@ -48,12 +45,8 @@ superadmin.post(
     } catch (error) {
       if (error instanceof APIError) {
         return c.json(
-          errorResponse(
-            error.body?.code ?? "AUTH_ERROR",
-            error.body?.message ?? error.message,
-          ),
-          (error.statusCode as ContentfulStatusCode) ||
-            HttpStatusCodes.INTERNAL_SERVER_ERROR,
+          errorResponse(error.body?.code ?? "AUTH_ERROR", error.body?.message ?? error.message),
+          (error.statusCode as ContentfulStatusCode) || HttpStatusCodes.INTERNAL_SERVER_ERROR,
         );
       }
 
@@ -89,18 +82,12 @@ superadmin.post(
       const userToBeChanged = await getUserById(data.userId);
 
       if (!userToBeChanged) {
-        return c.json(
-          errorResponse("NOT_FOUND", "User not found"),
-          HttpStatusCodes.NOT_FOUND,
-        );
+        return c.json(errorResponse("NOT_FOUND", "User not found"), HttpStatusCodes.NOT_FOUND);
       }
 
       if (userToBeChanged.role === "superadmin") {
         return c.json(
-          errorResponse(
-            "FORBIDDEN",
-            "User cannot change the role of a superadmin",
-          ),
+          errorResponse("FORBIDDEN", "User cannot change the role of a superadmin"),
           HttpStatusCodes.FORBIDDEN,
         );
       }
@@ -117,12 +104,8 @@ superadmin.post(
     } catch (error) {
       if (error instanceof APIError) {
         return c.json(
-          errorResponse(
-            error.body?.code ?? "AUTH_ERROR",
-            error.body?.message ?? error.message,
-          ),
-          (error.statusCode as ContentfulStatusCode) ||
-            HttpStatusCodes.INTERNAL_SERVER_ERROR,
+          errorResponse(error.body?.code ?? "AUTH_ERROR", error.body?.message ?? error.message),
+          (error.statusCode as ContentfulStatusCode) || HttpStatusCodes.INTERNAL_SERVER_ERROR,
         );
       }
 
@@ -151,10 +134,7 @@ superadmin.delete(
       const userToBeDeleted = await getUserById(data.userId);
 
       if (!userToBeDeleted) {
-        return c.json(
-          errorResponse("NOT_FOUND", "User not found"),
-          HttpStatusCodes.NOT_FOUND,
-        );
+        return c.json(errorResponse("NOT_FOUND", "User not found"), HttpStatusCodes.NOT_FOUND);
       }
 
       if (userToBeDeleted.role === "superadmin") {
@@ -178,12 +158,8 @@ superadmin.delete(
     } catch (error) {
       if (error instanceof APIError) {
         return c.json(
-          errorResponse(
-            error.body?.code ?? "AUTH_ERROR",
-            error.body?.message ?? error.message,
-          ),
-          (error.statusCode as ContentfulStatusCode) ||
-            HttpStatusCodes.INTERNAL_SERVER_ERROR,
+          errorResponse(error.body?.code ?? "AUTH_ERROR", error.body?.message ?? error.message),
+          (error.statusCode as ContentfulStatusCode) || HttpStatusCodes.INTERNAL_SERVER_ERROR,
         );
       }
 

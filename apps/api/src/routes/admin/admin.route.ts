@@ -1,7 +1,6 @@
-import { BanUserSchema } from "@repo/db/validators/user.validator";
 import { APIError } from "better-auth/api";
-import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { validator } from "hono-openapi";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { z } from "zod";
 
 import { createRouter } from "@/app";
@@ -13,6 +12,8 @@ import checkRole from "@/middleware/check-role";
 import { validationHook } from "@/middleware/validation-hook";
 import { getAdminOrderById, getAllOrders } from "@/queries/order-queries";
 import { getSessionByToken, getUserById } from "@/queries/user-queries";
+import { BanUserSchema } from "@repo/db/validators/user.validator";
+
 import {
   banUserDoc,
   changeUserPwdDoc,
@@ -34,10 +35,7 @@ admin.get("/orders", getAllOrdersDoc, async (c) => {
   try {
     const orders = await getAllOrders();
 
-    return c.json(
-      successResponse(orders, "All orders retrieved successfully"),
-      HttpStatusCodes.OK,
-    );
+    return c.json(successResponse(orders, "All orders retrieved successfully"), HttpStatusCodes.OK);
   } catch (error) {
     console.error("Error retrieving all orders:", error);
     return c.json(
@@ -59,10 +57,7 @@ admin.get(
       const orderWithItems = await getAdminOrderById(id);
 
       if (!orderWithItems) {
-        return c.json(
-          errorResponse("NOT_FOUND", "Order not found"),
-          HttpStatusCodes.NOT_FOUND,
-        );
+        return c.json(errorResponse("NOT_FOUND", "Order not found"), HttpStatusCodes.NOT_FOUND);
       }
 
       return c.json(
@@ -72,10 +67,7 @@ admin.get(
     } catch (error) {
       console.error("Error retrieving order details:", error);
       return c.json(
-        errorResponse(
-          "INTERNAL_SERVER_ERROR",
-          "Failed to retrieve order details",
-        ),
+        errorResponse("INTERNAL_SERVER_ERROR", "Failed to retrieve order details"),
         HttpStatusCodes.INTERNAL_SERVER_ERROR,
       );
     }
@@ -97,12 +89,8 @@ admin.get("/list-users", listUsersDoc, async (c) => {
   } catch (error) {
     if (error instanceof APIError) {
       return c.json(
-        errorResponse(
-          error.body?.code ?? "AUTH_ERROR",
-          error.body?.message ?? error.message,
-        ),
-        (error.statusCode as ContentfulStatusCode) ||
-          HttpStatusCodes.INTERNAL_SERVER_ERROR,
+        errorResponse(error.body?.code ?? "AUTH_ERROR", error.body?.message ?? error.message),
+        (error.statusCode as ContentfulStatusCode) || HttpStatusCodes.INTERNAL_SERVER_ERROR,
       );
     }
 
@@ -123,16 +111,10 @@ admin.post(
       const userToGetSessions = await getUserById(data.userId);
 
       if (!userToGetSessions) {
-        return c.json(
-          errorResponse("NOT_FOUND", "User not found"),
-          HttpStatusCodes.NOT_FOUND,
-        );
+        return c.json(errorResponse("NOT_FOUND", "User not found"), HttpStatusCodes.NOT_FOUND);
       }
 
-      if (
-        userToGetSessions.role === "superadmin" &&
-        user.role !== "superadmin"
-      ) {
+      if (userToGetSessions.role === "superadmin" && user.role !== "superadmin") {
         return c.json(
           errorResponse("FORBIDDEN", "User cannot get superadmin info"),
           HttpStatusCodes.FORBIDDEN,
@@ -151,12 +133,8 @@ admin.post(
     } catch (error) {
       if (error instanceof APIError) {
         return c.json(
-          errorResponse(
-            error.body?.code ?? "AUTH_ERROR",
-            error.body?.message ?? error.message,
-          ),
-          (error.statusCode as ContentfulStatusCode) ||
-            HttpStatusCodes.INTERNAL_SERVER_ERROR,
+          errorResponse(error.body?.code ?? "AUTH_ERROR", error.body?.message ?? error.message),
+          (error.statusCode as ContentfulStatusCode) || HttpStatusCodes.INTERNAL_SERVER_ERROR,
         );
       }
 
@@ -169,11 +147,7 @@ admin.post(
 admin.post(
   "/revoke-user-session",
   revokeUserSessionDoc,
-  validator(
-    "json",
-    z.object({ sessionToken: z.string().min(1) }),
-    validationHook,
-  ),
+  validator("json", z.object({ sessionToken: z.string().min(1) }), validationHook),
   async (c) => {
     try {
       const user = c.get("user");
@@ -182,25 +156,16 @@ admin.post(
       const sessionToBeRevoked = await getSessionByToken(data.sessionToken);
 
       if (!sessionToBeRevoked) {
-        return c.json(
-          errorResponse("NOT_FOUND", "Session not found"),
-          HttpStatusCodes.NOT_FOUND,
-        );
+        return c.json(errorResponse("NOT_FOUND", "Session not found"), HttpStatusCodes.NOT_FOUND);
       }
 
       const userToRevokeSession = await getUserById(sessionToBeRevoked.userId);
 
       if (!userToRevokeSession) {
-        return c.json(
-          errorResponse("NOT_FOUND", "User not found"),
-          HttpStatusCodes.NOT_FOUND,
-        );
+        return c.json(errorResponse("NOT_FOUND", "User not found"), HttpStatusCodes.NOT_FOUND);
       }
 
-      if (
-        userToRevokeSession.role === "superadmin" &&
-        user.role !== "superadmin"
-      ) {
+      if (userToRevokeSession.role === "superadmin" && user.role !== "superadmin") {
         return c.json(
           errorResponse("FORBIDDEN", "User cannot revoke superadmin session"),
           HttpStatusCodes.FORBIDDEN,
@@ -213,10 +178,7 @@ admin.post(
         userToRevokeSession.id !== user.id
       ) {
         return c.json(
-          errorResponse(
-            "FORBIDDEN",
-            "Admin cannot revoke fellow admin session",
-          ),
+          errorResponse("FORBIDDEN", "Admin cannot revoke fellow admin session"),
           HttpStatusCodes.FORBIDDEN,
         );
       }
@@ -233,12 +195,8 @@ admin.post(
     } catch (error) {
       if (error instanceof APIError) {
         return c.json(
-          errorResponse(
-            error.body?.code ?? "AUTH_ERROR",
-            error.body?.message ?? error.message,
-          ),
-          (error.statusCode as ContentfulStatusCode) ||
-            HttpStatusCodes.INTERNAL_SERVER_ERROR,
+          errorResponse(error.body?.code ?? "AUTH_ERROR", error.body?.message ?? error.message),
+          (error.statusCode as ContentfulStatusCode) || HttpStatusCodes.INTERNAL_SERVER_ERROR,
         );
       }
 
@@ -260,16 +218,10 @@ admin.post(
       const userToRevokeSessions = await getUserById(data.userId);
 
       if (!userToRevokeSessions) {
-        return c.json(
-          errorResponse("NOT_FOUND", "User not found"),
-          HttpStatusCodes.NOT_FOUND,
-        );
+        return c.json(errorResponse("NOT_FOUND", "User not found"), HttpStatusCodes.NOT_FOUND);
       }
 
-      if (
-        userToRevokeSessions.role === "superadmin" &&
-        user.role !== "superadmin"
-      ) {
+      if (userToRevokeSessions.role === "superadmin" && user.role !== "superadmin") {
         return c.json(
           errorResponse("FORBIDDEN", "User cannot revoke superadmin sessions"),
           HttpStatusCodes.FORBIDDEN,
@@ -282,10 +234,7 @@ admin.post(
         userToRevokeSessions.id !== user.id
       ) {
         return c.json(
-          errorResponse(
-            "FORBIDDEN",
-            "Admin cannot revoke fellow admin session",
-          ),
+          errorResponse("FORBIDDEN", "Admin cannot revoke fellow admin session"),
           HttpStatusCodes.FORBIDDEN,
         );
       }
@@ -296,21 +245,14 @@ admin.post(
       });
 
       return c.json(
-        successResponse(
-          response,
-          "All sessions for the user revoked successfully",
-        ),
+        successResponse(response, "All sessions for the user revoked successfully"),
         HttpStatusCodes.OK,
       );
     } catch (error) {
       if (error instanceof APIError) {
         return c.json(
-          errorResponse(
-            error.body?.code ?? "AUTH_ERROR",
-            error.body?.message ?? error.message,
-          ),
-          (error.statusCode as ContentfulStatusCode) ||
-            HttpStatusCodes.INTERNAL_SERVER_ERROR,
+          errorResponse(error.body?.code ?? "AUTH_ERROR", error.body?.message ?? error.message),
+          (error.statusCode as ContentfulStatusCode) || HttpStatusCodes.INTERNAL_SERVER_ERROR,
         );
       }
 
@@ -339,10 +281,7 @@ admin.post(
       const userToChangePwd = await getUserById(data.userId);
 
       if (!userToChangePwd) {
-        return c.json(
-          errorResponse("NOT_FOUND", "User not found"),
-          HttpStatusCodes.NOT_FOUND,
-        );
+        return c.json(errorResponse("NOT_FOUND", "User not found"), HttpStatusCodes.NOT_FOUND);
       }
 
       if (userToChangePwd.role === "superadmin" && user.role !== "superadmin") {
@@ -358,10 +297,7 @@ admin.post(
         userToChangePwd.id !== user.id
       ) {
         return c.json(
-          errorResponse(
-            "FORBIDDEN",
-            "Admin cannot change fellow admin password",
-          ),
+          errorResponse("FORBIDDEN", "Admin cannot change fellow admin password"),
           HttpStatusCodes.FORBIDDEN,
         );
       }
@@ -378,12 +314,8 @@ admin.post(
     } catch (error) {
       if (error instanceof APIError) {
         return c.json(
-          errorResponse(
-            error.body?.code ?? "AUTH_ERROR",
-            error.body?.message ?? error.message,
-          ),
-          (error.statusCode as ContentfulStatusCode) ||
-            HttpStatusCodes.INTERNAL_SERVER_ERROR,
+          errorResponse(error.body?.code ?? "AUTH_ERROR", error.body?.message ?? error.message),
+          (error.statusCode as ContentfulStatusCode) || HttpStatusCodes.INTERNAL_SERVER_ERROR,
         );
       }
 
@@ -393,70 +325,55 @@ admin.post(
 );
 
 // Ban user
-admin.post(
-  "/ban-user",
-  banUserDoc,
-  validator("json", BanUserSchema, validationHook),
-  async (c) => {
-    try {
-      const user = c.get("user");
-      const data = c.req.valid("json");
+admin.post("/ban-user", banUserDoc, validator("json", BanUserSchema, validationHook), async (c) => {
+  try {
+    const user = c.get("user");
+    const data = c.req.valid("json");
 
-      if (user.id === data.userId) {
-        return c.json(
-          errorResponse("FORBIDDEN", "User cannot ban their own account"),
-          HttpStatusCodes.FORBIDDEN,
-        );
-      }
-
-      const userToBeBanned = await getUserById(data.userId);
-
-      if (!userToBeBanned) {
-        return c.json(
-          errorResponse("NOT_FOUND", "User not found"),
-          HttpStatusCodes.NOT_FOUND,
-        );
-      }
-
-      if (userToBeBanned.role === "superadmin") {
-        return c.json(
-          errorResponse("FORBIDDEN", "User cannot ban a superadmin"),
-          HttpStatusCodes.FORBIDDEN,
-        );
-      }
-
-      if (userToBeBanned.role === "admin" && user.role === "admin") {
-        return c.json(
-          errorResponse("FORBIDDEN", "An admin cannot ban a fellow admin"),
-          HttpStatusCodes.FORBIDDEN,
-        );
-      }
-
-      const bannedUser = await auth.api.banUser({
-        body: data,
-        headers: c.req.raw.headers,
-      });
-
+    if (user.id === data.userId) {
       return c.json(
-        successResponse(bannedUser, "User banned successfully"),
-        HttpStatusCodes.OK,
+        errorResponse("FORBIDDEN", "User cannot ban their own account"),
+        HttpStatusCodes.FORBIDDEN,
       );
-    } catch (error) {
-      if (error instanceof APIError) {
-        return c.json(
-          errorResponse(
-            error.body?.code ?? "AUTH_ERROR",
-            error.body?.message ?? error.message,
-          ),
-          (error.statusCode as ContentfulStatusCode) ||
-            HttpStatusCodes.INTERNAL_SERVER_ERROR,
-        );
-      }
-
-      throw error;
     }
-  },
-);
+
+    const userToBeBanned = await getUserById(data.userId);
+
+    if (!userToBeBanned) {
+      return c.json(errorResponse("NOT_FOUND", "User not found"), HttpStatusCodes.NOT_FOUND);
+    }
+
+    if (userToBeBanned.role === "superadmin") {
+      return c.json(
+        errorResponse("FORBIDDEN", "User cannot ban a superadmin"),
+        HttpStatusCodes.FORBIDDEN,
+      );
+    }
+
+    if (userToBeBanned.role === "admin" && user.role === "admin") {
+      return c.json(
+        errorResponse("FORBIDDEN", "An admin cannot ban a fellow admin"),
+        HttpStatusCodes.FORBIDDEN,
+      );
+    }
+
+    const bannedUser = await auth.api.banUser({
+      body: data,
+      headers: c.req.raw.headers,
+    });
+
+    return c.json(successResponse(bannedUser, "User banned successfully"), HttpStatusCodes.OK);
+  } catch (error) {
+    if (error instanceof APIError) {
+      return c.json(
+        errorResponse(error.body?.code ?? "AUTH_ERROR", error.body?.message ?? error.message),
+        (error.statusCode as ContentfulStatusCode) || HttpStatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    throw error;
+  }
+});
 
 // Unban user
 admin.post(
@@ -478,10 +395,7 @@ admin.post(
       const userToBeUnbanned = await getUserById(data.userId);
 
       if (!userToBeUnbanned) {
-        return c.json(
-          errorResponse("NOT_FOUND", "User not found"),
-          HttpStatusCodes.NOT_FOUND,
-        );
+        return c.json(errorResponse("NOT_FOUND", "User not found"), HttpStatusCodes.NOT_FOUND);
       }
 
       if (userToBeUnbanned.role === "superadmin") {
@@ -510,12 +424,8 @@ admin.post(
     } catch (error) {
       if (error instanceof APIError) {
         return c.json(
-          errorResponse(
-            error.body?.code ?? "AUTH_ERROR",
-            error.body?.message ?? error.message,
-          ),
-          (error.statusCode as ContentfulStatusCode) ||
-            HttpStatusCodes.INTERNAL_SERVER_ERROR,
+          errorResponse(error.body?.code ?? "AUTH_ERROR", error.body?.message ?? error.message),
+          (error.statusCode as ContentfulStatusCode) || HttpStatusCodes.INTERNAL_SERVER_ERROR,
         );
       }
 

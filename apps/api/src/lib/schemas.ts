@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 
 export const CreateProductSchema = z.object({
   name: z.string().min(1),
@@ -11,15 +11,11 @@ export const CreateProductSchema = z.object({
   sizes: z
     .string()
     .optional()
-    .describe(
-      `JSON stringified array of size objects, e.g. [{"name":"S","inStock":true}]`,
-    ),
+    .describe(`JSON stringified array of size objects, e.g. [{"name":"S","inStock":true}]`),
   colors: z
     .string()
     .optional()
-    .describe(
-      `JSON stringified array of color objects, e.g. [{"name":"Red","inStock":true}]`,
-    ),
+    .describe(`JSON stringified array of color objects, e.g. [{"name":"Red","inStock":true}]`),
   createdBy: z.string().min(1),
   categoryIds: z
     .string()
@@ -49,25 +45,18 @@ export const UpdateProductSchema = z.object({
   sizes: z
     .string()
     .optional()
-    .describe(
-      `JSON stringified array of size objects, e.g. [{"name":"S","inStock":true}]`,
-    ),
+    .describe(`JSON stringified array of size objects, e.g. [{"name":"S","inStock":true}]`),
   colors: z
     .string()
     .optional()
-    .describe(
-      `JSON stringified array of color objects, e.g. [{"name":"Red","inStock":true}]`,
-    ),
+    .describe(`JSON stringified array of color objects, e.g. [{"name":"Red","inStock":true}]`),
   categoryIds: z
     .string()
     .optional()
     .describe(
       `JSON stringified array of category ID strings, e.g. ["123e4567-e89b-12d3-a456-426614174000"]`,
     ),
-  keepImageKeys: z
-    .string()
-    .optional()
-    .describe(`JSON array of image keys to keep`),
+  keepImageKeys: z.string().optional().describe(`JSON array of image keys to keep`),
   newImages: z
     // Use z.any() for file uploads to compatible with basic OpenAPI generation
     .union([z.any(), z.array(z.any())])

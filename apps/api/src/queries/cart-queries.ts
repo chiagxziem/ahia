@@ -66,11 +66,7 @@ export const getCartItem = async (cartId: string, productId: string) => {
 /**
  * Adds a new item to the cart
  */
-export const addCartItem = async (
-  cartId: string,
-  productId: string,
-  quantity: number,
-) => {
+export const addCartItem = async (cartId: string, productId: string, quantity: number) => {
   const [newCartItem] = await db
     .insert(cartItem)
     .values({
@@ -86,10 +82,7 @@ export const addCartItem = async (
 /**
  * Updates the quantity of an existing cart item
  */
-export const updateCartItemQuantity = async (
-  cartItemId: string,
-  quantity: number,
-) => {
+export const updateCartItemQuantity = async (cartItemId: string, quantity: number) => {
   const [updatedCartItem] = await db
     .update(cartItem)
     .set({ quantity })
@@ -130,10 +123,7 @@ export const deleteCartItem = async (cartItemId: string) => {
  * Clears all items from a user's cart
  */
 export const clearCartItems = async (cartId: string) => {
-  const deletedItems = await db
-    .delete(cartItem)
-    .where(eq(cartItem.cartId, cartId))
-    .returning();
+  const deletedItems = await db.delete(cartItem).where(eq(cartItem.cartId, cartId)).returning();
 
   return deletedItems;
 };

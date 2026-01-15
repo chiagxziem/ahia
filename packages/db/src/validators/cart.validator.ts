@@ -1,5 +1,5 @@
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import z from "zod";
+import { z } from "zod";
 
 import { cart, cartItem } from "../schemas/cart.schema";
 import { ProductSelectSchema } from "./product.validator";

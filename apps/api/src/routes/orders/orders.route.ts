@@ -1,5 +1,3 @@
-import { db, eq } from "@repo/db";
-import { order } from "@repo/db/schemas/order.schema";
 import { validator } from "hono-openapi";
 import { z } from "zod";
 
@@ -18,11 +16,10 @@ import {
   getUserOrders,
   reserveStock,
 } from "@/queries/order-queries";
-import {
-  createCheckoutDoc,
-  getUserOrderDoc,
-  getUserOrdersDoc,
-} from "./orders.docs";
+import { db, eq } from "@repo/db";
+import { order } from "@repo/db/schemas/order.schema";
+
+import { createCheckoutDoc, getUserOrderDoc, getUserOrdersDoc } from "./orders.docs";
 
 const orders = createRouter().use(authed);
 
@@ -59,10 +56,7 @@ orders.get(
       const orderWithItems = await getOrderById(id);
 
       if (!orderWithItems || orderWithItems.userId !== user.id) {
-        return c.json(
-          errorResponse("NOT_FOUND", "Order not found"),
-          HttpStatusCodes.NOT_FOUND,
-        );
+        return c.json(errorResponse("NOT_FOUND", "Order not found"), HttpStatusCodes.NOT_FOUND);
       }
 
       return c.json(
@@ -72,10 +66,7 @@ orders.get(
     } catch (error) {
       console.error("Error retrieving order details:", error);
       return c.json(
-        errorResponse(
-          "INTERNAL_SERVER_ERROR",
-          "Failed to retrieve order details",
-        ),
+        errorResponse("INTERNAL_SERVER_ERROR", "Failed to retrieve order details"),
         HttpStatusCodes.INTERNAL_SERVER_ERROR,
       );
     }
@@ -92,10 +83,7 @@ orders.post("/create-checkout", createCheckoutDoc, async (c) => {
 
     if (!userCart || userCart.cartItems.length === 0) {
       return c.json(
-        errorResponse(
-          "INVALID_DATA",
-          "Cart is empty. Add items to cart before creating order.",
-        ),
+        errorResponse("INVALID_DATA", "Cart is empty. Add items to cart before creating order."),
         HttpStatusCodes.BAD_REQUEST,
       );
     }
@@ -131,10 +119,7 @@ orders.post("/create-checkout", createCheckoutDoc, async (c) => {
     // Return validation errors if any
     if (cartValidationErrors.length > 0) {
       return c.json(
-        errorResponse(
-          cartValidationErrors[0].code,
-          cartValidationErrors[0].details,
-        ),
+        errorResponse(cartValidationErrors[0].code, cartValidationErrors[0].details),
         HttpStatusCodes.UNPROCESSABLE_ENTITY,
       );
     }
@@ -143,11 +128,7 @@ orders.post("/create-checkout", createCheckoutDoc, async (c) => {
     const result = await db.transaction(async () => {
       // This will create the order with null stripeCheckoutSessionId.
       // After creating the Stripe session, it will update the order with the actual session ID.
-      const newOrder = await createOrder(
-        user.id,
-        user.email,
-        totalAmount.toFixed(2),
-      );
+      const newOrder = await createOrder(user.id, user.email, totalAmount.toFixed(2));
 
       // Create order items with frozen prices
       const orderItemsData = userCart.cartItems.map((cartItem) => ({
@@ -225,10 +206,7 @@ orders.post("/create-checkout", createCheckoutDoc, async (c) => {
 
     if (!orderWithItems) {
       return c.json(
-        errorResponse(
-          "INTERNAL_SERVER_ERROR",
-          "Failed to retrieve created order",
-        ),
+        errorResponse("INTERNAL_SERVER_ERROR", "Failed to retrieve created order"),
         HttpStatusCodes.INTERNAL_SERVER_ERROR,
       );
     }

@@ -1,12 +1,6 @@
-import { db, eq } from "@repo/db";
-import { category } from "@repo/db/schemas/product.schema";
-import {
-  CreateCategorySchema,
-  UpdateCategorySchema,
-} from "@repo/db/validators/product.validator";
 import { validator } from "hono-openapi";
 import slugify from "slugify";
-import z from "zod";
+import { z } from "zod";
 
 import { createRouter } from "@/app";
 import HttpStatusCodes from "@/lib/http-status-codes";
@@ -15,6 +9,10 @@ import { authed } from "@/middleware/authed";
 import checkRole from "@/middleware/check-role";
 import { validationHook } from "@/middleware/validation-hook";
 import { getCategoryById } from "@/queries/category-queries";
+import { db, eq } from "@repo/db";
+import { category } from "@repo/db/schemas/product.schema";
+import { CreateCategorySchema, UpdateCategorySchema } from "@repo/db/validators/product.validator";
+
 import {
   createCategoryDoc,
   deleteCategoryDoc,
@@ -55,17 +53,11 @@ categories.get(
       const categoryWithProducts = await getCategoryById(id);
 
       if (!categoryWithProducts) {
-        return c.json(
-          errorResponse("NOT_FOUND", "Category not found"),
-          HttpStatusCodes.NOT_FOUND,
-        );
+        return c.json(errorResponse("NOT_FOUND", "Category not found"), HttpStatusCodes.NOT_FOUND);
       }
 
       return c.json(
-        successResponse(
-          categoryWithProducts,
-          "Category retrieved successfully",
-        ),
+        successResponse(categoryWithProducts, "Category retrieved successfully"),
         HttpStatusCodes.OK,
       );
     } catch (error) {
@@ -95,8 +87,7 @@ categories.post(
       const result = await db.transaction(async (tx) => {
         // Check for existing name (case-insensitive)
         const existingCategory = await tx.query.category.findFirst({
-          where: (category, { sql }) =>
-            sql`LOWER(${category.name}) = LOWER(${trimmedName})`,
+          where: (category, { sql }) => sql`LOWER(${category.name}) = LOWER(${trimmedName})`,
         });
 
         if (existingCategory) {
@@ -113,9 +104,7 @@ categories.post(
 
         while (true) {
           const finalSlug = counter === 0 ? slug : `${slug}-${counter}`;
-          const existingSlug = allCategories.find(
-            (cat) => cat.slug === finalSlug,
-          );
+          const existingSlug = allCategories.find((cat) => cat.slug === finalSlug);
 
           if (!existingSlug) {
             slug = finalSlug;
@@ -169,16 +158,10 @@ categories.put(
       const categoryToUpdate = await getCategoryById(id);
 
       if (!categoryToUpdate) {
-        return c.json(
-          errorResponse("NOT_FOUND", "Category not found"),
-          HttpStatusCodes.NOT_FOUND,
-        );
+        return c.json(errorResponse("NOT_FOUND", "Category not found"), HttpStatusCodes.NOT_FOUND);
       }
 
-      if (
-        !trimmedName ||
-        trimmedName.toLowerCase() === categoryToUpdate.name.toLowerCase()
-      ) {
+      if (!trimmedName || trimmedName.toLowerCase() === categoryToUpdate.name.toLowerCase()) {
         return c.json(
           successResponse(categoryToUpdate, "Category updated successfully"),
           HttpStatusCodes.OK,
@@ -232,10 +215,7 @@ categories.put(
           return updatedCategory;
         });
 
-        return c.json(
-          successResponse(result, "Category updated successfully"),
-          HttpStatusCodes.OK,
-        );
+        return c.json(successResponse(result, "Category updated successfully"), HttpStatusCodes.OK);
       } catch (error) {
         if (error instanceof Error && error.message === "CATEGORY_EXISTS") {
           return c.json(
@@ -282,18 +262,12 @@ categories.delete(
           throw new Error("CATEGORY_HAS_PRODUCTS");
         }
 
-        const [deletedCategory] = await tx
-          .delete(category)
-          .where(eq(category.id, id))
-          .returning();
+        const [deletedCategory] = await tx.delete(category).where(eq(category.id, id)).returning();
 
         return deletedCategory;
       });
 
-      return c.json(
-        successResponse(result, "Category deleted successfully"),
-        HttpStatusCodes.OK,
-      );
+      return c.json(successResponse(result, "Category deleted successfully"), HttpStatusCodes.OK);
     } catch (error) {
       if (error instanceof Error) {
         if (error.message === "CATEGORY_NOT_FOUND") {

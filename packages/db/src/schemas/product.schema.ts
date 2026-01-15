@@ -1,14 +1,8 @@
 import { type InferSelectModel, relations } from "drizzle-orm";
-import {
-  integer,
-  jsonb,
-  numeric,
-  pgTable,
-  text,
-  uuid,
-} from "drizzle-orm/pg-core";
+import { integer, jsonb, numeric, pgTable, text, uuid } from "drizzle-orm/pg-core";
 
 import { timestamps } from "../lib/helpers";
+// oxlint-disable-next-line import/no-cycle
 import { user } from "./auth.schema";
 import { cartItem } from "./cart.schema";
 import { orderItem } from "./order.schema";
@@ -20,18 +14,9 @@ export const product = pgTable("product", {
   description: text("description"),
   price: numeric("price", { precision: 10, scale: 2 }).notNull(),
   stockQuantity: integer("stock_quantity").default(0),
-  sizes: jsonb("sizes")
-    .$type<{ name: string; inStock: boolean }[]>()
-    .default([])
-    .notNull(),
-  colors: jsonb("colors")
-    .$type<{ name: string; inStock: boolean }[]>()
-    .default([])
-    .notNull(),
-  images: jsonb("images")
-    .$type<{ url: string; key: string }[]>()
-    .default([])
-    .notNull(),
+  sizes: jsonb("sizes").$type<{ name: string; inStock: boolean }[]>().default([]).notNull(),
+  colors: jsonb("colors").$type<{ name: string; inStock: boolean }[]>().default([]).notNull(),
+  images: jsonb("images").$type<{ url: string; key: string }[]>().default([]).notNull(),
   createdBy: uuid("created_by")
     .notNull()
     .references(() => user.id, {
@@ -68,19 +53,16 @@ export const productCategory = pgTable("product_category", {
     .notNull()
     .references(() => category.id, { onDelete: "cascade" }),
 });
-export const productCategoryRelations = relations(
-  productCategory,
-  ({ one }) => ({
-    product: one(product, {
-      fields: [productCategory.productId],
-      references: [product.id],
-    }),
-    category: one(category, {
-      fields: [productCategory.categoryId],
-      references: [category.id],
-    }),
+export const productCategoryRelations = relations(productCategory, ({ one }) => ({
+  product: one(product, {
+    fields: [productCategory.productId],
+    references: [product.id],
   }),
-);
+  category: one(category, {
+    fields: [productCategory.categoryId],
+    references: [category.id],
+  }),
+}));
 
 export type Product = InferSelectModel<typeof product>;
 export type Category = InferSelectModel<typeof category>;

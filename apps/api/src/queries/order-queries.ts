@@ -118,10 +118,7 @@ export const createOrderItems = async (
     };
   });
 
-  const newOrderItems = await db
-    .insert(orderItem)
-    .values(orderItemsData)
-    .returning();
+  const newOrderItems = await db.insert(orderItem).values(orderItemsData).returning();
 
   return newOrderItems;
 };
@@ -211,14 +208,16 @@ export const reserveStock = async (
     quantity: number;
   }>,
 ) => {
-  for (const item of cartItems) {
-    await db
-      .update(product)
-      .set({
-        stockQuantity: sql`${product.stockQuantity} - ${item.quantity}`,
-      })
-      .where(eq(product.id, item.productId));
-  }
+  await Promise.all(
+    cartItems.map((item) =>
+      db
+        .update(product)
+        .set({
+          stockQuantity: sql`${product.stockQuantity} - ${item.quantity}`,
+        })
+        .where(eq(product.id, item.productId)),
+    ),
+  );
 };
 
 /**
@@ -230,12 +229,12 @@ export const restoreStock = async (
     quantity: number;
   }>,
 ) => {
-  for (const item of orderItems) {
-    await db
-      .update(product)
-      .set({
-        stockQuantity: sql`${product.stockQuantity} + ${item.quantity}`,
-      })
-      .where(eq(product.id, item.productId));
-  }
+  await Promise.all(
+    orderItems.map((item) =>
+      db
+        .update(product)
+        .set({ stockQuantity: sql`${product.stockQuantity} + ${item.quantity}` })
+        .where(eq(product.id, item.productId)),
+    ),
+  );
 };

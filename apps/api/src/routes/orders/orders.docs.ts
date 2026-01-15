@@ -1,9 +1,5 @@
-import {
-  CreateCheckoutResponseSchema,
-  OrderSelectSchema,
-} from "@repo/db/validators/order.validator";
 import { describeRoute } from "hono-openapi";
-import z from "zod";
+import { z } from "zod";
 
 import HttpStatusCodes from "@/lib/http-status-codes";
 import {
@@ -15,6 +11,10 @@ import {
   getErrDetailsFromErrFields,
 } from "@/lib/openapi";
 import { authExamples } from "@/lib/openapi-examples";
+import {
+  CreateCheckoutResponseSchema,
+  OrderSelectSchema,
+} from "@repo/db/validators/order.validator";
 
 const tags = ["Orders"];
 
@@ -98,22 +98,18 @@ export const createCheckoutDoc = describeRoute({
       code: "UNAUTHORIZED",
       details: "No session found",
     }),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: createErrorResponse(
-      "Cart or stock issues",
-      {
-        insufficientStock: {
-          summary: "Insufficient stock",
-          code: "INSUFFICIENT_STOCK",
-          details: `Not enough stock for "Product". Requested: 5, Available: 3`,
-        },
-        productNoLongerExists: {
-          summary: "Product no longer exists",
-          code: "INVALID_CART_STATE",
-          details:
-            'Product with ID "123e4567-e89b-12d3-a456-426614174000" no longer exists',
-        },
+    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: createErrorResponse("Cart or stock issues", {
+      insufficientStock: {
+        summary: "Insufficient stock",
+        code: "INSUFFICIENT_STOCK",
+        details: `Not enough stock for "Product". Requested: 5, Available: 3`,
       },
-    ),
+      productNoLongerExists: {
+        summary: "Product no longer exists",
+        code: "INVALID_CART_STATE",
+        details: 'Product with ID "123e4567-e89b-12d3-a456-426614174000" no longer exists',
+      },
+    }),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },

@@ -1,6 +1,3 @@
-import { SessionSelectSchema } from "@repo/db/validators/auth.validator";
-import { OrderWithCustomerSelectSchema } from "@repo/db/validators/order.validator";
-import { UserSelectSchema } from "@repo/db/validators/user.validator";
 import { describeRoute } from "hono-openapi";
 import { z } from "zod";
 
@@ -14,6 +11,9 @@ import {
   getErrDetailsFromErrFields,
 } from "@/lib/openapi";
 import { authExamples, userExamples } from "@/lib/openapi-examples";
+import { SessionSelectSchema } from "@repo/db/validators/auth.validator";
+import { OrderWithCustomerSelectSchema } from "@repo/db/validators/order.validator";
+import { UserSelectSchema } from "@repo/db/validators/user.validator";
 
 const tags = ["Admin"];
 
@@ -225,15 +225,12 @@ export const revokeUserSessionsDoc = describeRoute({
     },
   ],
   responses: {
-    [HttpStatusCodes.OK]: createSuccessResponse(
-      "All sessions for the user revoked",
-      {
-        details: "All sessions for the user revoked successfully",
-        dataSchema: z.object({
-          success: z.boolean(),
-        }),
-      },
-    ),
+    [HttpStatusCodes.OK]: createSuccessResponse("All sessions for the user revoked", {
+      details: "All sessions for the user revoked successfully",
+      dataSchema: z.object({
+        success: z.boolean(),
+      }),
+    }),
     [HttpStatusCodes.BAD_REQUEST]: createErrorResponse("Invalid request data", {
       validationError: {
         summary: "Invalid service token",
@@ -384,13 +381,10 @@ export const banUserDoc = describeRoute({
       code: "NOT_FOUND",
       details: "User not found",
     }),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: createGenericErrorResponse(
-      "Unprocessable entity",
-      {
-        code: "UNPROCESSABLE_ENTITY",
-        details: "Unprocessable entity",
-      },
-    ),
+    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: createGenericErrorResponse("Unprocessable entity", {
+      code: "UNPROCESSABLE_ENTITY",
+      details: "Unprocessable entity",
+    }),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },
@@ -449,13 +443,10 @@ export const unbanUserDoc = describeRoute({
       code: "NOT_FOUND",
       details: "User not found",
     }),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: createGenericErrorResponse(
-      "Unprocessable entity",
-      {
-        code: "UNPROCESSABLE_ENTITY",
-        details: "Unprocessable entity",
-      },
-    ),
+    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: createGenericErrorResponse("Unprocessable entity", {
+      code: "UNPROCESSABLE_ENTITY",
+      details: "Unprocessable entity",
+    }),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },

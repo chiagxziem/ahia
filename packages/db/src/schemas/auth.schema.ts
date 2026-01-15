@@ -1,19 +1,15 @@
 import { type InferSelectModel, relations, sql } from "drizzle-orm";
-import {
-  boolean,
-  index,
-  pgTable,
-  text,
-  timestamp,
-  uuid,
-} from "drizzle-orm/pg-core";
+import { boolean, index, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
+// oxlint-disable-next-line import/no-cycle
 import { cart } from "./cart.schema";
 import { order } from "./order.schema";
 import { product } from "./product.schema";
 
 export const user = pgTable("user", {
-  id: uuid("id").default(sql`pg_catalog.gen_random_uuid()`).primaryKey(),
+  id: uuid("id")
+    .default(sql`pg_catalog.gen_random_uuid()`)
+    .primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
@@ -39,7 +35,9 @@ export const userRelations = relations(user, ({ many, one }) => ({
 export const session = pgTable(
   "session",
   {
-    id: uuid("id").default(sql`pg_catalog.gen_random_uuid()`).primaryKey(),
+    id: uuid("id")
+      .default(sql`pg_catalog.gen_random_uuid()`)
+      .primaryKey(),
     expiresAt: timestamp("expires_at").notNull(),
     token: text("token").notNull().unique(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -65,7 +63,9 @@ export const sessionRelations = relations(session, ({ one }) => ({
 export const account = pgTable(
   "account",
   {
-    id: uuid("id").default(sql`pg_catalog.gen_random_uuid()`).primaryKey(),
+    id: uuid("id")
+      .default(sql`pg_catalog.gen_random_uuid()`)
+      .primaryKey(),
     accountId: text("account_id").notNull(),
     providerId: text("provider_id").notNull(),
     userId: uuid("user_id")
@@ -95,7 +95,9 @@ export const accountRelations = relations(account, ({ one }) => ({
 export const verification = pgTable(
   "verification",
   {
-    id: uuid("id").default(sql`pg_catalog.gen_random_uuid()`).primaryKey(),
+    id: uuid("id")
+      .default(sql`pg_catalog.gen_random_uuid()`)
+      .primaryKey(),
     identifier: text("identifier").notNull(),
     value: text("value").notNull(),
     expiresAt: timestamp("expires_at").notNull(),

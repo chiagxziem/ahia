@@ -1,4 +1,3 @@
-import { UserSelectSchema } from "@repo/db/validators/user.validator";
 import { describeRoute } from "hono-openapi";
 import { z } from "zod";
 
@@ -12,6 +11,7 @@ import {
   getErrDetailsFromErrFields,
 } from "@/lib/openapi";
 import { userExamples } from "@/lib/openapi-examples";
+import { UserSelectSchema } from "@repo/db/validators/user.validator";
 
 const tags = ["Superadmin"];
 
@@ -46,13 +46,10 @@ export const createUserDoc = describeRoute({
       code: "FORBIDDEN",
       details: "User does not have the required role",
     }),
-    [HttpStatusCodes.CONFLICT]: createGenericErrorResponse(
-      "User already exists",
-      {
-        code: "USER_EXISTS",
-        details: "User already exists",
-      },
-    ),
+    [HttpStatusCodes.CONFLICT]: createGenericErrorResponse("User already exists", {
+      code: "USER_EXISTS",
+      details: "User already exists",
+    }),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },

@@ -1,5 +1,5 @@
 import { createSelectSchema } from "drizzle-zod";
-import z from "zod";
+import { z } from "zod";
 
 import { session } from "../schemas/auth.schema";
 
