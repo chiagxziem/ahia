@@ -6,7 +6,6 @@ const env = createEnv({
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
     API_URL: z.url(),
     WEB_URL: z.url(),
-    OPENAPI_SERVER_URL: z.url(),
     DOMAIN: z.string().optional(),
     DATABASE_URL: z.url(),
     SUPERADMIN_EMAIL: z.email(),

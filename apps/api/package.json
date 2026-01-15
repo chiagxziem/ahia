@@ -10,6 +10,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.966.0",
     "@hono/bun-compress": "^0.1.0",
+    "@hono/standard-validator": "^0.2.2",
     "@react-email/render": "^2.0.2",
     "@scalar/hono-api-reference": "^0.9.32",
     "@t3-oss/env-core": "^0.13.10",

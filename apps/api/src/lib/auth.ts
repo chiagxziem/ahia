@@ -6,6 +6,7 @@ import { db } from "@repo/db";
 
 import { createCartForUser } from "../queries/cart-queries";
 import { sendResetPasswordEmail, sendVerificationEmail } from "./email";
+import env from "./env";
 import { ac, admin, superadmin, user } from "./permissions";
 
 export const auth = betterAuth({
@@ -46,7 +47,7 @@ export const auth = betterAuth({
     },
   },
 
-  trustedOrigins: ["http://localhost:3000", "http://localhost:8000"],
+  trustedOrigins: [env.API_URL, env.WEB_URL],
 
   session: {
     expiresIn: 60 * 60 * 24 * 30,
