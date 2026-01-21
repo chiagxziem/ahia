@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.5 AS base
+FROM oven/bun:1.3.6 AS base
 
 # --- PREPARE STAGE ---
 FROM base AS prepare

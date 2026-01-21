@@ -17,10 +17,15 @@
     "suspicious": "warn"
   },
   "rules": {
-    "import/no-cycle": ["warn"],
     "typescript/no-unsafe-type-assertion": "off",
+
+    "import/no-cycle": ["warn"],
+
+    "react/react-in-jsx-scope": "off",
+
     "react-perf/jsx-no-jsx-as-prop": "off",
-    "react/react-in-jsx-scope": "off"
+    "react-perf/jsx-no-new-function-as-prop": "off",
+    "react-perf/jsx-no-new-object-as-prop": "off"
   },
   "ignorePatterns": [
     ".jj/**",

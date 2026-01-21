@@ -161,15 +161,15 @@ stripeWebhook.post(
       switch (event.type) {
         // Checkout Session Events
         case "checkout.session.completed":
-          await handleCheckoutSuccess(event.data.object as Stripe.Checkout.Session);
+          await handleCheckoutSuccess(event.data.object);
           break;
 
         case "checkout.session.expired":
-          await handleCheckoutExpired(event.data.object as Stripe.Checkout.Session);
+          await handleCheckoutExpired(event.data.object);
           break;
 
         case "checkout.session.async_payment_failed":
-          await handleCheckoutCancelled(event.data.object as Stripe.Checkout.Session);
+          await handleCheckoutCancelled(event.data.object);
           break;
 
         default:

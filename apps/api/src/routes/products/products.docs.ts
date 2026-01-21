@@ -89,6 +89,11 @@ export const createProductDoc = describeRoute({
       details: "User does not have the required role",
     }),
     [HttpStatusCodes.UNPROCESSABLE_ENTITY]: createErrorResponse("Invalid file data", {
+      notAnArray: {
+        summary: "Not an array",
+        code: "INVALID_FILE",
+        details: "Images must be an array",
+      },
       noImages: {
         summary: "No images provided",
         code: "INVALID_FILE",
@@ -98,6 +103,11 @@ export const createProductDoc = describeRoute({
         summary: "Too many images",
         code: "INVALID_FILE",
         details: "Maximum 3 images allowed",
+      },
+      fileFormatError: {
+        summary: "Invalid file format",
+        code: "INVALID_FILE",
+        details: "Image 1: Invalid file format",
       },
       fileSizeError: {
         summary: "File size too large",

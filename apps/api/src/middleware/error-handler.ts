@@ -16,7 +16,7 @@ const errorHandler: ErrorHandler = (err, c) => {
 
   // Handle Hono HTTPException (thrown by middleware, auth, etc.)
   if (err instanceof HTTPException) {
-    const status = err.status as ContentfulStatusCode;
+    const status = err.status;
     const message = err.message || getDefaultMessageForStatus(status);
 
     // Log client errors in dev, server errors always
