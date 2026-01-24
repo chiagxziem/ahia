@@ -3,6 +3,7 @@ import { createSuperadmin } from "@/queries/admin-queries";
 import admin from "@/routes/admin/admin.route";
 import cart from "@/routes/cart/cart.route";
 import categories from "@/routes/categories/categories.route";
+import health from "@/routes/health/health.route";
 import orders from "@/routes/orders/orders.route";
 import products from "@/routes/products/products.route";
 import stripeWebhook from "@/routes/stripe/stripe.route";
@@ -15,14 +16,15 @@ const app = createApp();
 
 // Register routers
 app
-  .route("/categories", categories)
-  .route("/products", products)
-  .route("/orders", orders)
-  .route("/cart", cart)
-  .route("/stripe-webhook", stripeWebhook)
-  .route("/admin", admin)
-  .route("/superadmin", superadmin)
-  .route("/user", user);
+  .route("/api/health", health)
+  .route("/api/user", user)
+  .route("/api/admin", admin)
+  .route("/api/superadmin", superadmin)
+  .route("/api/categories", categories)
+  .route("/api/products", products)
+  .route("/api/orders", orders)
+  .route("/api/cart", cart)
+  .route("/api/stripe-webhook", stripeWebhook);
 
 // Create superadmin if not exists
 if (env.NODE_ENV !== "test") {
