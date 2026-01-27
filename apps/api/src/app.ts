@@ -14,7 +14,6 @@ import notFoundRoute from "@/middleware/not-found-route";
 import type { AppEnv } from "@/types";
 
 import { apiRateLimiter, authRateLimiter } from "./lib/rate-limit";
-import { nonWwwRedirect } from "./middleware/non-www-redirect";
 
 export const createRouter = () => {
   return new Hono<AppEnv>({ strict: false });
@@ -50,9 +49,6 @@ export const createApp = () => {
       referrerPolicy: "strict-origin-when-cross-origin",
     }),
   );
-
-  // Non-www redirect
-  app.use("*", nonWwwRedirect);
 
   // Compress response body, log requests and set up emoji favicon
   app.use(compress());
