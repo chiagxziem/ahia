@@ -1,6 +1,26 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
+  "globalDependencies": [".env"],
+  "globalEnv": [
+    "API_URL",
+    "WEB_URL",
+    "DOMAIN",
+    "DATABASE_URL",
+    "SUPERADMIN_EMAIL",
+    "BETTER_AUTH_SECRET",
+    "CORS_ORIGINS",
+    "RESEND_API_KEY",
+    "RESEND_DOMAIN",
+    "CLOUDFLARE_R2_ACCOUNT_ID",
+    "CLOUDFLARE_R2_ACCESS_KEY_ID",
+    "CLOUDFLARE_R2_SECRET_ACCESS_KEY",
+    "CLOUDFLARE_R2_BUCKET_NAME",
+    "CLOUDFLARE_R2_PUBLIC_URL",
+    "STRIPE_PUBLISHABLE_KEY",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -11,7 +31,8 @@
         "dist/**",
         ".output/**",
         ".tanstack/**",
-        ".vercel/**"
+        ".vercel/**",
+        "*-exe"
       ]
     },
     "check-types": {
@@ -27,9 +48,6 @@
       "cache": false,
       "persistent": true
     },
-    "//#lint": { "cache": false },
-    "//#format": { "cache": false },
-    "//#check": { "cache": false },
     "db:up": {
       "cache": false
     },
