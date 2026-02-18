@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin as adminPlugin, bearer } from "better-auth/plugins";
+import { admin as adminPlugin, bearer, openAPI } from "better-auth/plugins";
 
 import { db } from "@repo/db";
 
@@ -77,6 +77,7 @@ export const auth = betterAuth({
 
   plugins: [
     bearer(),
+    openAPI(),
     adminPlugin({
       ac,
       roles: {

@@ -56,7 +56,7 @@ export const createApp = () => {
   app.use(emojiFavicon("🛍️"));
 
   // Auth
-  app.on(["POST", "GET"], "/auth/*", (c) => auth.handler(c.req.raw));
+  app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
   // OpenAPI
   app.get(

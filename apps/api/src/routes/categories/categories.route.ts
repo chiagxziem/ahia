@@ -6,7 +6,7 @@ import { createRouter } from "@/app";
 import HttpStatusCodes from "@/lib/http-status-codes";
 import { errorResponse, successResponse } from "@/lib/utils";
 import { authed } from "@/middleware/authed";
-import checkRole from "@/middleware/check-role";
+import { permit } from "@/middleware/permit";
 import { validationHook } from "@/middleware/validation-hook";
 import { getCategoryById } from "@/queries/category-queries";
 import { db, eq } from "@repo/db";
@@ -71,7 +71,7 @@ categories.get(
 );
 
 // Middleware for protected routes
-categories.use(authed).use(checkRole(["admin", "superadmin"]));
+categories.use(authed).use(permit({ category: ["create", "update", "delete"] }));
 
 // Create category
 categories.post(

@@ -10,7 +10,7 @@ import { deleteImageFromR2, uploadImageToR2 } from "@/lib/r2";
 import { CreateProductSchema, InStockSchema, UpdateProductSchema } from "@/lib/schemas";
 import { errorResponse, parseJsonField, successResponse } from "@/lib/utils";
 import { authed } from "@/middleware/authed";
-import checkRole from "@/middleware/check-role";
+import { permit } from "@/middleware/permit";
 import { validationHook } from "@/middleware/validation-hook";
 import { getProductById, getProducts } from "@/queries/product-queries";
 import { db, eq } from "@repo/db";
@@ -58,7 +58,7 @@ products.get(
 );
 
 // Middleware for protected routes
-products.use(authed).use(checkRole(["admin", "superadmin"]));
+products.use(authed).use(permit({ product: ["create", "update", "delete"] }));
 
 // Create product
 products.post(

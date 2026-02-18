@@ -39,7 +39,6 @@ export const createUser = async (user: {
     email: user.email,
     password,
   });
-
   await auth.api.sendVerificationEmail({
     body: {
       email: user.email,

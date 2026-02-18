@@ -1,25 +1,31 @@
 import { createMiddleware } from "hono/factory";
 
+import { auth } from "@/lib/auth";
 import HttpStatusCodes from "@/lib/http-status-codes";
 import { errorResponse } from "@/lib/utils";
 import type { AppEnv } from "@/types";
 
-const checkRole = (requiredRole: string | string[]) => {
+export const permit = (permissions: Record<string, string[]>) => {
   return createMiddleware<AppEnv>(async (c, next) => {
     const user = c.get("user");
 
-    if (!user || !user.role) {
+    if (!user || !user.id || !user.role) {
       return c.json(
         errorResponse("FORBIDDEN", "No user or role assigned"),
         HttpStatusCodes.FORBIDDEN,
       );
     }
 
-    const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+    const result = await auth.api.userHasPermission({
+      body: {
+        userId: user.id,
+        permissions,
+      },
+    });
 
-    if (!roles.includes(user.role)) {
+    if (!result.success) {
       return c.json(
-        errorResponse("FORBIDDEN", "User does not have the required role"),
+        errorResponse("FORBIDDEN", "User does not have the required permission"),
         HttpStatusCodes.FORBIDDEN,
       );
     }
@@ -27,5 +33,3 @@ const checkRole = (requiredRole: string | string[]) => {
     await next();
   });
 };
-
-export default checkRole;
