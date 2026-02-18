@@ -8,20 +8,20 @@
     "stripe": "stripe listen --forward-to localhost:8000/api/webhooks/stripe"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.966.0",
+    "@aws-sdk/client-s3": "^3.992.0",
     "@hono/bun-compress": "^0.1.0",
     "@hono/standard-validator": "^0.2.2",
-    "@react-email/render": "^2.0.2",
-    "@scalar/hono-api-reference": "^0.9.32",
+    "@react-email/render": "^2.0.4",
+    "@scalar/hono-api-reference": "^0.9.41",
     "@t3-oss/env-core": "^0.13.10",
-    "better-auth": "^1.4.10",
-    "hono": "^4.11.3",
-    "hono-openapi": "^1.1.2",
+    "better-auth": "^1.4.18",
+    "hono": "^4.11.10",
+    "hono-openapi": "^1.2.0",
     "hono-rate-limiter": "^0.5.3",
-    "resend": "^6.7.0",
+    "resend": "^6.9.2",
     "slugify": "^1.6.6",
-    "stripe": "^20.1.2",
-    "zod": "^4.3.5"
+    "stripe": "^20.3.1",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@repo/db": "workspace:*",
