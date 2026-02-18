@@ -1,0 +1,27 @@
+opencollection: 1.0.0
+info:
+  name: "Ahia"
+  type: workspace
+
+collections:
+  - name: "user"
+    path: "collections/user"
+
+specs:
+
+docs: |-
+  # Ahia
+  
+  Ahia is a eCommerce platform that will include an API, an admin panel, and a storefront.
+  
+  ## Stack
+  
+  Bun is used for running the app. The backend is built with Hono. Admin and storefront will be built using Next.js. Stripe handles checkouts and payments. PostgreSQL is used as the database with Drizzle as the ORM. Everything (API, admin, storefront) gets deployed using Docker.
+  
+  ## Features
+  
+  - Sell and buy stuff. Basically the usual eCommerce things.
+  - Admins can sell stuff, customers can buy stuff.
+  - Superadmin can create admins, who can then manage customers, products, etc.
+
+activeEnvironmentUid: 11m3tc000000000000000

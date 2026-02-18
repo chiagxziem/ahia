@@ -1,0 +1,10 @@
+name: development
+variables:
+  - name: BASE_URL
+    value: http://localhost:8000/api
+  - secret: true
+    name: ADMIN_BEARER_TOKEN
+  - secret: true
+    name: SUPERADMIN_BEARER_TOKEN
+  - secret: true
+    name: USER_BEARER_TOKEN
