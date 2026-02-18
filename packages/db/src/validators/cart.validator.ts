@@ -5,16 +5,16 @@ import { cart, cartItem } from "../schemas/cart.schema";
 import { ProductSelectSchema } from "./product.validator";
 
 export const CartItemSelectSchema = createSelectSchema(cartItem).extend({
-  createdAt: z.number().transform((n) => new Date(n)),
-  updatedAt: z.number().transform((n) => new Date(n)),
+  createdAt: z.iso.datetime().transform((n) => new Date(n)),
+  updatedAt: z.iso.datetime().transform((n) => new Date(n)),
   product: ProductSelectSchema,
   quantity: z.int().min(1),
   subAmount: z.string().regex(/^\d+(\.\d{2})?$/),
 });
 
 export const CartSelectSchema = createSelectSchema(cart).extend({
-  createdAt: z.number().transform((n) => new Date(n)),
-  updatedAt: z.number().transform((n) => new Date(n)),
+  createdAt: z.iso.datetime().transform((n) => new Date(n)),
+  updatedAt: z.iso.datetime().transform((n) => new Date(n)),
   cartItems: CartItemSelectSchema.array(),
   totalItems: z.int().nonnegative(),
   totalAmount: z.string().regex(/^\d+(\.\d{2})?$/),

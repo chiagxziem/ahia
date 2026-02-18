@@ -5,13 +5,13 @@ import { category, product } from "../schemas/product.schema";
 import { UserSelectSchema } from "./user.validator";
 
 export const CategorySelectSchema = createSelectSchema(category).extend({
-  createdAt: z.number().transform((n) => new Date(n)),
-  updatedAt: z.number().transform((n) => new Date(n)),
+  createdAt: z.iso.datetime().transform((n) => new Date(n)),
+  updatedAt: z.iso.datetime().transform((n) => new Date(n)),
 });
 
 export const ProductSelectSchema = createSelectSchema(product).extend({
-  createdAt: z.number().transform((n) => new Date(n)),
-  updatedAt: z.number().transform((n) => new Date(n)),
+  createdAt: z.iso.datetime().transform((n) => new Date(n)),
+  updatedAt: z.iso.datetime().transform((n) => new Date(n)),
 });
 
 export const CategoryExtendedSchema = CategorySelectSchema.extend({

@@ -5,8 +5,8 @@ import { z } from "zod";
 import { user } from "../schemas/auth.schema";
 
 export const UserSelectSchema = createSelectSchema(user).extend({
-  createdAt: z.number().transform((n) => new Date(n)),
-  updatedAt: z.number().transform((n) => new Date(n)),
+  createdAt: z.iso.datetime().transform((n) => new Date(n)),
+  updatedAt: z.iso.datetime().transform((n) => new Date(n)),
   banExpires: z
     .number()
     .transform((n) => new Date(n))
@@ -34,7 +34,7 @@ export const CreateUserSchema = createInsertSchema(user, {
 });
 
 export const BanUserSchema = z.object({
-  userId: z.string().min(1),
+  userId: z.uuid(),
   banReason: z.string().min(1).default("No reason provided"),
   banExpiresIn: z
     .number()

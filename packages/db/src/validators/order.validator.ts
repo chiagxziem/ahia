@@ -14,14 +14,14 @@ export const OrderItemSelectSchema = createSelectSchema(orderItem).extend({
 });
 
 export const OrderSelectSchema = createSelectSchema(order).extend({
-  createdAt: z.number().transform((n) => new Date(n)),
-  updatedAt: z.number().transform((n) => new Date(n)),
+  createdAt: z.iso.datetime().transform((n) => new Date(n)),
+  updatedAt: z.iso.datetime().transform((n) => new Date(n)),
   orderItems: OrderItemSelectSchema.array(),
 });
 
 export const OrderWithCustomerSelectSchema = createSelectSchema(order).extend({
-  createdAt: z.number().transform((n) => new Date(n)),
-  updatedAt: z.number().transform((n) => new Date(n)),
+  createdAt: z.iso.datetime().transform((n) => new Date(n)),
+  updatedAt: z.iso.datetime().transform((n) => new Date(n)),
   orderItems: OrderItemSelectSchema.array(),
   customer: UserSelectSchema,
 });
