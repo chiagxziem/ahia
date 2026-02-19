@@ -3,7 +3,7 @@ import slugify from "slugify";
 import { z } from "zod";
 
 import { createRouter } from "@/app";
-import { ALLOWED_FILE_TYPES, validateProductImages } from "@/lib/file";
+import { validateFile, validateProductImages } from "@/lib/file";
 import HttpStatusCodes from "@/lib/http-status-codes";
 import { getErrDetailsFromErrFields } from "@/lib/openapi";
 import { deleteImageFromR2, uploadImageToR2 } from "@/lib/r2";
@@ -28,10 +28,10 @@ const products = createRouter();
 
 // Get all products
 products.get("/", getAllProductsDoc, async (c) => {
-  const products = await getProducts();
+  const allProducts = await getProducts();
 
   return c.json(
-    successResponse(products, "All products retrieved successfully"),
+    successResponse(allProducts, "All products retrieved successfully"),
     HttpStatusCodes.OK,
   );
 });
@@ -181,20 +181,22 @@ products.post(
       );
     }
 
-    // Fetch all products to check for slug conflicts
-    const products = await db.query.product.findMany({
+    // Generate unique slug
+    const baseSlug = slugify(rawFormData.name.trim(), { lower: true, strict: true });
+    let slug = baseSlug;
+
+    const existingSlugs = await db.query.product.findMany({
+      where: (product, { or, eq, like }) =>
+        or(eq(product.slug, baseSlug), like(product.slug, `${baseSlug}-%`)),
       columns: { slug: true },
     });
 
-    // Generate unique slug
-    let slug = slugify(rawFormData.name, { lower: true, strict: true });
+    const slugSet = new Set(existingSlugs.map((p) => p.slug));
     let counter = 0;
 
     while (true) {
-      const finalSlug = counter === 0 ? slug : `${slug}-${counter}`;
-      const existingProduct = products.find((p) => p.slug === finalSlug);
-
-      if (!existingProduct) {
+      const finalSlug = counter === 0 ? baseSlug : `${baseSlug}-${counter}`;
+      if (!slugSet.has(finalSlug)) {
         slug = finalSlug;
         break;
       }
@@ -390,27 +392,14 @@ products.put(
     // Validate new images (if provided)
     const newImages = rawFormData.newImages || [];
     if (newImages.length > 0) {
-      try {
-        // Use a modified validation that doesn't require minimum images
-        newImages.forEach((file, index) => {
-          if (file.size > 1024 * 1024) {
-            throw new Error(`Image ${index + 1}: File size must be less than 1MB`);
-          }
-          if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-            throw new Error(
-              `Image ${index + 1}: File type must be one of: ${ALLOWED_FILE_TYPES.join(", ")}`,
-            );
-          }
-        });
-      } catch (error) {
-        return c.json(
-          errorResponse(
-            "INVALID_FILE",
-            error instanceof Error ? error.message : "Image validation failed",
-          ),
-          HttpStatusCodes.UNPROCESSABLE_ENTITY,
-        );
-      }
+      newImages.forEach((file, index) => {
+        try {
+          validateFile(file, index);
+        } catch (error) {
+          validationErrors[`newImages.${index}`] =
+            error instanceof Error ? error.message : "Image validation failed";
+        }
+      });
     }
 
     // Validate total image count (kept + new)
@@ -449,20 +438,25 @@ products.put(
 
     // Generate unique slug if name is being updated
     let slug: string | undefined;
-    if (rawFormData.name && rawFormData.name !== existingProduct.name) {
-      // Fetch all products to check for slug conflicts (excluding current product)
-      const products = await db.query.product.findMany({
-        columns: { slug: true, id: true },
+    if (rawFormData.name && rawFormData.name.trim() !== existingProduct.name) {
+      const baseSlug = slugify(rawFormData.name.trim(), { lower: true, strict: true });
+
+      const existingSlugs = await db.query.product.findMany({
+        where: (product, { or, eq, like, and, ne }) =>
+          and(
+            or(eq(product.slug, baseSlug), like(product.slug, `${baseSlug}-%`)),
+            ne(product.id, id),
+          ),
+        columns: { slug: true },
       });
 
-      const baseSlug = slugify(rawFormData.name, { lower: true, strict: true });
+      const slugSet = new Set(existingSlugs.map((p) => p.slug));
       let counter = 0;
 
       while (true) {
         const finalSlug = counter === 0 ? baseSlug : `${baseSlug}-${counter}`;
-        const existingProduct = products.find((p) => p.slug === finalSlug && p.id !== id);
 
-        if (!existingProduct) {
+        if (!slugSet.has(finalSlug)) {
           slug = finalSlug;
           break;
         }
@@ -498,6 +492,11 @@ products.put(
             keepImageKeys.includes(img.key),
           );
           updateData.images = [...keptImages, ...uploadedImages];
+        }
+
+        // Check if there's anything to update
+        if (Object.keys(updateData).length === 0 && categoryIds === undefined) {
+          return existingProduct;
         }
 
         // Update product
