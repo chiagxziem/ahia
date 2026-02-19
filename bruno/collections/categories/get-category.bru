@@ -1,0 +1,20 @@
+meta {
+  name: get-category
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{BASE_URL}}/categories/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: bb2145ac-10cc-4d2e-96ad-8a5fe3c8d7ba
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

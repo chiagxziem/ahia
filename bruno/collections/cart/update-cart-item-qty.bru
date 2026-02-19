@@ -1,0 +1,26 @@
+meta {
+  name: update-cart-item-qty
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{BASE_URL}}/cart/items/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: 4ca953be-1a01-4633-893c-8e65458477b9
+}
+
+body:json {
+  {
+    "quantity": 15
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,15 @@
+meta {
+  name: clear-cart
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{BASE_URL}}/cart
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

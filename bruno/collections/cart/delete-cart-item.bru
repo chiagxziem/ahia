@@ -1,0 +1,20 @@
+meta {
+  name: delete-cart-item
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{BASE_URL}}/cart/items/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: d52179ea-fb7f-4fbc-bd2b-b92b7bb3ef71
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

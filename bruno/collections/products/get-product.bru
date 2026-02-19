@@ -1,0 +1,20 @@
+meta {
+  name: get-product
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{BASE_URL}}/products/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 2f84630e-7482-4fb6-9ac3-0c6bfbd3834a
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

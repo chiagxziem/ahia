@@ -6,6 +6,14 @@ info:
 collections:
   - name: "user"
     path: "collections/user"
+  - name: "categories"
+    path: "collections/categories"
+  - name: "products"
+    path: "collections/products"
+  - name: "cart"
+    path: "collections/cart"
+  - name: "orders"
+    path: "collections/orders"
 
 specs:
 

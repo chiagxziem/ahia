@@ -1,0 +1,26 @@
+meta {
+  name: delete-category
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{BASE_URL}}/categories/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 9cd73067-154b-41a4-8c07-9b362afd371d
+}
+
+body:json {
+  {
+    "name": "Shirts"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
