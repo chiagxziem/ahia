@@ -127,7 +127,7 @@ const handleCheckoutCancelled = async (session: Stripe.Checkout.Session) => {
 
 // Handle Stripe webhook
 stripeWebhook.post(
-  "/webhooks/stripe",
+  "/",
   stripeWebhookDoc,
   validator(
     "header",

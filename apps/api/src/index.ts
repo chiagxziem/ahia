@@ -20,7 +20,7 @@ app
   .route("/api/products", products)
   .route("/api/orders", orders)
   .route("/api/cart", cart)
-  .route("/api/stripe-webhook", stripeWebhook);
+  .route("/api/webhooks/stripe", stripeWebhook);
 
 // Create superadmin if not exists
 if (env.NODE_ENV !== "test") {
