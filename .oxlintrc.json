@@ -19,7 +19,8 @@
   "rules": {
     "typescript/no-unsafe-type-assertion": "off",
 
-    "import/no-cycle": ["warn"],
+    "import/no-cycle": "warn",
+    "import/no-unassigned-import": "off",
 
     "react/react-in-jsx-scope": "off",
 
