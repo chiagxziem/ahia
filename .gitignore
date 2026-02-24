@@ -3,7 +3,12 @@
 # Dependencies
 node_modules
 .pnp
-.pnp.js
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
 # Local env files
 .env*
@@ -38,6 +43,12 @@ generated
 .vinxi
 .DS_Store
 *.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
 # typescript
 *.tsbuildinfo
