@@ -32,6 +32,6 @@ if (env.NODE_ENV !== "test") {
 }
 
 export default {
-  port: env.PORT,
+  port: 8000,
   fetch: app.fetch,
 };
