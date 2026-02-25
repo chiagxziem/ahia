@@ -56,7 +56,7 @@ const CATEGORY_PRODUCTS = [
 
 export default function CategoriesPage() {
   return (
-    <div className="w-full max-w-300 mx-auto md:px-8 flex flex-col lg:flex-row">
+    <div className="mx-auto flex w-full max-w-300 flex-col md:px-8 lg:flex-row">
       {/* Sidebar for Desktop */}
       <CategorySidebar />
 
@@ -67,10 +67,10 @@ export default function CategoriesPage() {
           <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <h1 className="text-2xl md:text-3xl font-bold tracking-tight">All Products</h1>
+                <h1 className="text-2xl font-bold tracking-tight md:text-3xl">All Products</h1>
                 <MobileFilterDrawer />
               </div>
-              <span className="text-xs md:text-sm text-muted-foreground">
+              <span className="text-xs text-muted-foreground md:text-sm">
                 {CATEGORY_PRODUCTS.length} products
               </span>
             </div>
@@ -80,7 +80,7 @@ export default function CategoriesPage() {
           </div>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 gap-4 md:gap-6 xl:grid-cols-3">
             {CATEGORY_PRODUCTS.map((product) => (
               <ProductCard
                 key={product.id}

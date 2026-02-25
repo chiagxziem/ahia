@@ -16,7 +16,7 @@ export function RegisterForm() {
       </div>
 
       {/* Google */}
-      <Button variant="outline" className="w-full h-11 rounded-xl text-sm font-medium">
+      <Button variant="outline" className="h-11 w-full rounded-xl text-sm font-medium">
         <span className="flex items-center justify-center gap-2.5">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="size-4.5">
             <path
@@ -41,18 +41,18 @@ export function RegisterForm() {
       </Button>
 
       {/* Terms */}
-      <p className="text-center text-xs text-muted-foreground leading-relaxed max-w-xs mx-auto">
+      <p className="mx-auto max-w-xs text-center text-xs leading-relaxed text-muted-foreground">
         By continuing, you agree to our{" "}
         <Link
           href="/terms"
-          className="underline underline-offset-4 hover:text-foreground transition-colors"
+          className="underline underline-offset-4 transition-colors hover:text-foreground"
         >
           Terms of Service
         </Link>{" "}
         and{" "}
         <Link
           href="/privacy"
-          className="underline underline-offset-4 hover:text-foreground transition-colors"
+          className="underline underline-offset-4 transition-colors hover:text-foreground"
         >
           Privacy Policy
         </Link>
@@ -64,7 +64,7 @@ export function RegisterForm() {
         Already have an account?{" "}
         <Link
           href="/login"
-          className="font-medium text-foreground hover:text-primary transition-colors"
+          className="font-medium text-foreground transition-colors hover:text-primary"
         >
           Sign in
         </Link>

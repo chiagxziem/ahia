@@ -1,6 +1,6 @@
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden bg-background px-4 py-12 sm:px-6 lg:px-8">
       {/* Subtle background gradient to add a soft minimal touch without being distracting */}
       <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
         <div
@@ -12,7 +12,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         />
       </div>
 
-      <div className="w-full max-w-sm sm:max-w-md z-10 flex flex-col gap-6">{children}</div>
+      <div className="z-10 flex w-full max-w-sm flex-col gap-6 sm:max-w-md">{children}</div>
     </div>
   );
 }

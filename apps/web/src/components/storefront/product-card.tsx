@@ -14,28 +14,28 @@ export function ProductCard({ name, price, category, slug, tag }: ProductCardPro
   return (
     <Link href={`/products/${slug}`} className="group block">
       {/* Image */}
-      <div className="relative aspect-3/4 bg-muted/30 rounded-xl md:rounded-2xl overflow-hidden mb-3">
+      <div className="relative mb-3 aspect-3/4 overflow-hidden rounded-xl bg-muted/30 md:rounded-2xl">
         {tag && (
-          <Badge className="absolute top-3 left-3 z-10 bg-background/80 backdrop-blur-sm text-foreground hover:bg-background/80 pointer-events-none rounded-full px-2.5 py-0.5 shadow-xs font-medium border border-border/20 text-[11px]">
+          <Badge className="pointer-events-none absolute top-3 left-3 z-10 rounded-full border border-border/20 bg-background/80 px-2.5 py-0.5 text-[11px] font-medium text-foreground shadow-xs backdrop-blur-sm hover:bg-background/80">
             {tag}
           </Badge>
         )}
-        <div className="w-full h-full flex items-center justify-center transition-all duration-500 ease-out group-hover:scale-[1.03] group-hover:bg-muted/20">
-          <div className="size-10 md:size-14 rounded-full bg-muted-foreground/4" />
+        <div className="flex h-full w-full items-center justify-center transition-all duration-500 ease-out group-hover:scale-[1.03] group-hover:bg-muted/20">
+          <div className="size-10 rounded-full bg-muted-foreground/4 md:size-14" />
         </div>
       </div>
 
       {/* Info */}
       <div className="flex items-start justify-between gap-3 px-0.5">
-        <div className="flex flex-col gap-0.5 min-w-0">
-          <span className="font-medium text-[13px] md:text-sm leading-snug text-foreground group-hover:text-primary transition-colors truncate">
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <span className="truncate text-[13px] leading-snug font-medium text-foreground transition-colors group-hover:text-primary md:text-sm">
             {name}
           </span>
-          <span className="text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider">
+          <span className="text-[11px] font-medium tracking-wider text-muted-foreground/70 uppercase">
             {category}
           </span>
         </div>
-        <span className="font-semibold text-[13px] md:text-sm tabular-nums shrink-0 pt-0.5">
+        <span className="shrink-0 pt-0.5 text-[13px] font-semibold tabular-nums md:text-sm">
           {price}
         </span>
       </div>

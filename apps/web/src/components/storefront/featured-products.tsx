@@ -33,22 +33,22 @@ const PRODUCTS = [
 
 export function FeaturedProducts() {
   return (
-    <section className="w-full max-w-300 mx-auto px-4 py-16 mb-24">
+    <section className="mx-auto mb-24 w-full max-w-300 px-4 py-16">
       <div className="flex flex-col gap-10">
         <div className="flex items-end justify-between">
           <div className="flex flex-col gap-2">
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight">New Arrivals</h2>
+            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">New Arrivals</h2>
             <p className="text-muted-foreground">The latest additions to our collection.</p>
           </div>
           <Link
             href="/categories"
-            className="hidden sm:flex items-center gap-1 text-sm font-medium hover:text-primary transition-colors"
+            className="hidden items-center gap-1 text-sm font-medium transition-colors hover:text-primary sm:flex"
           >
             Shop all <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 gap-4 md:gap-6 lg:grid-cols-4">
           {PRODUCTS.map((product) => (
             <ProductCard
               key={product.id}

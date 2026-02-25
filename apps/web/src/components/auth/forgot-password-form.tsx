@@ -32,7 +32,7 @@ export function ForgotPasswordForm() {
           />
         </div>
 
-        <Button type="submit" className="w-full h-11 rounded-xl text-sm font-semibold mt-1">
+        <Button type="submit" className="mt-1 h-11 w-full rounded-xl text-sm font-semibold">
           Send reset link
         </Button>
       </form>
@@ -42,7 +42,7 @@ export function ForgotPasswordForm() {
         Remember your password?{" "}
         <Link
           href="/login"
-          className="font-medium text-foreground hover:text-primary transition-colors"
+          className="font-medium text-foreground transition-colors hover:text-primary"
         >
           Back to sign in
         </Link>

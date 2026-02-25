@@ -53,7 +53,7 @@ function FilterContent() {
     <div className="flex flex-col gap-7">
       {FILTERS.map((section) => (
         <div key={section.id} className="flex flex-col gap-3">
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
             {section.name}
           </span>
           <div className="flex flex-col gap-2.5">
@@ -62,7 +62,7 @@ function FilterContent() {
                 <Checkbox id={`filter-${section.id}-${option.value}`} className="size-4 rounded" />
                 <label
                   htmlFor={`filter-${section.id}-${option.value}`}
-                  className="text-sm text-muted-foreground hover:text-foreground cursor-pointer transition-colors select-none"
+                  className="cursor-pointer text-sm text-muted-foreground transition-colors select-none hover:text-foreground"
                 >
                   {option.label}
                 </label>
@@ -78,11 +78,11 @@ function FilterContent() {
 // Desktop sidebar
 export function CategorySidebar() {
   return (
-    <aside className="hidden lg:block w-56 shrink-0 py-12 pr-8">
+    <aside className="hidden w-56 shrink-0 py-12 pr-8 lg:block">
       <div className="sticky top-24">
-        <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 flex items-center justify-between">
           <span className="text-sm font-semibold tracking-tight">Filters</span>
-          <button className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+          <button className="text-xs text-muted-foreground transition-colors hover:text-foreground">
             Clear all
           </button>
         </div>
@@ -100,14 +100,14 @@ export function MobileFilterDrawer() {
         <Button
           variant="outline"
           size="sm"
-          className="lg:hidden rounded-full gap-1.5 text-xs font-medium"
+          className="gap-1.5 rounded-full text-xs font-medium lg:hidden"
         >
           <HugeiconsIcon icon={FilterIcon} className="size-3.5" />
           Filters
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="w-[85vw] sm:w-80 h-full rounded-none border-r-0">
-        <DrawerHeader className="border-b border-border/30 px-5 py-4 flex flex-row items-center justify-between gap-4">
+      <DrawerContent className="h-full w-[85vw] rounded-none border-r-0 sm:w-80">
+        <DrawerHeader className="flex flex-row items-center justify-between gap-4 border-b border-border/30 px-5 py-4">
           <DrawerTitle className="text-base font-semibold tracking-tight">Filters</DrawerTitle>
           <DrawerClose asChild>
             <Button
@@ -123,7 +123,7 @@ export function MobileFilterDrawer() {
         <div className="flex-1 overflow-y-auto px-5 py-5">
           <FilterContent />
         </div>
-        <div className="border-t border-border/30 px-5 py-4 flex gap-3">
+        <div className="flex gap-3 border-t border-border/30 px-5 py-4">
           <Button variant="outline" className="flex-1 rounded-full text-xs font-medium">
             Clear all
           </Button>

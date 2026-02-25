@@ -31,7 +31,7 @@ export function ResetPasswordForm() {
           <Input id="confirm-password" type="password" required className="h-11 rounded-xl" />
         </div>
 
-        <Button type="submit" className="w-full h-11 rounded-xl text-sm font-semibold mt-1">
+        <Button type="submit" className="mt-1 h-11 w-full rounded-xl text-sm font-semibold">
           Reset password
         </Button>
       </form>
@@ -40,7 +40,7 @@ export function ResetPasswordForm() {
       <p className="text-center text-sm text-muted-foreground">
         <Link
           href="/login"
-          className="font-medium text-foreground hover:text-primary transition-colors"
+          className="font-medium text-foreground transition-colors hover:text-primary"
         >
           Back to sign in
         </Link>
