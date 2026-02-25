@@ -4,7 +4,7 @@ Ahia is a eCommerce website I'm building for the major purpose of showing that I
 
 ## Stack
 
-I use Bun for running the app. Backend is built with Hono. Admin and storefront will be built with Next.js. Stripe handles checkouts and payments. Database is PostgreSQL with Drizzle as the ORM. Everything (API, admin, storefront) gets deployed using Docker.
+I use Bun for running the app. Backend is built with Hono. Admin and storefront will be built with Next.js. Stripe handles checkouts and payments. Database is PostgreSQL with Drizzle as the ORM.
 
 ## What are the features?
 

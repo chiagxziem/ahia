@@ -3,7 +3,7 @@
 Storefront and Admin Dash for Ahia eCommerce.
 
 - Built with Nextjs.
-- Deployed using Docker.
+- Deployed to Vercel. Can also be deployed using the Dockerfile.
 
 ## Getting Started
 

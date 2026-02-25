@@ -4,7 +4,7 @@ Backend API for the Ahia application.
 
 - Built with Hono.
 - Uses PostgreSQL for data storage.
-- Deployed using Docker.
+- Deployed to Railway. Can also be deployed using the Dockerfile.
 - [OpenAPI Docs with Scalar](https://api.ahia.gozman.xyz/api/reference)
 
 ## Getting Started
