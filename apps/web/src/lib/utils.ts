@@ -9,3 +9,17 @@ import { twMerge } from "tailwind-merge";
 export const cn = (...inputs: ClassValue[]): string => {
   return twMerge(clsx(inputs));
 };
+
+/**
+ * Generates initials from a name.
+ * @param name - The name to generate initials from.
+ * @returns The initials of the name.
+ */
+export const getInitials = (name: string) => {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+};

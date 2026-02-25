@@ -1,7 +1,13 @@
 "use client";
 
-import { DashboardSquare01Icon, Logout03Icon, Settings01Icon } from "@hugeicons/core-free-icons";
+import {
+  AccountSetting01Icon,
+  DashboardSquare01Icon,
+  Login01Icon,
+  Logout01Icon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { Facehash } from "facehash";
 import Link from "next/link";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,27 +21,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-// Dummy user data — replace with real auth data later
-const DUMMY_USER = {
-  name: "Jane Doe",
-  email: "jane@example.com",
-  image: "",
-  isAdmin: true,
-};
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
+import { DUMMY_USER, isSignedIn } from "@/lib/dummy-user";
+import { getInitials } from "@/lib/utils";
 
 export function UserMenu() {
   const user = DUMMY_USER;
-  const isSignedIn = true; // Toggle to false to see guest UI
 
   // Guest state
   if (!isSignedIn) {
@@ -43,11 +33,13 @@ export function UserMenu() {
       <>
         <Button
           variant="ghost"
+          size="icon"
           nativeButton={false}
-          className="text-muted-foreground hover:text-foreground md:flex hidden text-[13px] font-medium"
+          className="text-muted-foreground hover:text-foreground"
           render={<Link href="/login" />}
         >
-          Log in
+          <HugeiconsIcon icon={Login01Icon} className="size-5" />
+          <span className="sr-only">Login</span>
         </Button>
       </>
     );
@@ -56,32 +48,69 @@ export function UserMenu() {
   // Signed-in state
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-        <Avatar size="sm">
-          {user.image && <AvatarImage src={user.image} alt={user.name} />}
-          <AvatarFallback className="text-[10px] font-semibold">
-            {getInitials(user.name)}
-          </AvatarFallback>
-        </Avatar>
-        <span className="sr-only">User menu</span>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative text-foreground/80 hover:text-foreground"
+          >
+            {!user.image ? (
+              <Facehash
+                name={user.name}
+                size={24}
+                variant="solid"
+                intensity3d="none"
+                enableBlink
+                className="rounded-md border bg-muted text-muted-foreground"
+              />
+            ) : (
+              <Avatar size="sm" className={"rounded-md after:rounded-md"}>
+                {user.image && <AvatarImage src={user.image} alt={user.name} />}
+                <AvatarFallback className="rounded-md text-[10px] font-semibold">
+                  {getInitials(user.name)}
+                </AvatarFallback>
+              </Avatar>
+            )}
+            <span className="sr-only">User menu</span>
+          </Button>
+        }
+      ></DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" sideOffset={8} className="w-56">
         {/* User info */}
         <DropdownMenuGroup>
-          <DropdownMenuLabel className="font-normal">
+          <DropdownMenuLabel className="flex items-center gap-2 font-normal">
+            {!user.image ? (
+              <Facehash
+                name={user.name}
+                size={40}
+                variant="solid"
+                intensity3d="medium"
+                enableBlink
+                className="rounded-xl border bg-muted text-muted-foreground"
+              />
+            ) : (
+              <Avatar size="lg" className={"rounded-xl after:rounded-xl"}>
+                {user.image && <AvatarImage src={user.image} alt={user.name} />}
+                <AvatarFallback className="rounded-xl text-[10px] font-semibold">
+                  {getInitials(user.name)}
+                </AvatarFallback>
+              </Avatar>
+            )}
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium leading-none">{user.name}</span>
-              <span className="text-xs text-muted-foreground leading-none">{user.email}</span>
+              <span className="text-sm leading-none font-medium text-foreground">{user.name}</span>
+              <span className="text-xs leading-none text-muted-foreground">{user.email}</span>
             </div>
           </DropdownMenuLabel>
         </DropdownMenuGroup>
+
         <DropdownMenuSeparator />
 
         {/* Navigation */}
         <DropdownMenuGroup>
           <DropdownMenuItem render={<Link href="/settings" />}>
-            <HugeiconsIcon icon={Settings01Icon} className="size-4" />
+            <HugeiconsIcon icon={AccountSetting01Icon} className="size-4" />
             Settings
           </DropdownMenuItem>
 
@@ -93,11 +122,12 @@ export function UserMenu() {
             </DropdownMenuItem>
           )}
         </DropdownMenuGroup>
+
         <DropdownMenuSeparator />
 
         {/* Sign out */}
-        <DropdownMenuItem>
-          <HugeiconsIcon icon={Logout03Icon} className="size-4" />
+        <DropdownMenuItem variant="destructive">
+          <HugeiconsIcon icon={Logout01Icon} className="size-4" />
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>

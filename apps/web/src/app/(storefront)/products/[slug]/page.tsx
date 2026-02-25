@@ -72,14 +72,14 @@ export default function ProductDetailPage() {
   const product = PRODUCT;
 
   return (
-    <div className="w-full max-w-300 mx-auto px-4 py-8 md:py-12">
+    <div className="container w-full px-4 py-8 md:py-12">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
-        <Link href="/" className="hover:text-foreground transition-colors">
+      <nav className="mb-8 flex items-center gap-2 text-sm text-muted-foreground">
+        <Link href="/" className="transition-colors hover:text-foreground">
           Home
         </Link>
         <span>/</span>
-        <Link href="/categories" className="hover:text-foreground transition-colors">
+        <Link href="/categories" className="transition-colors hover:text-foreground">
           {product.categories[0]?.name ?? "Shop"}
         </Link>
         <span>/</span>
@@ -87,13 +87,13 @@ export default function ProductDetailPage() {
       </nav>
 
       {/* Product Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
         {/* Image Gallery */}
         <div className="flex flex-col gap-4">
           {/* Main Image */}
-          <div className="relative aspect-square bg-muted/30 rounded-2xl md:rounded-[28px] overflow-hidden">
-            <div className="w-full h-full flex items-center justify-center">
-              <span className="text-muted-foreground/30 font-semibold tracking-[0.15em] uppercase text-sm">
+          <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted/30 md:rounded-[28px]">
+            <div className="flex h-full w-full items-center justify-center">
+              <span className="text-sm font-semibold tracking-[0.15em] text-muted-foreground/30 uppercase">
                 Product Photo
               </span>
             </div>
@@ -106,13 +106,13 @@ export default function ProductDetailPage() {
                 <button
                   key={image.key}
                   onClick={() => setSelectedImageIndex(index)}
-                  className={`relative aspect-square w-20 rounded-xl overflow-hidden bg-muted/30 transition-all ${
+                  className={`relative aspect-square w-20 overflow-hidden rounded-xl bg-muted/30 transition-all ${
                     selectedImageIndex === index
                       ? "ring-2 ring-primary ring-offset-2"
                       : "opacity-60 hover:opacity-100"
                   }`}
                 >
-                  <div className="w-full h-full flex items-center justify-center">
+                  <div className="flex h-full w-full items-center justify-center">
                     <div className="size-6 rounded-full bg-muted-foreground/5" />
                   </div>
                 </button>
@@ -129,14 +129,14 @@ export default function ProductDetailPage() {
               <Link key={cat.slug} href={`/categories?cat=${cat.slug}`}>
                 <Badge
                   variant="outline"
-                  className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest border-border/60 hover:bg-muted transition-colors"
+                  className="rounded-full border-border/60 px-3 py-1 text-xs font-semibold tracking-widest uppercase transition-colors hover:bg-muted"
                 >
                   {cat.name}
                 </Badge>
               </Link>
             ))}
             {product.stockQuantity > 0 && product.stockQuantity <= 5 && (
-              <Badge className="rounded-full px-3 py-1 text-xs font-medium bg-amber-500/10 text-amber-600 hover:bg-amber-500/10 border-0">
+              <Badge className="rounded-full border-0 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600 hover:bg-amber-500/10">
                 Only {product.stockQuantity} left
               </Badge>
             )}
@@ -144,14 +144,14 @@ export default function ProductDetailPage() {
 
           {/* Name & Price */}
           <div className="flex flex-col gap-2">
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
               {product.name}
             </h1>
             <span className="text-2xl font-semibold text-foreground">${product.price}</span>
           </div>
 
           {/* Description */}
-          <p className="text-base text-muted-foreground leading-relaxed max-w-lg">
+          <p className="max-w-lg text-base leading-relaxed text-muted-foreground">
             {product.description}
           </p>
 
@@ -161,7 +161,7 @@ export default function ProductDetailPage() {
           {/* Color Selection */}
           {product.colors.length > 0 && (
             <div className="flex flex-col gap-3">
-              <span className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+              <span className="text-sm font-semibold tracking-widest text-muted-foreground uppercase">
                 Color{selectedColor && ` — ${selectedColor}`}
               </span>
               <div className="flex flex-wrap gap-2">
@@ -170,12 +170,12 @@ export default function ProductDetailPage() {
                     key={color.name}
                     disabled={!color.inStock}
                     onClick={() => setSelectedColor(color.name)}
-                    className={`px-4 py-2.5 rounded-full text-sm font-medium border transition-all ${
+                    className={`rounded-full border px-4 py-2.5 text-sm font-medium transition-all ${
                       selectedColor === color.name
                         ? "border-foreground bg-foreground text-background"
                         : color.inStock
                           ? "border-border/60 text-foreground hover:border-foreground/40"
-                          : "border-border/30 text-muted-foreground/40 cursor-not-allowed line-through"
+                          : "cursor-not-allowed border-border/30 text-muted-foreground/40 line-through"
                     }`}
                   >
                     {color.name}
@@ -188,7 +188,7 @@ export default function ProductDetailPage() {
           {/* Size Selection */}
           {product.sizes.length > 0 && (
             <div className="flex flex-col gap-3">
-              <span className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+              <span className="text-sm font-semibold tracking-widest text-muted-foreground uppercase">
                 Size{selectedSize && ` — ${selectedSize}`}
               </span>
               <div className="flex flex-wrap gap-2">
@@ -197,12 +197,12 @@ export default function ProductDetailPage() {
                     key={size.name}
                     disabled={!size.inStock}
                     onClick={() => setSelectedSize(size.name)}
-                    className={`px-4 py-2.5 rounded-full text-sm font-medium border transition-all ${
+                    className={`rounded-full border px-4 py-2.5 text-sm font-medium transition-all ${
                       selectedSize === size.name
                         ? "border-foreground bg-foreground text-background"
                         : size.inStock
                           ? "border-border/60 text-foreground hover:border-foreground/40"
-                          : "border-border/30 text-muted-foreground/40 cursor-not-allowed line-through"
+                          : "cursor-not-allowed border-border/30 text-muted-foreground/40 line-through"
                     }`}
                   >
                     {size.name}
@@ -213,20 +213,20 @@ export default function ProductDetailPage() {
           )}
 
           {/* Quantity & Add to Cart */}
-          <div className="flex flex-col gap-4 mt-2">
+          <div className="mt-2 flex flex-col gap-4">
             <div className="flex items-center gap-4">
               {/* Quantity Selector */}
-              <div className="flex items-center gap-4 bg-muted/40 rounded-full px-4 py-2 text-sm font-medium">
+              <div className="flex items-center gap-4 rounded-full bg-muted/40 px-4 py-2 text-sm font-medium">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   −
                 </button>
                 <span className="min-w-6 text-center font-semibold">{quantity}</span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   +
                 </button>
@@ -235,7 +235,7 @@ export default function ProductDetailPage() {
               {/* Add to Cart */}
               <Button
                 size="lg"
-                className="flex-1 rounded-full h-12 text-base font-semibold shadow-lg shadow-primary/10 gap-2"
+                className="h-12 flex-1 gap-2 rounded-full text-base font-semibold shadow-lg shadow-primary/10"
                 disabled={product.stockQuantity === 0}
               >
                 <HugeiconsIcon icon={ShoppingCart01Icon} className="size-5" />
@@ -258,20 +258,20 @@ export default function ProductDetailPage() {
         <div className="flex flex-col gap-8">
           <div className="flex items-end justify-between">
             <div className="flex flex-col gap-2">
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">You might also like</h2>
+              <h2 className="text-2xl font-bold tracking-tight md:text-3xl">You might also like</h2>
               <p className="text-muted-foreground">
                 More from {product.categories[0]?.name ?? "this collection"}
               </p>
             </div>
             <Link
               href="/categories"
-              className="hidden sm:flex items-center gap-1 text-sm font-medium hover:text-primary transition-colors"
+              className="hidden items-center gap-1 text-sm font-medium transition-colors hover:text-primary sm:flex"
             >
               View all <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 gap-4 md:gap-6 lg:grid-cols-4">
             {RELATED_PRODUCTS.map((relatedProduct) => (
               <ProductCard
                 key={relatedProduct.id}

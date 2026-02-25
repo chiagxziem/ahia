@@ -18,8 +18,8 @@ const NAV_LINKS = [
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-lg border-b border-border/30">
-      <div className="w-full max-w-300 mx-auto px-4 md:px-8 flex h-14 md:h-16 items-center justify-between">
+    <header className="sticky top-0 z-40 w-full border-b border-border/30 bg-background/80 backdrop-blur-lg">
+      <div className="container flex h-14 w-full items-center justify-between px-4 md:h-16 md:px-8">
         {/* Left: Mobile nav + Logo */}
         <div className="flex items-center gap-3">
           <MobileNav />
@@ -29,12 +29,12 @@ export function SiteHeader() {
         </div>
 
         {/* Center: Desktop nav */}
-        <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
+        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 md:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className="text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               {link.label}
             </Link>
@@ -45,10 +45,10 @@ export function SiteHeader() {
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
-            size="icon-sm"
-            className="rounded-full text-muted-foreground hover:text-foreground"
+            size="icon"
+            className="text-muted-foreground hover:text-foreground"
           >
-            <HugeiconsIcon icon={Search01Icon} className="size-4.5" />
+            <HugeiconsIcon icon={Search01Icon} className="size-5" />
             <span className="sr-only">Search</span>
           </Button>
           <UserMenu />

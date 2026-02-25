@@ -1,3 +1,4 @@
+import { ThemeProvider } from "better-themes/rsc";
 import type { Metadata } from "next";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,9 +21,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${sometypeMono.variable} antialiased`}>
-        <TooltipProvider>{children}</TooltipProvider>
+        <ThemeProvider
+          attribute="class"
+          disableTransitionOnChange
+          // defaultTheme="light"
+          enableSystem
+        >
+          <TooltipProvider>{children}</TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
