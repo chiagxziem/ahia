@@ -13,7 +13,7 @@
     "sortSideEffects": true
   },
   "experimentalTailwindcss": {
-    "stylesheet": "./apps/web/src/styles/app.css",
+    "stylesheet": "./apps/web/src/styles/globals.css",
     "attributes": ["class", "className"],
     "functions": ["clsx", "cn", "twMerge"]
   },
