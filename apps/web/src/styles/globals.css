@@ -17,7 +17,7 @@
 @theme inline {
   /* fonts */
   --font-sans: var(--font-inter);
-  --font-mono: var(--font-sometype-mono);
+  --font-heading: var(--font-bricolage);
 
   /* colors */
   --color-background: var(--background);

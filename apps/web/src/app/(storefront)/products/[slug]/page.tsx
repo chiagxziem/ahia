@@ -144,7 +144,7 @@ export default function ProductDetailPage() {
 
           {/* Name & Price */}
           <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
               {product.name}
             </h1>
             <span className="text-2xl font-semibold text-foreground">${product.price}</span>

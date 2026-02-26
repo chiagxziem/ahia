@@ -37,7 +37,9 @@ export function FeaturedProducts() {
       <div className="flex flex-col gap-10">
         <div className="flex items-end justify-between">
           <div className="flex flex-col gap-2">
-            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">New Arrivals</h2>
+            <h2 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">
+              New Arrivals
+            </h2>
             <p className="text-muted-foreground">The latest additions to our collection.</p>
           </div>
           <Link

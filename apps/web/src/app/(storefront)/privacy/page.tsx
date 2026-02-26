@@ -10,7 +10,9 @@ export default function PrivacyPage() {
     <div className="small-container w-full px-4 py-16 md:py-24">
       <div className="flex flex-col gap-10">
         <div className="flex flex-col gap-3">
-          <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Privacy Policy</h1>
+          <h1 className="font-heading text-3xl font-bold tracking-tight md:text-4xl">
+            Privacy Policy
+          </h1>
           <p className="text-sm text-muted-foreground">Last updated: February 24, 2026</p>
         </div>
 

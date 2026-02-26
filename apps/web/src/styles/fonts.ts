@@ -1,11 +1,12 @@
-import { Inter, Sometype_Mono } from "next/font/google";
+import { Inter, Bricolage_Grotesque } from "next/font/google";
 
 export const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
 });
 
-export const sometypeMono = Sometype_Mono({
-  variable: "--font-sometype-mono",
+export const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
 });
+

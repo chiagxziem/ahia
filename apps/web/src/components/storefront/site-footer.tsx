@@ -27,7 +27,7 @@ export function SiteFooter() {
         <div className="flex flex-col gap-10 py-12 md:flex-row md:items-start md:justify-between md:py-16">
           {/* Brand */}
           <div className="flex flex-col gap-3 md:max-w-xs">
-            <Link href="/" className="w-fit text-lg font-bold tracking-tight">
+            <Link href="/" className="w-fit font-heading text-lg font-bold tracking-tight">
               Ahia
             </Link>
             <p className="text-sm leading-relaxed text-muted-foreground">

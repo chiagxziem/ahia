@@ -13,7 +13,7 @@ export default function SettingsPage() {
       <div className="flex flex-col gap-10">
         {/* Page header */}
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Settings</h1>
+          <h1 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">Settings</h1>
           <p className="text-sm text-muted-foreground">Manage your account and preferences.</p>
         </div>
 

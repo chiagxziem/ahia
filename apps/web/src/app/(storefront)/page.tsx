@@ -26,7 +26,7 @@ export default function Home() {
           >
             SS{new Date().getFullYear().toString().slice(-2)} Collection
           </Badge>
-          <h1 className="text-4xl leading-[1.08]! font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+          <h1 className="font-heading text-4xl leading-[1.08]! font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
             Curated essentials,
             <br />
             <span className="text-muted-foreground/60">beautifully minimal.</span>

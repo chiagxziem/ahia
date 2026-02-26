@@ -24,7 +24,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-3">
           <MobileNav />
           <Link href="/" className="flex items-center">
-            <span className="text-lg font-bold tracking-tight">Ahia</span>
+            <span className="font-heading text-lg font-bold tracking-tight">Ahia</span>
           </Link>
         </div>
 

@@ -2,7 +2,7 @@ import { ThemeProvider } from "better-themes/rsc";
 import type { Metadata } from "next";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { inter, sometypeMono } from "@/styles/fonts";
+import { bricolage, inter } from "@/styles/fonts";
 
 import "@/styles/globals.css";
 
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${sometypeMono.variable} antialiased`}>
+      <body className={`${inter.variable} ${bricolage.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
           disableTransitionOnChange

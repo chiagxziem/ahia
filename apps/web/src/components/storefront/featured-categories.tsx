@@ -16,7 +16,9 @@ export function FeaturedCategories() {
       <div className="flex flex-col gap-10">
         <div className="flex items-end justify-between">
           <div className="flex flex-col gap-2">
-            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Shop by Category</h2>
+            <h2 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">
+              Shop by Category
+            </h2>
             <p className="text-muted-foreground">Find exactly what you&apos;re looking for.</p>
           </div>
           <Link
