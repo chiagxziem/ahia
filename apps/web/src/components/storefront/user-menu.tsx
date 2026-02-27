@@ -7,8 +7,11 @@ import {
   Logout01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Facehash } from "facehash";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -21,14 +24,46 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DUMMY_USER, isSignedIn } from "@/lib/dummy-user";
-import { getInitials } from "@/lib/utils";
+import { getUser } from "@/features/user/queries";
+import { authClient } from "@/lib/auth-client";
+import { queryKeys } from "@/lib/query-keys";
+import { getInitials, roles } from "@/lib/utils";
 
-export function UserMenu() {
-  const user = DUMMY_USER;
+import { cancelToastEl } from "../ui/sonner";
+
+interface Props {
+  headers: Headers;
+}
+
+export function UserMenu({ headers }: Props) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const { data: user } = useQuery({
+    queryKey: queryKeys.user(),
+    queryFn: () => getUser(headers),
+  });
+
+  const signOutUser = async () => {
+    toast.promise(
+      authClient.signOut().then(async () => {
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.user(),
+        });
+        router.push("/sign-in");
+        return undefined;
+      }),
+      {
+        loading: "Signing out...",
+        success: "Signed out successfully",
+        error: "Failed to sign out. Please try again.",
+        ...cancelToastEl,
+      },
+    );
+  };
 
   // Guest state
-  if (!isSignedIn) {
+  if (!user) {
     return (
       <>
         <Button
@@ -36,10 +71,10 @@ export function UserMenu() {
           size="icon"
           nativeButton={false}
           className="text-muted-foreground hover:text-foreground"
-          render={<Link href="/login" />}
+          render={<Link href="/sign-in" />}
         >
           <HugeiconsIcon icon={Login01Icon} className="size-5" />
-          <span className="sr-only">Login</span>
+          <span className="sr-only">Sign In</span>
         </Button>
       </>
     );
@@ -75,7 +110,7 @@ export function UserMenu() {
             <span className="sr-only">User menu</span>
           </Button>
         }
-      ></DropdownMenuTrigger>
+      />
 
       <DropdownMenuContent align="end" sideOffset={8} className="w-56">
         {/* User info */}
@@ -115,18 +150,19 @@ export function UserMenu() {
           </DropdownMenuItem>
 
           {/* Admin-only: Dashboard link */}
-          {user.isAdmin && (
-            <DropdownMenuItem render={<Link href="/admin" />}>
-              <HugeiconsIcon icon={DashboardSquare01Icon} className="size-4" />
-              Admin Dashboard
-            </DropdownMenuItem>
-          )}
+          {user.role === roles.ADMIN ||
+            (user.role === roles.SUPERADMIN && (
+              <DropdownMenuItem render={<Link href="/admin" />}>
+                <HugeiconsIcon icon={DashboardSquare01Icon} className="size-4" />
+                Admin Dashboard
+              </DropdownMenuItem>
+            ))}
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
         {/* Sign out */}
-        <DropdownMenuItem variant="destructive">
+        <DropdownMenuItem variant="destructive" onClick={signOutUser}>
           <HugeiconsIcon icon={Logout01Icon} className="size-4" />
           Sign out
         </DropdownMenuItem>

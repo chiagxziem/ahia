@@ -2,6 +2,7 @@
 
 import {
   Alert02Icon,
+  Cancel01Icon,
   CheckmarkCircle02Icon,
   InformationCircleIcon,
   Loading03Icon,
@@ -40,6 +41,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast: "cn-toast",
+          cancelButton:
+            "!absolute !top-1.5 !right-1.5 !bg-transparent !p-0 !size-5 !flex !items-center !justify-center !opacity-80 lg:!opacity-50 lg:hover:!opacity-80 lg:hover:!bg-neutral-100/20 dark:!bg-transparent dark:lg:hover:!bg-neutral-900/20 !transition",
         },
       }}
       {...props}
@@ -47,4 +50,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
   );
 };
 
-export { Toaster };
+const cancelToastEl = {
+  cancel: {
+    label: <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} className="size-3.5" />,
+    onClick: () => {},
+  },
+};
+
+export { cancelToastEl, Toaster };

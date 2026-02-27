@@ -146,12 +146,12 @@ export function MobileNav() {
           ) : (
             <div className="flex flex-col gap-0.5">
               <Link
-                href="/login"
+                href="/sign-in"
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted/60 hover:text-foreground"
               >
                 <HugeiconsIcon icon={Login01Icon} className="size-4.5 text-muted-foreground" />
-                Login
+                Sign In
               </Link>
               <Link
                 href="/register"
