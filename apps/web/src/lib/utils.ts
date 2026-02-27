@@ -23,3 +23,12 @@ export const getInitials = (name: string) => {
     .toUpperCase()
     .slice(0, 2);
 };
+
+/**
+ * Roles enum
+ */
+export const roles = {
+  ADMIN: "admin",
+  SUPERADMIN: "superadmin",
+  USER: "user",
+};
