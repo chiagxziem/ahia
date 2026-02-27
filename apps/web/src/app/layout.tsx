@@ -1,7 +1,9 @@
 import { ThemeProvider } from "better-themes/rsc";
 import type { Metadata } from "next";
 
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import QueryClientProviderWrapper from "@/lib/query-client";
 import { bricolage, inter } from "@/styles/fonts";
 
 import "@/styles/globals.css";
@@ -29,7 +31,10 @@ export default function RootLayout({
           // defaultTheme="light"
           enableSystem
         >
-          <TooltipProvider>{children}</TooltipProvider>
+          <QueryClientProviderWrapper>
+            <TooltipProvider>{children}</TooltipProvider>
+          </QueryClientProviderWrapper>
+          <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>
     </html>

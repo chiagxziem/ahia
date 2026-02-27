@@ -9,23 +9,20 @@ export const metadata: Metadata = {
     "Discover premium quality and exceptional design. Ahia brings a curated shopping experience right to your fingertips.",
 };
 
+import { cacheLife } from "next/cache";
+
 import { FeaturedCategories } from "@/components/storefront/featured-categories";
 import { FeaturedProducts } from "@/components/storefront/featured-products";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-export default function Home() {
+export const Home = () => {
   return (
     <div className="flex w-full flex-col">
       {/* Hero */}
       <section className="container mb-8 flex w-full flex-col items-center justify-between gap-12 px-4 py-12 md:py-20 lg:flex-row lg:gap-16">
         <div className="z-10 flex flex-col items-start gap-6 text-left lg:w-1/2">
-          <Badge
-            variant="outline"
-            className="rounded-full border-primary/20 bg-primary/5 text-xs font-semibold tracking-wide text-primary uppercase"
-          >
-            SS{new Date().getFullYear().toString().slice(-2)} Collection
-          </Badge>
+          <CollectionBadge />
           <h1 className="font-heading text-4xl leading-[1.08]! font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
             Curated essentials,
             <br />
@@ -76,4 +73,20 @@ export default function Home() {
       <FeaturedProducts />
     </div>
   );
-}
+};
+
+export default Home;
+
+const CollectionBadge = async () => {
+  "use cache";
+  cacheLife("hours");
+
+  return (
+    <Badge
+      variant="outline"
+      className="rounded-full border-primary/20 bg-primary/5 text-xs font-semibold tracking-wide text-primary uppercase"
+    >
+      SS{new Date().getFullYear().toString().slice(-2)} Collection
+    </Badge>
+  );
+};
