@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "Sign in to your Ahia account.",
 };
 
-export default function LoginPage() {
+export default function SignInPage() {
   return (
     <div className="flex flex-col gap-6">
       <Link href="/" className="flex items-center gap-2 self-center font-medium">
