@@ -1,3 +1,4 @@
+import { cacheLife } from "next/cache";
 import Link from "next/link";
 
 const FOOTER_LINKS = {
@@ -19,11 +20,11 @@ const FOOTER_LINKS = {
   },
 };
 
-export function SiteFooter() {
+export const SiteFooter = () => {
   return (
     <footer className="border-t border-border/30 bg-background">
       <div className="mx-auto w-full max-w-300 px-4 md:px-8">
-        {/* Top section — brand left, links far right */}
+        {/* Top section */}
         <div className="flex flex-col gap-10 py-12 md:flex-row md:items-start md:justify-between md:py-16">
           {/* Brand */}
           <div className="flex flex-col gap-3 md:max-w-xs">
@@ -35,7 +36,7 @@ export function SiteFooter() {
             </p>
           </div>
 
-          {/* Link columns — pushed right */}
+          {/* Link columns */}
           <div className="flex gap-16 sm:gap-20">
             {Object.values(FOOTER_LINKS).map((section) => (
               <div key={section.title} className="flex flex-col gap-3">
@@ -60,9 +61,7 @@ export function SiteFooter() {
 
         {/* Bottom bar */}
         <div className="flex flex-col items-center justify-between gap-2 border-t border-border/30 py-6 sm:flex-row sm:gap-4">
-          <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} Ahia. All rights reserved.
-          </p>
+          <FooterCopyright />
           <div className="flex items-center gap-5">
             <Link
               href="https://x.com"
@@ -85,4 +84,15 @@ export function SiteFooter() {
       </div>
     </footer>
   );
-}
+};
+
+const FooterCopyright = async () => {
+  "use cache";
+  cacheLife("minutes");
+
+  return (
+    <p className="text-xs text-muted-foreground">
+      &copy; {new Date().getFullYear()} Ahia. All rights reserved.
+    </p>
+  );
+};

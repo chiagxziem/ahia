@@ -1,10 +1,12 @@
-"use client";
-
-import { Search01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import { headers } from "next/headers";
 import Link from "next/link";
+import { Suspense } from "react";
 
-import { Button } from "@/components/ui/button";
+import { Search } from "@/components/storefront/search";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getUser } from "@/features/user/queries";
+import { queryKeys } from "@/lib/query-keys";
 
 import { CartDrawer } from "./cart-drawer";
 import { MobileNav } from "./mobile-nav";
@@ -42,19 +44,39 @@ export function SiteHeader() {
         </nav>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <HugeiconsIcon icon={Search01Icon} className="size-5" />
-            <span className="sr-only">Search</span>
-          </Button>
-          <UserMenu />
-          <CartDrawer />
-        </div>
+        <Suspense fallback={<HeaderActionsFallback />}>
+          <HeaderActions />
+        </Suspense>
       </div>
     </header>
   );
 }
+
+const HeaderActions = async () => {
+  const headersList = await headers();
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: queryKeys.user(),
+    queryFn: async () => getUser(headersList),
+  });
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <div className="flex items-center gap-1">
+        <Search />
+        <UserMenu headers={headersList} />
+        <CartDrawer />
+      </div>
+    </HydrationBoundary>
+  );
+};
+const HeaderActionsFallback = () => {
+  return (
+    <div className="flex items-center gap-1">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <Skeleton key={i} className="size-8 rounded-lg" />
+      ))}
+    </div>
+  );
+};
