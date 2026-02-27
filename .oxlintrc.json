@@ -23,6 +23,7 @@
     "import/no-unassigned-import": "off",
 
     "react/react-in-jsx-scope": "off",
+    "react/no-array-index-key": "off",
 
     "react-perf/jsx-no-jsx-as-prop": "off",
     "react-perf/jsx-no-new-function-as-prop": "off",
