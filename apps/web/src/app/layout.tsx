@@ -1,5 +1,6 @@
 import { ThemeProvider } from "better-themes/rsc";
 import type { Metadata } from "next";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -31,10 +32,12 @@ export default function RootLayout({
           // defaultTheme="light"
           enableSystem
         >
-          <QueryClientProviderWrapper>
-            <TooltipProvider>{children}</TooltipProvider>
-          </QueryClientProviderWrapper>
-          <Toaster richColors position="top-right" />
+          <NuqsAdapter>
+            <QueryClientProviderWrapper>
+              <TooltipProvider>{children}</TooltipProvider>
+            </QueryClientProviderWrapper>
+            <Toaster richColors position="top-right" />
+          </NuqsAdapter>
         </ThemeProvider>
       </body>
     </html>

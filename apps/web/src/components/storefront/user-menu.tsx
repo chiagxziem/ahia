@@ -27,15 +27,11 @@ import {
 import { getUser } from "@/features/user/queries";
 import { authClient } from "@/lib/auth-client";
 import { queryKeys } from "@/lib/query-keys";
-import { getInitials, roles } from "@/lib/utils";
+import { getInitials, roles, truncateEmail } from "@/lib/utils";
 
 import { cancelToastEl } from "../ui/sonner";
 
-interface Props {
-  headers: Headers;
-}
-
-export function UserMenu({ headers }: Props) {
+export const UserMenu = ({ headers }: { headers: Headers }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -97,10 +93,10 @@ export function UserMenu({ headers }: Props) {
                 variant="solid"
                 intensity3d="none"
                 enableBlink
-                className="rounded-md border bg-muted text-muted-foreground"
+                className="shrink-0 rounded-md border bg-muted text-muted-foreground"
               />
             ) : (
-              <Avatar size="sm" className={"rounded-md after:rounded-md"}>
+              <Avatar size="sm" className={"shrink-0 rounded-md after:rounded-md"}>
                 {user.image && <AvatarImage src={user.image} alt={user.name} />}
                 <AvatarFallback className="rounded-md text-[10px] font-semibold">
                   {getInitials(user.name)}
@@ -112,7 +108,7 @@ export function UserMenu({ headers }: Props) {
         }
       />
 
-      <DropdownMenuContent align="end" sideOffset={8} className="w-56">
+      <DropdownMenuContent align="end" sideOffset={8} className="w-64">
         {/* User info */}
         <DropdownMenuGroup>
           <DropdownMenuLabel className="flex items-center gap-2 font-normal">
@@ -123,19 +119,23 @@ export function UserMenu({ headers }: Props) {
                 variant="solid"
                 intensity3d="medium"
                 enableBlink
-                className="rounded-xl border bg-muted text-muted-foreground"
+                className="shrink-0 rounded-xl border bg-muted text-muted-foreground"
               />
             ) : (
-              <Avatar size="lg" className={"rounded-xl after:rounded-xl"}>
+              <Avatar size="lg" className={"shrink-0 rounded-xl after:rounded-xl"}>
                 {user.image && <AvatarImage src={user.image} alt={user.name} />}
                 <AvatarFallback className="rounded-xl text-[10px] font-semibold">
                   {getInitials(user.name)}
                 </AvatarFallback>
               </Avatar>
             )}
-            <div className="flex flex-col gap-1">
-              <span className="text-sm leading-none font-medium text-foreground">{user.name}</span>
-              <span className="text-xs leading-none text-muted-foreground">{user.email}</span>
+            <div className="flex min-w-0 flex-col gap-1">
+              <span className="truncate text-sm leading-none font-medium text-foreground">
+                {user.name}
+              </span>
+              <span className="truncate text-xs leading-none text-muted-foreground">
+                {truncateEmail(user.email)}
+              </span>
             </div>
           </DropdownMenuLabel>
         </DropdownMenuGroup>
@@ -150,13 +150,12 @@ export function UserMenu({ headers }: Props) {
           </DropdownMenuItem>
 
           {/* Admin-only: Dashboard link */}
-          {user.role === roles.ADMIN ||
-            (user.role === roles.SUPERADMIN && (
-              <DropdownMenuItem render={<Link href="/admin" />}>
-                <HugeiconsIcon icon={DashboardSquare01Icon} className="size-4" />
-                Admin Dashboard
-              </DropdownMenuItem>
-            ))}
+          {(user.role === roles.ADMIN || user.role === roles.SUPERADMIN) && (
+            <DropdownMenuItem render={<Link href="/admin" />}>
+              <HugeiconsIcon icon={DashboardSquare01Icon} className="size-4" />
+              Admin Dashboard
+            </DropdownMenuItem>
+          )}
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
@@ -169,4 +168,4 @@ export function UserMenu({ headers }: Props) {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+};

@@ -32,3 +32,22 @@ export const roles = {
   SUPERADMIN: "superadmin",
   USER: "user",
 };
+
+/**
+ * Truncates an email address.
+ * Displays the first 3 and last 3 characters of the local part (before @) with '...' in between.
+ * @param email - The email address to truncate.
+ * @returns The truncated email address.
+ */
+export const truncateEmail = (email: string) => {
+  const [localPart, domain] = email.split("@");
+  if (!localPart || !domain) return email;
+
+  if (localPart.length <= 6) {
+    return email;
+  }
+
+  const firstThree = localPart.slice(0, 3);
+  const lastThree = localPart.slice(-3);
+  return `${firstThree}...${lastThree}@${domain}`;
+};

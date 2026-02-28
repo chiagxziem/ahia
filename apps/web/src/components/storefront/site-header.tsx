@@ -9,7 +9,7 @@ import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
 
 import { CartDrawer } from "./cart-drawer";
-import { MobileNav } from "./mobile-nav";
+import { MobileNav, MobileNavUserContent, MobileNavUserFallback } from "./mobile-nav";
 import { UserMenu } from "./user-menu";
 
 const NAV_LINKS = [
@@ -18,13 +18,17 @@ const NAV_LINKS = [
   { href: "/categories?c=new", label: "New Arrivals" },
 ];
 
-export function SiteHeader() {
+export const SiteHeader = () => {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/30 bg-background/80 backdrop-blur-lg">
       <div className="container flex h-14 w-full items-center justify-between px-4 md:h-16 md:px-8">
         {/* Left: Mobile nav + Logo */}
         <div className="flex items-center gap-3">
-          <MobileNav />
+          <MobileNav>
+            <Suspense fallback={<MobileNavUserFallback />}>
+              <MobileNavUserAsync />
+            </Suspense>
+          </MobileNav>
           <Link href="/" className="flex items-center">
             <span className="font-heading text-lg font-bold tracking-tight">Ahia</span>
           </Link>
@@ -50,7 +54,19 @@ export function SiteHeader() {
       </div>
     </header>
   );
-}
+};
+
+const MobileNavUserAsync = async () => {
+  const headersList = await headers();
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: queryKeys.user(),
+    queryFn: async () => getUser(headersList),
+  });
+
+  return <MobileNavUserContent headers={headersList} />;
+};
 
 const HeaderActions = async () => {
   const headersList = await headers();
@@ -66,11 +82,12 @@ const HeaderActions = async () => {
       <div className="flex items-center gap-1">
         <Search />
         <UserMenu headers={headersList} />
-        <CartDrawer />
+        <CartDrawer headers={headersList} />
       </div>
     </HydrationBoundary>
   );
 };
+
 const HeaderActionsFallback = () => {
   return (
     <div className="flex items-center gap-1">

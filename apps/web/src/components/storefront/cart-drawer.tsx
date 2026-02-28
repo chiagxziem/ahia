@@ -2,6 +2,7 @@
 
 import { Cancel01Icon, ShoppingBag01Icon, ShoppingCart01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import * as React from "react";
 
@@ -15,7 +16,8 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { isSignedIn } from "@/lib/dummy-user";
+import { getUser } from "@/features/user/queries";
+import { queryKeys } from "@/lib/query-keys";
 
 // Dummy data for visual design
 const CART_ITEMS = [
@@ -23,15 +25,24 @@ const CART_ITEMS = [
   { id: "2", name: "Essential Tee", price: "$35", quantity: 2 },
 ];
 
-export function CartDrawer() {
+interface Props {
+  headers: Headers;
+}
+
+export const CartDrawer = ({ headers }: Props) => {
   const [open, setOpen] = React.useState(false);
+
+  const { data: user } = useQuery({
+    queryKey: queryKeys.user(),
+    queryFn: () => getUser(headers),
+  });
 
   const subtotal = 190;
   const itemCount = CART_ITEMS.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <>
-      {isSignedIn ? (
+      {user ? (
         <Drawer open={open} onOpenChange={setOpen} direction="right">
           <DrawerTrigger asChild>
             <Button
@@ -142,4 +153,4 @@ export function CartDrawer() {
       ) : null}
     </>
   );
-}
+};

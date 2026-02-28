@@ -8,11 +8,13 @@ const env = createEnv({
     DATABASE_URL: z.url(),
   },
   client: {
+    NEXT_PUBLIC_WEB_URL: z.string().min(1),
     NEXT_PUBLIC_API_URL: z.string().min(1),
   },
   experimental__runtimeEnv: {
     ...process.env,
     // client variables must be explicitly passed
+    NEXT_PUBLIC_WEB_URL: process.env.NEXT_PUBLIC_WEB_URL,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   },
   emptyStringAsUndefined: true,

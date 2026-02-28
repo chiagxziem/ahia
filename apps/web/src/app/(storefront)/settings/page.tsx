@@ -1,11 +1,25 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 import { UserSettings } from "@/components/storefront/user-settings";
+import { getUser } from "@/features/user/queries";
 
 export const metadata: Metadata = {
   title: "Settings",
   description: "Manage your account settings and preferences.",
 };
+
+async function SettingsContent() {
+  const user = await getUser(await headers());
+
+  if (!user) {
+    redirect("/sign-in");
+  }
+
+  return <UserSettings />;
+}
 
 export default function SettingsPage() {
   return (
@@ -17,7 +31,9 @@ export default function SettingsPage() {
           <p className="text-sm text-muted-foreground">Manage your account and preferences.</p>
         </div>
 
-        <UserSettings />
+        <Suspense fallback={<div className="h-100 w-full animate-pulse rounded-xl bg-muted/60" />}>
+          <SettingsContent />
+        </Suspense>
       </div>
     </div>
   );
