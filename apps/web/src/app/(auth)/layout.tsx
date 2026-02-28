@@ -1,4 +1,20 @@
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { ReactNode, Suspense } from "react";
+
+import { getUser } from "@/features/user/queries";
+
+async function AuthGuard({ children }: { children: ReactNode }) {
+  const user = await getUser(await headers());
+
+  if (user) {
+    redirect("/");
+  }
+
+  return <>{children}</>;
+}
+
+export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden bg-background px-4 py-12 sm:px-6 lg:px-8">
       {/* Subtle background gradient to add a soft minimal touch without being distracting */}
@@ -12,7 +28,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         />
       </div>
 
-      <div className="z-10 flex w-full max-w-sm flex-col gap-6 sm:max-w-md">{children}</div>
+      <div className="z-10 flex w-full max-w-sm flex-col gap-6 sm:max-w-md">
+        <Suspense fallback={null}>
+          <AuthGuard>{children}</AuthGuard>
+        </Suspense>
+      </div>
     </div>
   );
 }

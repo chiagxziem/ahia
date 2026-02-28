@@ -1,14 +1,8 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 
-import { SignInForm } from "@/components/auth/sign-in-form";
+import { VerifyEmailContent } from "@/components/auth/verify-email";
 
-export const metadata: Metadata = {
-  title: "Sign In",
-  description: "Sign in to your Ahia account.",
-};
-
-export default function SignInPage() {
+export default function VerifyEmailPage() {
   return (
     <div className="flex flex-col gap-6">
       <Link href="/" className="flex items-center gap-2 self-center font-medium">
@@ -17,7 +11,7 @@ export default function SignInPage() {
         </div>
         <span className="text-xl tracking-tight">Ahia</span>
       </Link>
-      <SignInForm />
+      <VerifyEmailContent />
     </div>
   );
 }

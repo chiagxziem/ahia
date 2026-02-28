@@ -12,7 +12,7 @@ type SendEmail = {
 };
 
 export const sendVerificationEmail = async ({ to, token, name, url }: SendEmail) => {
-  const verificationUrl = url ?? `${env.WEB_URL}/auth/verify-email?token=${token}`;
+  const verificationUrl = url ?? `${env.WEB_URL}/verify-email?token=${token}`;
 
   await resend.emails.send({
     from: `Ahia <ahia@${env.RESEND_DOMAIN}>`,
@@ -28,7 +28,7 @@ export const sendVerificationEmail = async ({ to, token, name, url }: SendEmail)
 };
 
 export const sendResetPasswordEmail = async ({ to, token, name, url }: SendEmail) => {
-  const resetPasswordUrl = url ?? `${env.WEB_URL}/auth/reset-password?token=${token}`;
+  const resetPasswordUrl = url ?? `${env.WEB_URL}/reset-password?token=${token}`;
 
   await resend.emails.send({
     from: `Ahia <ahia@${env.RESEND_DOMAIN}>`,
