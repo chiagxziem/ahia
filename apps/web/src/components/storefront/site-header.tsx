@@ -24,11 +24,13 @@ export const SiteHeader = () => {
       <div className="container flex h-14 w-full items-center justify-between px-4 md:h-16 md:px-8">
         {/* Left: Mobile nav + Logo */}
         <div className="flex items-center gap-3">
-          <MobileNav>
-            <Suspense fallback={<MobileNavUserFallback />}>
-              <MobileNavUserAsync />
-            </Suspense>
-          </MobileNav>
+          <Suspense fallback={null}>
+            <MobileNav>
+              <Suspense fallback={<MobileNavUserFallback />}>
+                <MobileNavUserAsync />
+              </Suspense>
+            </MobileNav>
+          </Suspense>
           <Link href="/" className="flex items-center">
             <span className="font-heading text-lg font-bold tracking-tight">Ahia</span>
           </Link>

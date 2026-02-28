@@ -25,11 +25,7 @@ const CART_ITEMS = [
   { id: "2", name: "Essential Tee", price: "$35", quantity: 2 },
 ];
 
-interface Props {
-  headers: Headers;
-}
-
-export const CartDrawer = ({ headers }: Props) => {
+export const CartDrawer = ({ headers }: { headers: Headers }) => {
   const [open, setOpen] = React.useState(false);
 
   const { data: user } = useQuery({
