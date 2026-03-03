@@ -101,6 +101,7 @@ export function SignInForm() {
                   autoComplete="email"
                   className="h-11 rounded-xl"
                   value={field.state.value}
+                  disabled={isPending || isGooglePending}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                   aria-invalid={field.state.meta.errors.length > 0}
@@ -141,6 +142,7 @@ export function SignInForm() {
                     name={field.name}
                     type={showPassword ? "text" : "password"}
                     value={field.state.value}
+                    disabled={isPending || isGooglePending}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     aria-invalid={field.state.meta.errors.length > 0}

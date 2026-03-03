@@ -104,6 +104,7 @@ export function ResetPasswordForm() {
                   type="password"
                   className="h-11 rounded-xl"
                   value={field.state.value}
+                  disabled={isPending}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                   aria-invalid={field.state.meta.errors.length > 0}
@@ -139,6 +140,7 @@ export function ResetPasswordForm() {
                   type="password"
                   className="h-11 rounded-xl"
                   value={field.state.value}
+                  disabled={isPending}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                   aria-invalid={field.state.meta.errors.length > 0}
