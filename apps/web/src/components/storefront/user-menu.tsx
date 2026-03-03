@@ -31,13 +31,13 @@ import { getInitials, roles, truncateEmail } from "@/lib/utils";
 
 import { cancelToastEl } from "../ui/sonner";
 
-export const UserMenu = ({ headers }: { headers: Headers }) => {
+export const UserMenu = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
     queryKey: queryKeys.user(),
-    queryFn: () => getUser(headers),
+    queryFn: () => getUser(),
   });
 
   const signOutUser = async () => {
@@ -97,7 +97,9 @@ export const UserMenu = ({ headers }: { headers: Headers }) => {
               />
             ) : (
               <Avatar size="sm" className={"shrink-0 rounded-md after:rounded-md"}>
-                {user.image && <AvatarImage src={user.image} alt={user.name} />}
+                {user.image && (
+                  <AvatarImage src={user.image} alt={user.name} className={"rounded-md"} />
+                )}
                 <AvatarFallback className="rounded-md text-[10px] font-semibold">
                   {getInitials(user.name)}
                 </AvatarFallback>
@@ -123,7 +125,9 @@ export const UserMenu = ({ headers }: { headers: Headers }) => {
               />
             ) : (
               <Avatar size="lg" className={"shrink-0 rounded-xl after:rounded-xl"}>
-                {user.image && <AvatarImage src={user.image} alt={user.name} />}
+                {user.image && (
+                  <AvatarImage src={user.image} alt={user.name} className={"rounded-xl"} />
+                )}
                 <AvatarFallback className="rounded-xl text-[10px] font-semibold">
                   {getInitials(user.name)}
                 </AvatarFallback>

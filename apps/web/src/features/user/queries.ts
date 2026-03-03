@@ -1,12 +1,11 @@
 import { $fetch } from "@/lib/fetch";
-import { errorResSchema, successResSchema } from "@/lib/schemas";
+import { successResSchema } from "@/lib/schemas";
 import { UserSelectSchema } from "@repo/db/validators/user.validator";
 
-export const getUser = async (headers: Headers) => {
+export const getUser = async (cookie?: string) => {
   const { data, error } = await $fetch("/user/me", {
     output: successResSchema(UserSelectSchema),
-    headers,
-    errorSchema: errorResSchema,
+    headers: cookie ? { cookie } : undefined,
   });
 
   if (error) {

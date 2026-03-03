@@ -64,10 +64,14 @@ const MobileNavUserAsync = async () => {
 
   await queryClient.prefetchQuery({
     queryKey: queryKeys.user(),
-    queryFn: async () => getUser(headersList),
+    queryFn: async () => getUser(headersList.get("cookie") ?? undefined),
   });
 
-  return <MobileNavUserContent headers={headersList} />;
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <MobileNavUserContent />
+    </HydrationBoundary>
+  );
 };
 
 const HeaderActions = async () => {
@@ -76,14 +80,14 @@ const HeaderActions = async () => {
 
   await queryClient.prefetchQuery({
     queryKey: queryKeys.user(),
-    queryFn: async () => getUser(headersList),
+    queryFn: async () => getUser(headersList.get("cookie") ?? undefined),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="flex items-center gap-1">
         <Search />
-        <UserMenu headers={headersList} />
+        <UserMenu />
         <CartDrawer headers={headersList} />
       </div>
     </HydrationBoundary>

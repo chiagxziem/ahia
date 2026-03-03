@@ -98,13 +98,13 @@ export const MobileNav = ({ children }: { children?: ReactNode }) => {
   );
 };
 
-export const MobileNavUserContent = ({ headers }: { headers: Headers }) => {
+export const MobileNavUserContent = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
     queryKey: queryKeys.user(),
-    queryFn: () => getUser(headers),
+    queryFn: () => getUser(),
   });
 
   const signOutUser = async () => {
@@ -140,7 +140,9 @@ export const MobileNavUserContent = ({ headers }: { headers: Headers }) => {
             />
           ) : (
             <Avatar size="lg" className={"shrink-0 rounded-xl after:rounded-xl"}>
-              <AvatarImage src={user.image} alt={user.name} />
+              {user.image && (
+                <AvatarImage src={user.image} alt={user.name} className={"rounded-xl"} />
+              )}
               <AvatarFallback className="rounded-xl text-[10px] font-semibold">
                 {getInitials(user.name)}
               </AvatarFallback>
