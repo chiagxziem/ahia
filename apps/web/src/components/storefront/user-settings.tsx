@@ -1,16 +1,120 @@
 "use client";
 
+import { ViewIcon, ViewOffIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { useForm } from "@tanstack/react-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Facehash } from "facehash";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { z } from "zod";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { DUMMY_USER } from "@/lib/dummy-user";
+import { cancelToastEl } from "@/components/ui/sonner";
+import { updateUser } from "@/features/user/actions";
+import { getUser } from "@/features/user/queries";
+import { authClient } from "@/lib/auth-client";
+import { queryKeys } from "@/lib/query-keys";
 import { getInitials } from "@/lib/utils";
 
-export function UserSettings() {
-  const user = DUMMY_USER;
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "../ui/input-group";
+
+export const UserSettings = () => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [isPasswordPending, setIsPasswordPending] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+
+  const { data: user } = useQuery({
+    queryKey: queryKeys.user(),
+    queryFn: () => getUser(),
+  });
+
+  const updateProfileMutation = useMutation({
+    mutationFn: updateUser,
+    onSuccess: () => {
+      toast.success("Profile updated successfully", cancelToastEl);
+      queryClient.invalidateQueries({ queryKey: queryKeys.user() });
+      router.refresh();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update profile", cancelToastEl);
+    },
+  });
+
+  const profileForm = useForm({
+    defaultValues: {
+      name: user?.name ?? "",
+      image: user?.image ?? "",
+    },
+    onSubmit: async ({ value }) => {
+      await updateProfileMutation.mutateAsync({
+        ...value,
+        image: value.image === "" ? undefined : value.image,
+      });
+    },
+  });
+
+  const passwordForm = useForm({
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmNewPassword: "",
+    },
+    onSubmit: async ({ value }) => {
+      if (value.newPassword !== value.confirmNewPassword) {
+        toast.error("New passwords do not match", cancelToastEl);
+        return;
+      }
+
+      await authClient.changePassword(
+        {
+          newPassword: value.newPassword,
+          currentPassword: value.currentPassword,
+          revokeOtherSessions: true,
+        },
+        {
+          onRequest: () => {
+            setIsPasswordPending(true);
+          },
+          onSuccess: () => {
+            toast.success("Password updated successfully", cancelToastEl);
+            passwordForm.reset();
+            setIsPasswordPending(false);
+          },
+          onError: (ctx) => {
+            toast.error(ctx.error.message || "Failed to update password", cancelToastEl);
+            setIsPasswordPending(false);
+          },
+          onSettled: () => {
+            setIsPasswordPending(false);
+          },
+        },
+      );
+    },
+  });
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/sign-in");
+    } else {
+      // Sync form values if user data arrives late or changes
+      profileForm.reset({
+        name: user.name,
+        image: user.image ?? "",
+      });
+    }
+  }, [user, router, profileForm]);
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <>
@@ -23,7 +127,14 @@ export function UserSettings() {
 
         <div className="h-px bg-border/30" />
 
-        <form className="flex flex-col gap-6">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            profileForm.handleSubmit();
+          }}
+          className="flex flex-col gap-6"
+        >
           {/* Avatar */}
           <div className="flex items-center gap-5">
             {!user.image ? (
@@ -37,7 +148,9 @@ export function UserSettings() {
               />
             ) : (
               <Avatar size="xl" className={"rounded-xl after:rounded-xl"}>
-                {user.image && <AvatarImage src={user.image} alt={user.name} />}
+                {user.image && (
+                  <AvatarImage src={user.image} alt={user.name} className={"rounded-xl"} />
+                )}
                 <AvatarFallback className="rounded-xl text-[10px] font-semibold">
                   {getInitials(user.name)}
                 </AvatarFallback>
@@ -45,102 +158,273 @@ export function UserSettings() {
             )}
           </div>
 
-          {/* Image */}
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="image" className="text-sm font-medium">
-              Image URL
-            </Label>
-            <Input
-              id="image"
-              type="text"
-              defaultValue={user.image}
-              className="h-10 max-w-sm rounded-xl"
-            />
-          </div>
+          <FieldGroup>
+            {/* Image */}
+            <profileForm.Field
+              name="image"
+              validators={{
+                onChange: ({ value }) => {
+                  if (value && !z.url().safeParse(value).success) {
+                    return "Please enter a valid URL";
+                  }
+                  return undefined;
+                },
+              }}
+            >
+              {(field) => (
+                <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
+                  <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+                    Image URL
+                  </FieldLabel>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    type="text"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    className="h-10 max-w-sm rounded-xl"
+                    disabled={updateProfileMutation.isPending}
+                  />
+                  {field.state.meta.errors.length > 0 && (
+                    <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                  )}
+                </Field>
+              )}
+            </profileForm.Field>
 
-          {/* Name */}
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="name" className="text-sm font-medium">
-              Name
-            </Label>
-            <Input
-              id="name"
-              type="text"
-              defaultValue={user.name}
-              className="h-10 max-w-sm rounded-xl"
-            />
-          </div>
+            {/* Name */}
+            <profileForm.Field
+              name="name"
+              validators={{
+                onChange: ({ value }) => {
+                  if (!value) return "Name is required";
+                  if (value.length < 2) return "Name must be at least 2 characters";
+                  return undefined;
+                },
+              }}
+            >
+              {(field) => (
+                <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
+                  <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+                    Name
+                  </FieldLabel>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    type="text"
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    className="h-10 max-w-sm rounded-xl"
+                    disabled={updateProfileMutation.isPending}
+                  />
+                  {field.state.meta.errors.length > 0 && (
+                    <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                  )}
+                </Field>
+              )}
+            </profileForm.Field>
 
-          {/* Email — read only */}
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="email" className="text-sm font-medium">
-              Email
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              defaultValue={user.email}
-              disabled
-              className="h-10 max-w-sm rounded-xl"
-            />
-            <p className="text-[11px] text-muted-foreground">
-              Email cannot be changed. Contact support if you need help.
-            </p>
-          </div>
+            {/* Email — read only */}
+            <div className="flex flex-col gap-2">
+              <FieldLabel htmlFor="email" className="text-sm font-medium">
+                Email
+              </FieldLabel>
+              <Input
+                id="email"
+                type="email"
+                defaultValue={user.email}
+                disabled
+                className="h-10 max-w-sm rounded-xl"
+              />
+              <p className="text-[11px] text-muted-foreground">
+                Email cannot be changed. Contact support if you need help.
+              </p>
+            </div>
+          </FieldGroup>
 
           <div>
-            <Button type="submit" className="rounded-full px-6 text-xs font-semibold">
-              Save changes
-            </Button>
+            <profileForm.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+              {([canSubmit, isSubmitting]) => (
+                <Button
+                  type="submit"
+                  disabled={!canSubmit || isSubmitting || updateProfileMutation.isPending}
+                  className="rounded-full px-6 text-xs font-semibold"
+                >
+                  {isSubmitting || updateProfileMutation.isPending ? "Saving..." : "Save changes"}
+                </Button>
+              )}
+            </profileForm.Subscribe>
           </div>
         </form>
       </section>
 
-      {/* Password section — Admin only */}
-      {user.isAdmin && (
-        <section className="flex flex-col gap-6">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-base font-semibold tracking-tight">Password</h2>
-            <p className="text-sm text-muted-foreground">Update your admin account password.</p>
+      {/* Password section */}
+      <section className="flex flex-col gap-6">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-base font-semibold tracking-tight">Password</h2>
+          <p className="text-sm text-muted-foreground">Update your account password.</p>
+        </div>
+
+        <div className="h-px bg-border/30" />
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            passwordForm.handleSubmit();
+          }}
+          className="flex flex-col gap-6"
+        >
+          <FieldGroup>
+            <passwordForm.Field
+              name="currentPassword"
+              validators={{
+                onChange: ({ value }) => (!value ? "Current password is required" : undefined),
+              }}
+            >
+              {(field) => (
+                <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
+                  <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+                    Current password
+                  </FieldLabel>
+                  <InputGroup className="h-10 max-w-sm rounded-xl">
+                    <InputGroupInput
+                      id={field.name}
+                      name={field.name}
+                      type={showCurrentPassword ? "text" : "password"}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      disabled={isPasswordPending}
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <InputGroupButton
+                        className="h-9"
+                        onClick={() => setShowCurrentPassword((prev) => !prev)}
+                      >
+                        <HugeiconsIcon
+                          icon={showCurrentPassword ? ViewOffIcon : ViewIcon}
+                          className="size-4.5"
+                        />
+                      </InputGroupButton>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  {field.state.meta.errors.length > 0 && (
+                    <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                  )}
+                </Field>
+              )}
+            </passwordForm.Field>
+
+            <passwordForm.Field
+              name="newPassword"
+              validators={{
+                onChange: ({ value }) => {
+                  if (!value) return "New password is required";
+                  if (value.length < 8) return "Must be at least 8 characters";
+                  return undefined;
+                },
+              }}
+            >
+              {(field) => (
+                <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
+                  <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+                    New password
+                  </FieldLabel>
+                  <InputGroup className="h-10 max-w-sm rounded-xl">
+                    <InputGroupInput
+                      id={field.name}
+                      name={field.name}
+                      type={showNewPassword ? "text" : "password"}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      disabled={isPasswordPending}
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <InputGroupButton
+                        className="h-9"
+                        onClick={() => setShowNewPassword((prev) => !prev)}
+                      >
+                        <HugeiconsIcon
+                          icon={showNewPassword ? ViewOffIcon : ViewIcon}
+                          className="size-4.5"
+                        />
+                      </InputGroupButton>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  {field.state.meta.errors.length > 0 && (
+                    <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                  )}
+                </Field>
+              )}
+            </passwordForm.Field>
+
+            <passwordForm.Field
+              name="confirmNewPassword"
+              validators={{
+                onChangeListenTo: ["newPassword"],
+                onChange: ({ value, fieldApi }) => {
+                  if (!value) return "Please confirm your new password";
+                  if (value !== fieldApi.form.getFieldValue("newPassword")) {
+                    return "Passwords do not match";
+                  }
+                  return undefined;
+                },
+              }}
+            >
+              {(field) => (
+                <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
+                  <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+                    Confirm new password
+                  </FieldLabel>
+                  <InputGroup className="h-10 max-w-sm rounded-xl">
+                    <InputGroupInput
+                      id={field.name}
+                      name={field.name}
+                      type={showConfirmNewPassword ? "text" : "password"}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      disabled={isPasswordPending}
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <InputGroupButton
+                        className="h-9"
+                        onClick={() => setShowConfirmNewPassword((prev) => !prev)}
+                      >
+                        <HugeiconsIcon
+                          icon={showConfirmNewPassword ? ViewOffIcon : ViewIcon}
+                          className="size-4.5"
+                        />
+                      </InputGroupButton>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  {field.state.meta.errors.length > 0 && (
+                    <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                  )}
+                </Field>
+              )}
+            </passwordForm.Field>
+          </FieldGroup>
+
+          <div>
+            <passwordForm.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+              {([canSubmit, isSubmitting]) => (
+                <Button
+                  type="submit"
+                  disabled={!canSubmit || isSubmitting || isPasswordPending}
+                  className="rounded-full px-6 text-xs font-semibold"
+                >
+                  {isSubmitting || isPasswordPending ? "Updating..." : "Update password"}
+                </Button>
+              )}
+            </passwordForm.Subscribe>
           </div>
-
-          <div className="h-px bg-border/30" />
-
-          <form className="flex flex-col gap-6">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="current-password" className="text-sm font-medium">
-                Current password
-              </Label>
-              <Input id="current-password" type="password" className="h-10 max-w-sm rounded-xl" />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="new-password" className="text-sm font-medium">
-                New password
-              </Label>
-              <Input id="new-password" type="password" className="h-10 max-w-sm rounded-xl" />
-              <p className="text-[11px] text-muted-foreground">Must be at least 8 characters.</p>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="confirm-new-password" className="text-sm font-medium">
-                Confirm new password
-              </Label>
-              <Input
-                id="confirm-new-password"
-                type="password"
-                className="h-10 max-w-sm rounded-xl"
-              />
-            </div>
-
-            <div>
-              <Button type="submit" className="rounded-full px-6 text-xs font-semibold">
-                Update password
-              </Button>
-            </div>
-          </form>
-        </section>
-      )}
+        </form>
+      </section>
     </>
   );
-}
+};
