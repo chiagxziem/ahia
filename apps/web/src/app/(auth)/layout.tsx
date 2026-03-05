@@ -5,7 +5,7 @@ import { ReactNode, Suspense } from "react";
 import { getUser } from "@/features/user/queries";
 
 async function AuthGuard({ children }: { children: ReactNode }) {
-  const user = await getUser(await headers());
+  const user = await getUser((await headers()).get("cookie") ?? undefined);
 
   if (user) {
     redirect("/");

@@ -25,12 +25,12 @@ const CART_ITEMS = [
   { id: "2", name: "Essential Tee", price: "$35", quantity: 2 },
 ];
 
-export const CartDrawer = ({ headers }: { headers: Headers }) => {
+export const CartDrawer = () => {
   const [open, setOpen] = React.useState(false);
 
   const { data: user } = useQuery({
     queryKey: queryKeys.user(),
-    queryFn: () => getUser(headers),
+    queryFn: () => getUser(),
   });
 
   const subtotal = 190;

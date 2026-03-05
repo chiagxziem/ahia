@@ -1,4 +1,5 @@
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import type { Route } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -12,10 +13,10 @@ import { CartDrawer } from "./cart-drawer";
 import { MobileNav, MobileNavUserContent, MobileNavUserFallback } from "./mobile-nav";
 import { UserMenu } from "./user-menu";
 
-const NAV_LINKS = [
+const NAV_LINKS: { href: Route; label: string }[] = [
   { href: "/", label: "Home" },
   { href: "/categories", label: "Shop" },
-  { href: "/categories?c=new", label: "New Arrivals" },
+  { href: "/categories?c=new" as Route, label: "New Arrivals" },
 ];
 
 export const SiteHeader = () => {
@@ -59,12 +60,11 @@ export const SiteHeader = () => {
 };
 
 const MobileNavUserAsync = async () => {
-  const headersList = await headers();
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
     queryKey: queryKeys.user(),
-    queryFn: async () => getUser(headersList.get("cookie") ?? undefined),
+    queryFn: async () => getUser((await headers()).get("cookie") ?? undefined),
   });
 
   return (
@@ -75,12 +75,11 @@ const MobileNavUserAsync = async () => {
 };
 
 const HeaderActions = async () => {
-  const headersList = await headers();
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
     queryKey: queryKeys.user(),
-    queryFn: async () => getUser(headersList.get("cookie") ?? undefined),
+    queryFn: async () => getUser((await headers()).get("cookie") ?? undefined),
   });
 
   return (
@@ -88,7 +87,7 @@ const HeaderActions = async () => {
       <div className="flex items-center gap-1">
         <Search />
         <UserMenu />
-        <CartDrawer headers={headersList} />
+        <CartDrawer />
       </div>
     </HydrationBoundary>
   );

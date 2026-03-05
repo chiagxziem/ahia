@@ -5,7 +5,6 @@ import "@/lib/env";
 const nextConfig: NextConfig = {
   reactCompiler: true,
   cacheComponents: true,
-  typedRoutes: true,
   // output: "standalone",
   // transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"],
   async rewrites() {
