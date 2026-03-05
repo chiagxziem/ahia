@@ -15,7 +15,7 @@ export const UserSelectSchema = createSelectSchema(user).extend({
 
 export const UserUpdateSchema = createInsertSchema(user, {
   name: z.string().min(1).max(100),
-  image: z.url(),
+  image: z.url().nullable(),
 })
   .pick({
     name: true,

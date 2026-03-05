@@ -30,6 +30,7 @@ export const UserSettings = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: queryKeys.user(),
@@ -56,10 +57,23 @@ export const UserSettings = () => {
     onSubmit: async ({ value }) => {
       await updateProfileMutation.mutateAsync({
         ...value,
-        image: value.image === "" ? undefined : value.image,
+        image: value.image === "" ? null : value.image,
       });
     },
   });
+
+  const handleClearImage = async () => {
+    setIsClearing(true);
+    try {
+      await updateProfileMutation.mutateAsync({
+        name: profileForm.getFieldValue("name"),
+        image: null,
+      });
+      profileForm.setFieldValue("image", "");
+    } finally {
+      setIsClearing(false);
+    }
+  };
 
   const passwordForm = useForm({
     defaultValues: {
@@ -176,16 +190,29 @@ export const UserSettings = () => {
                   <FieldLabel htmlFor={field.name} className="text-sm font-medium">
                     Image URL
                   </FieldLabel>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    type="text"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    className="h-10 max-w-sm rounded-xl"
-                    disabled={updateProfileMutation.isPending}
-                  />
+                  <InputGroup className="h-10 max-w-sm rounded-xl">
+                    <InputGroupInput
+                      id={field.name}
+                      name={field.name}
+                      type="text"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={field.state.meta.errors.length > 0}
+                      disabled={updateProfileMutation.isPending || isClearing}
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <InputGroupButton
+                        size={"sm"}
+                        variant={"secondary"}
+                        className={"h-7 rounded-md"}
+                        onClick={handleClearImage}
+                        disabled={updateProfileMutation.isPending || isClearing}
+                      >
+                        {isClearing ? "Clearing..." : "Clear"}
+                      </InputGroupButton>
+                    </InputGroupAddon>
+                  </InputGroup>
                   {field.state.meta.errors.length > 0 && (
                     <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
                   )}
@@ -217,7 +244,8 @@ export const UserSettings = () => {
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     className="h-10 max-w-sm rounded-xl"
-                    disabled={updateProfileMutation.isPending}
+                    aria-invalid={field.state.meta.errors.length > 0}
+                    disabled={updateProfileMutation.isPending || isClearing}
                   />
                   {field.state.meta.errors.length > 0 && (
                     <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
@@ -249,7 +277,9 @@ export const UserSettings = () => {
               {([canSubmit, isSubmitting]) => (
                 <Button
                   type="submit"
-                  disabled={!canSubmit || isSubmitting || updateProfileMutation.isPending}
+                  disabled={
+                    !canSubmit || isSubmitting || updateProfileMutation.isPending || isClearing
+                  }
                   className="rounded-full px-6 text-xs font-semibold"
                 >
                   {isSubmitting || updateProfileMutation.isPending ? "Saving..." : "Save changes"}
@@ -297,11 +327,13 @@ export const UserSettings = () => {
                       value={field.state.value}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={field.state.meta.errors.length > 0}
                       disabled={isPasswordPending}
                     />
                     <InputGroupAddon align="inline-end">
                       <InputGroupButton
-                        className="h-9"
+                        size={"icon-sm"}
+                        className="h-7 rounded-md"
                         onClick={() => setShowCurrentPassword((prev) => !prev)}
                       >
                         <HugeiconsIcon
@@ -341,11 +373,13 @@ export const UserSettings = () => {
                       value={field.state.value}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={field.state.meta.errors.length > 0}
                       disabled={isPasswordPending}
                     />
                     <InputGroupAddon align="inline-end">
                       <InputGroupButton
-                        className="h-9"
+                        size={"icon-sm"}
+                        className="h-7 rounded-md"
                         onClick={() => setShowNewPassword((prev) => !prev)}
                       >
                         <HugeiconsIcon
@@ -388,11 +422,13 @@ export const UserSettings = () => {
                       value={field.state.value}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
+                      aria-invalid={field.state.meta.errors.length > 0}
                       disabled={isPasswordPending}
                     />
                     <InputGroupAddon align="inline-end">
                       <InputGroupButton
-                        className="h-9"
+                        size={"icon-sm"}
+                        className="h-7 rounded-md"
                         onClick={() => setShowConfirmNewPassword((prev) => !prev)}
                       >
                         <HugeiconsIcon
