@@ -10,7 +10,7 @@ const CATEGORIES = [
   { id: "4", name: "Tech", count: "12 Items", description: "Smart simplicity" },
 ];
 
-export function FeaturedCategories() {
+export const FeaturedCategories = () => {
   return (
     <section className="mx-auto w-full max-w-300 px-4 py-16">
       <div className="flex flex-col gap-10">
@@ -57,4 +57,4 @@ export function FeaturedCategories() {
       </div>
     </section>
   );
-}
+};

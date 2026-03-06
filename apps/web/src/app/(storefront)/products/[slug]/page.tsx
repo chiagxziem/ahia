@@ -63,7 +63,7 @@ const RELATED_PRODUCTS = [
   },
 ];
 
-export default function ProductDetailPage() {
+const ProductDetailPage = () => {
   const [selectedSize, setSelectedSize] = React.useState<string | null>(null);
   const [selectedColor, setSelectedColor] = React.useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = React.useState(0);
@@ -286,4 +286,6 @@ export default function ProductDetailPage() {
       </section>
     </div>
   );
-}
+};
+
+export default ProductDetailPage;

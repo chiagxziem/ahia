@@ -13,7 +13,7 @@ import { cancelToastEl } from "@/components/ui/sonner";
 import { authClient } from "@/lib/auth-client";
 import env from "@/lib/env";
 
-export function ForgotPasswordForm() {
+export const ForgotPasswordForm = () => {
   const [isPending, setIsPending] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -152,4 +152,4 @@ export function ForgotPasswordForm() {
       </p>
     </div>
   );
-}
+};

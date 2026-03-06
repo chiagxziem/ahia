@@ -5,7 +5,7 @@ export const metadata = {
   description: "Terms and conditions for using Ahia.",
 };
 
-export default function TermsPage() {
+const TermsPage = () => {
   return (
     <div className="small-container w-full px-4 py-16 md:py-24">
       <div className="flex flex-col gap-10">
@@ -88,4 +88,6 @@ export default function TermsPage() {
       </div>
     </div>
   );
-}
+};
+
+export default TermsPage;

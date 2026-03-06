@@ -54,7 +54,7 @@ const CATEGORY_PRODUCTS = [
   { id: "9", name: "Desk Mat", price: "$40", category: "Accessories", slug: "desk-mat" },
 ];
 
-export default function CategoriesPage() {
+const CategoriesPage = () => {
   return (
     <div className="mx-auto flex w-full max-w-300 flex-col md:px-8 lg:flex-row">
       {/* Sidebar for Desktop */}
@@ -98,4 +98,6 @@ export default function CategoriesPage() {
       </div>
     </div>
   );
-}
+};
+
+export default CategoriesPage;

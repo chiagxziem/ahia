@@ -31,7 +31,7 @@ const PRODUCTS = [
   },
 ];
 
-export function FeaturedProducts() {
+export const FeaturedProducts = () => {
   return (
     <section className="mx-auto mb-24 w-full max-w-300 px-4 py-16">
       <div className="flex flex-col gap-10">
@@ -65,4 +65,4 @@ export function FeaturedProducts() {
       </div>
     </section>
   );
-}
+};

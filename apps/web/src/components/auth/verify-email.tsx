@@ -9,7 +9,7 @@ import { authClient } from "@/lib/auth-client";
 
 import { cancelToastEl } from "../ui/sonner";
 
-export function VerifyEmailContent() {
+export const VerifyEmailContent = () => {
   const [token] = useQueryState("token", { defaultValue: "" });
   const [isVerified, setIsVerified] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -119,4 +119,4 @@ export function VerifyEmailContent() {
       </p>
     </div>
   );
-}
+};

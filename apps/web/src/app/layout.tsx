@@ -18,11 +18,11 @@ export const metadata: Metadata = {
     "Discover premium quality and exceptional design. Ahia brings a curated shopping experience right to your fingertips.",
 };
 
-export default function RootLayout({
+const RootLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${bricolage.variable} antialiased`}>
@@ -42,4 +42,6 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;

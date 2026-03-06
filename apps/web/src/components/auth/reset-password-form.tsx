@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
 import { authClient } from "@/lib/auth-client";
 
-export function ResetPasswordForm() {
+export const ResetPasswordForm = () => {
   const router = useRouter();
   const [token] = useQueryState("token", { defaultValue: "" });
 
@@ -177,4 +177,4 @@ export function ResetPasswordForm() {
       </p>
     </div>
   );
-}
+};

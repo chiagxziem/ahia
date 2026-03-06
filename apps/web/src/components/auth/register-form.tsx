@@ -9,7 +9,7 @@ import { cancelToastEl } from "@/components/ui/sonner";
 import { authClient } from "@/lib/auth-client";
 import env from "@/lib/env";
 
-export function RegisterForm() {
+export const RegisterForm = () => {
   const [isGooglePending, setIsGooglePending] = useState(false);
 
   return (

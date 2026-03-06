@@ -18,7 +18,7 @@ import env from "@/lib/env";
 
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "../ui/input-group";
 
-export function SignInForm() {
+export const SignInForm = () => {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [isGooglePending, setIsGooglePending] = useState(false);
@@ -251,4 +251,4 @@ export function SignInForm() {
       </p>
     </div>
   );
-}
+};

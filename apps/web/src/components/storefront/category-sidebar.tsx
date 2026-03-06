@@ -48,7 +48,7 @@ const FILTERS = [
   },
 ];
 
-function FilterContent() {
+const FilterContent = () => {
   return (
     <div className="flex flex-col gap-7">
       {FILTERS.map((section) => (
@@ -76,7 +76,7 @@ function FilterContent() {
 }
 
 // Desktop sidebar
-export function CategorySidebar() {
+export const CategorySidebar = () => {
   return (
     <aside className="hidden w-56 shrink-0 py-12 pr-8 lg:block">
       <div className="sticky top-24">
@@ -93,7 +93,7 @@ export function CategorySidebar() {
 }
 
 // Mobile filter drawer
-export function MobileFilterDrawer() {
+export const MobileFilterDrawer = () => {
   return (
     <Drawer direction="left">
       <DrawerTrigger asChild>

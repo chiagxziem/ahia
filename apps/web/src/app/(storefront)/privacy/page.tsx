@@ -5,7 +5,7 @@ export const metadata = {
   description: "How Ahia collects, uses, and protects your information.",
 };
 
-export default function PrivacyPage() {
+const PrivacyPage = () => {
   return (
     <div className="small-container w-full px-4 py-16 md:py-24">
       <div className="flex flex-col gap-10">
@@ -90,4 +90,6 @@ export default function PrivacyPage() {
       </div>
     </div>
   );
-}
+};
+
+export default PrivacyPage;

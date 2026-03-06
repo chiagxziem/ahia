@@ -8,7 +8,7 @@ type NativeSelectProps = Omit<React.ComponentProps<"select">, "size"> & {
   size?: "sm" | "default";
 };
 
-function NativeSelect({ className, size = "default", ...props }: NativeSelectProps) {
+const NativeSelect = ({ className, size = "default", ...props }: NativeSelectProps) => {
   return (
     <div
       className={cn(
@@ -33,14 +33,14 @@ function NativeSelect({ className, size = "default", ...props }: NativeSelectPro
       />
     </div>
   );
-}
+};
 
-function NativeSelectOption({ ...props }: React.ComponentProps<"option">) {
+const NativeSelectOption = ({ ...props }: React.ComponentProps<"option">) => {
   return <option data-slot="native-select-option" {...props} />;
-}
+};
 
-function NativeSelectOptGroup({ className, ...props }: React.ComponentProps<"optgroup">) {
+const NativeSelectOptGroup = ({ className, ...props }: React.ComponentProps<"optgroup">) => {
   return <optgroup data-slot="native-select-optgroup" className={cn(className)} {...props} />;
-}
+};
 
 export { NativeSelect, NativeSelectOptGroup, NativeSelectOption };

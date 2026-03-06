@@ -2,10 +2,10 @@
 
 import { Select as SelectPrimitive } from "@base-ui/react/select";
 import {
-  UnfoldMoreIcon,
-  Tick02Icon,
-  ArrowUp01Icon,
   ArrowDown01Icon,
+  ArrowUp01Icon,
+  Tick02Icon,
+  UnfoldMoreIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import * as React from "react";
@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 const Select = SelectPrimitive.Root;
 
-function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
+const SelectGroup = ({ className, ...props }: SelectPrimitive.Group.Props) => {
   return (
     <SelectPrimitive.Group
       data-slot="select-group"
@@ -22,9 +22,9 @@ function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
       {...props}
     />
   );
-}
+};
 
-function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
+const SelectValue = ({ className, ...props }: SelectPrimitive.Value.Props) => {
   return (
     <SelectPrimitive.Value
       data-slot="select-value"
@@ -32,16 +32,16 @@ function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
       {...props}
     />
   );
-}
+};
 
-function SelectTrigger({
+const SelectTrigger = ({
   className,
   size = "default",
   children,
   ...props
 }: SelectPrimitive.Trigger.Props & {
   size?: "sm" | "default";
-}) {
+}) => {
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
@@ -64,9 +64,9 @@ function SelectTrigger({
       />
     </SelectPrimitive.Trigger>
   );
-}
+};
 
-function SelectContent({
+const SelectContent = ({
   className,
   children,
   side = "bottom",
@@ -79,7 +79,7 @@ function SelectContent({
   Pick<
     SelectPrimitive.Positioner.Props,
     "align" | "alignOffset" | "side" | "sideOffset" | "alignItemWithTrigger"
-  >) {
+  >) => {
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Positioner
@@ -106,9 +106,9 @@ function SelectContent({
       </SelectPrimitive.Positioner>
     </SelectPrimitive.Portal>
   );
-}
+};
 
-function SelectLabel({ className, ...props }: SelectPrimitive.GroupLabel.Props) {
+const SelectLabel = ({ className, ...props }: SelectPrimitive.GroupLabel.Props) => {
   return (
     <SelectPrimitive.GroupLabel
       data-slot="select-label"
@@ -116,9 +116,9 @@ function SelectLabel({ className, ...props }: SelectPrimitive.GroupLabel.Props) 
       {...props}
     />
   );
-}
+};
 
-function SelectItem({ className, children, ...props }: SelectPrimitive.Item.Props) {
+const SelectItem = ({ className, children, ...props }: SelectPrimitive.Item.Props) => {
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
@@ -140,9 +140,9 @@ function SelectItem({ className, children, ...props }: SelectPrimitive.Item.Prop
       </SelectPrimitive.ItemIndicator>
     </SelectPrimitive.Item>
   );
-}
+};
 
-function SelectSeparator({ className, ...props }: SelectPrimitive.Separator.Props) {
+const SelectSeparator = ({ className, ...props }: SelectPrimitive.Separator.Props) => {
   return (
     <SelectPrimitive.Separator
       data-slot="select-separator"
@@ -150,12 +150,12 @@ function SelectSeparator({ className, ...props }: SelectPrimitive.Separator.Prop
       {...props}
     />
   );
-}
+};
 
-function SelectScrollUpButton({
+const SelectScrollUpButton = ({
   className,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.ScrollUpArrow>) {
+}: React.ComponentProps<typeof SelectPrimitive.ScrollUpArrow>) => {
   return (
     <SelectPrimitive.ScrollUpArrow
       data-slot="select-scroll-up-button"
@@ -168,12 +168,12 @@ function SelectScrollUpButton({
       <HugeiconsIcon icon={ArrowUp01Icon} strokeWidth={2} />
     </SelectPrimitive.ScrollUpArrow>
   );
-}
+};
 
-function SelectScrollDownButton({
+const SelectScrollDownButton = ({
   className,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.ScrollDownArrow>) {
+}: React.ComponentProps<typeof SelectPrimitive.ScrollDownArrow>) => {
   return (
     <SelectPrimitive.ScrollDownArrow
       data-slot="select-scroll-down-button"
@@ -186,7 +186,7 @@ function SelectScrollDownButton({
       <HugeiconsIcon icon={ArrowDown01Icon} strokeWidth={2} />
     </SelectPrimitive.ScrollDownArrow>
   );
-}
+};
 
 export {
   Select,

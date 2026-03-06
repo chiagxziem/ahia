@@ -4,7 +4,7 @@ import { ReactNode, Suspense } from "react";
 
 import { getUser } from "@/features/user/queries";
 
-async function AuthGuard({ children }: { children: ReactNode }) {
+const AuthGuard = async ({ children }: { children: ReactNode }) => {
   const user = await getUser((await headers()).get("cookie") ?? undefined);
 
   if (user) {
@@ -12,9 +12,9 @@ async function AuthGuard({ children }: { children: ReactNode }) {
   }
 
   return <>{children}</>;
-}
+};
 
-export default function AuthLayout({ children }: { children: ReactNode }) {
+const AuthLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden bg-background px-4 py-12 sm:px-6 lg:px-8">
       {/* Subtle background gradient to add a soft minimal touch without being distracting */}
@@ -35,4 +35,6 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       </div>
     </div>
   );
-}
+};
+
+export default AuthLayout;

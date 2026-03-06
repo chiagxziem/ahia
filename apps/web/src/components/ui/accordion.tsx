@@ -6,7 +6,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 
 import { cn } from "@/lib/utils";
 
-function Accordion({ className, ...props }: AccordionPrimitive.Root.Props) {
+const Accordion = ({ className, ...props }: AccordionPrimitive.Root.Props) => {
   return (
     <AccordionPrimitive.Root
       data-slot="accordion"
@@ -14,9 +14,9 @@ function Accordion({ className, ...props }: AccordionPrimitive.Root.Props) {
       {...props}
     />
   );
-}
+};
 
-function AccordionItem({ className, ...props }: AccordionPrimitive.Item.Props) {
+const AccordionItem = ({ className, ...props }: AccordionPrimitive.Item.Props) => {
   return (
     <AccordionPrimitive.Item
       data-slot="accordion-item"
@@ -24,9 +24,9 @@ function AccordionItem({ className, ...props }: AccordionPrimitive.Item.Props) {
       {...props}
     />
   );
-}
+};
 
-function AccordionTrigger({ className, children, ...props }: AccordionPrimitive.Trigger.Props) {
+const AccordionTrigger = ({ className, children, ...props }: AccordionPrimitive.Trigger.Props) => {
   return (
     <AccordionPrimitive.Header className="flex">
       <AccordionPrimitive.Trigger
@@ -53,9 +53,9 @@ function AccordionTrigger({ className, children, ...props }: AccordionPrimitive.
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   );
-}
+};
 
-function AccordionContent({ className, children, ...props }: AccordionPrimitive.Panel.Props) {
+const AccordionContent = ({ className, children, ...props }: AccordionPrimitive.Panel.Props) => {
   return (
     <AccordionPrimitive.Panel
       data-slot="accordion-content"
@@ -72,6 +72,6 @@ function AccordionContent({ className, children, ...props }: AccordionPrimitive.
       </div>
     </AccordionPrimitive.Panel>
   );
-}
+};
 
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent };
+export { Accordion, AccordionContent, AccordionItem, AccordionTrigger };

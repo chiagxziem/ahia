@@ -10,7 +10,7 @@ interface ProductCardProps {
   tag?: string;
 }
 
-export function ProductCard({ name, price, category, slug, tag }: ProductCardProps) {
+export const ProductCard = ({ name, price, category, slug, tag }: ProductCardProps) => {
   return (
     <Link href={`/products/${slug}`} className="group block">
       {/* Image */}
@@ -41,4 +41,4 @@ export function ProductCard({ name, price, category, slug, tag }: ProductCardPro
       </div>
     </Link>
   );
-}
+};
