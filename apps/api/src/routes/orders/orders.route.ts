@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createRouter } from "@/app";
 import env from "@/lib/env";
 import HttpStatusCodes from "@/lib/http-status-codes";
+import { PaginationQuerySchema } from "@/lib/schemas";
 import { stripe } from "@/lib/stripe";
 import { errorResponse, successResponse } from "@/lib/utils";
 import { authed } from "@/middleware/authed";
@@ -24,24 +25,40 @@ import { createCheckoutDoc, getUserOrderDoc, getUserOrdersDoc } from "./orders.d
 const orders = createRouter().use(authed);
 
 // Get user's order history
-orders.get("/", getUserOrdersDoc, async (c) => {
-  const user = c.get("user");
+orders.get(
+  "/",
+  getUserOrdersDoc,
+  validator("query", PaginationQuerySchema, validationHook),
+  async (c) => {
+    const user = c.get("user");
 
-  try {
-    const userOrders = await getUserOrders(user.id);
+    try {
+      const { page, limit } = c.req.valid("query");
+      const { orders: userOrders, total } = await getUserOrders(user.id, page, limit);
 
-    return c.json(
-      successResponse(userOrders, "User orders retrieved successfully"),
-      HttpStatusCodes.OK,
-    );
-  } catch (error) {
-    console.error("Error retrieving user orders:", error);
-    return c.json(
-      errorResponse("INTERNAL_SERVER_ERROR", "Failed to retrieve orders"),
-      HttpStatusCodes.INTERNAL_SERVER_ERROR,
-    );
-  }
-});
+      let pagination;
+      if (limit) {
+        pagination = {
+          page: page ?? 1,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        };
+      }
+
+      return c.json(
+        successResponse(userOrders, "User orders retrieved successfully", pagination),
+        HttpStatusCodes.OK,
+      );
+    } catch (error) {
+      console.error("Error retrieving user orders:", error);
+      return c.json(
+        errorResponse("INTERNAL_SERVER_ERROR", "Failed to retrieve orders"),
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+  },
+);
 
 // Get user's order details
 orders.get(

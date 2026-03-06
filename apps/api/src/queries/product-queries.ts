@@ -1,37 +1,57 @@
-import { db } from "@repo/db";
+import { count, db } from "@repo/db";
+import { product } from "@repo/db/schemas/product.schema";
 
-export const getProducts = async () => {
-  const result = await db.query.product.findMany({
-    with: {
-      creator: true,
-      productCategories: {
-        with: {
-          category: true,
+export const getProducts = async (page: number = 1, limit?: number) => {
+  let result;
+  if (limit) {
+    result = await db.query.product.findMany({
+      with: {
+        creator: true,
+        productCategories: {
+          with: {
+            category: true,
+          },
         },
       },
-    },
-  });
+      limit,
+      offset: (page - 1) * limit,
+    });
+  } else {
+    result = await db.query.product.findMany({
+      with: {
+        creator: true,
+        productCategories: {
+          with: {
+            category: true,
+          },
+        },
+      },
+    });
+  }
 
-  if (!result) return null;
+  if (!result) return { products: [], total: 0 };
 
-  const products = result.map((product) => ({
-    id: product.id,
-    name: product.name,
-    slug: product.slug,
-    description: product.description,
-    price: product.price,
-    stockQuantity: product.stockQuantity,
-    sizes: product.sizes,
-    colors: product.colors,
-    images: product.images,
-    createdBy: product.createdBy,
-    createdAt: product.createdAt,
-    updatedAt: product.updatedAt,
-    categories: product.productCategories?.map((pc) => pc.category) ?? [],
-    creator: product.creator,
+  const products = result.map((p) => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    description: p.description,
+    price: p.price,
+    stockQuantity: p.stockQuantity,
+    sizes: p.sizes,
+    colors: p.colors,
+    images: p.images,
+    createdBy: p.createdBy,
+    createdAt: p.createdAt,
+    updatedAt: p.updatedAt,
+    categories: p.productCategories?.map((pc) => pc.category) ?? [],
+    creator: p.creator,
   }));
 
-  return products;
+  const totalResult = await db.select({ count: count() }).from(product);
+  const total = totalResult[0].count;
+
+  return { products, total };
 };
 
 export const getProductById = async (id: string) => {

@@ -1,24 +1,46 @@
-import { db, desc, eq, sql } from "@repo/db";
+import { count, db, desc, eq, sql } from "@repo/db";
 import { order, orderItem } from "@repo/db/schemas/order.schema";
 import { product } from "@repo/db/schemas/product.schema";
 
 /**
  * Get all orders with customer information (admin only)
  */
-export const getAllOrders = async () => {
-  const allOrders = await db.query.order.findMany({
-    with: {
-      orderItems: {
-        with: {
-          product: true,
+export const getAllOrders = async (page: number = 1, limit?: number) => {
+  let allOrders;
+  if (limit) {
+    allOrders = await db.query.order.findMany({
+      with: {
+        orderItems: {
+          with: {
+            product: true,
+          },
         },
+        customer: true,
       },
-      customer: true,
-    },
-    orderBy: [desc(order.createdAt)],
-  });
+      orderBy: [desc(order.createdAt)],
+      limit,
+      offset: (page - 1) * limit,
+    });
+  } else {
+    allOrders = await db.query.order.findMany({
+      with: {
+        orderItems: {
+          with: {
+            product: true,
+          },
+        },
+        customer: true,
+      },
+      orderBy: [desc(order.createdAt)],
+    });
+  }
 
-  return allOrders;
+  if (!allOrders) return { orders: [], total: 0 };
+
+  const totalResult = await db.select({ count: count() }).from(order);
+  const total = totalResult[0].count;
+
+  return { orders: allOrders, total };
 };
 
 /**
@@ -43,20 +65,45 @@ export const getAdminOrderById = async (orderId: string) => {
 /**
  * Get user's orders with order items and products
  */
-export const getUserOrders = async (userId: string) => {
-  const userOrders = await db.query.order.findMany({
-    where: (order, { eq }) => eq(order.userId, userId),
-    with: {
-      orderItems: {
-        with: {
-          product: true,
+export const getUserOrders = async (userId: string, page: number = 1, limit?: number) => {
+  let userOrders;
+  if (limit) {
+    userOrders = await db.query.order.findMany({
+      where: (order, { eq }) => eq(order.userId, userId),
+      with: {
+        orderItems: {
+          with: {
+            product: true,
+          },
         },
       },
-    },
-    orderBy: [desc(order.createdAt)],
-  });
+      orderBy: [desc(order.createdAt)],
+      limit,
+      offset: (page - 1) * limit,
+    });
+  } else {
+    userOrders = await db.query.order.findMany({
+      where: (order, { eq }) => eq(order.userId, userId),
+      with: {
+        orderItems: {
+          with: {
+            product: true,
+          },
+        },
+      },
+      orderBy: [desc(order.createdAt)],
+    });
+  }
 
-  return userOrders;
+  if (!userOrders) return { orders: [], total: 0 };
+
+  const totalResult = await db
+    .select({ count: count() })
+    .from(order)
+    .where(eq(order.userId, userId));
+  const total = totalResult[0].count;
+
+  return { orders: userOrders, total };
 };
 
 /**

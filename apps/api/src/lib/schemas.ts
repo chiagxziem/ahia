@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+export const PaginationQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1).optional(),
+  limit: z.coerce.number().int().positive().optional(),
+});
+
 export const CreateProductSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1).optional(),

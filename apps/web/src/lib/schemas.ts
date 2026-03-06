@@ -5,6 +5,14 @@ export const successResSchema = <T>(data: z.ZodType<T>) =>
     status: z.literal("success"),
     details: z.string(),
     data: data,
+    pagination: z
+      .object({
+        page: z.number(),
+        limit: z.number(),
+        total: z.number(),
+        totalPages: z.number(),
+      })
+      .optional(),
   });
 
 export const errorResSchema = z.object({

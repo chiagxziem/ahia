@@ -1,4 +1,24 @@
-import { db } from "@repo/db";
+import { count, db } from "@repo/db";
+import { category } from "@repo/db/schemas/product.schema";
+
+export const getCategories = async (page: number = 1, limit?: number) => {
+  let result;
+  if (limit) {
+    result = await db.query.category.findMany({
+      limit,
+      offset: (page - 1) * limit,
+    });
+  } else {
+    result = await db.query.category.findMany();
+  }
+
+  if (!result) return { categories: [], total: 0 };
+
+  const totalResult = await db.select({ count: count() }).from(category);
+  const total = totalResult[0].count;
+
+  return { categories: result, total };
+};
 
 export const getCategoryById = async (id: string) => {
   const result = await db.query.category.findFirst({

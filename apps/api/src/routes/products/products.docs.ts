@@ -20,10 +20,14 @@ export const getAllProductsDoc = describeRoute({
   description: "Get all products",
   tags,
   responses: {
-    [HttpStatusCodes.OK]: createSuccessResponse("All products retrieved", {
-      details: "All products retrieved successfully",
-      dataSchema: z.array(ProductExtendedSchema),
-    }),
+    [HttpStatusCodes.OK]: createSuccessResponse(
+      "All products retrieved",
+      {
+        details: "All products retrieved successfully",
+        dataSchema: z.array(ProductExtendedSchema),
+      },
+      true,
+    ),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },

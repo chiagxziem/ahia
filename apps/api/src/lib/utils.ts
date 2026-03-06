@@ -6,11 +6,16 @@ import type { z } from "zod";
  * @param details - Additional details about the response.
  * @returns An object representing the success response.
  */
-export const successResponse = <TData, TDetails extends string>(data: TData, details: TDetails) => {
+export const successResponse = <TData, TDetails extends string>(
+  data: TData,
+  details: TDetails,
+  pagination?: { page: number; limit: number; total: number; totalPages: number },
+) => {
   return {
     status: "success" as const,
     details,
     data,
+    ...(pagination ? { pagination } : {}),
   };
 };
 

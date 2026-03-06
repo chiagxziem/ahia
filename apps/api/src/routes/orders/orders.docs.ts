@@ -27,10 +27,14 @@ export const getUserOrdersDoc = describeRoute({
     },
   ],
   responses: {
-    [HttpStatusCodes.OK]: createSuccessResponse("User orders retrieved", {
-      details: "User orders retrieved successfully",
-      dataSchema: z.array(OrderSelectSchema),
-    }),
+    [HttpStatusCodes.OK]: createSuccessResponse(
+      "User orders retrieved",
+      {
+        details: "User orders retrieved successfully",
+        dataSchema: z.array(OrderSelectSchema),
+      },
+      true, // isPaginated
+    ),
     [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
       code: "UNAUTHORIZED",
       details: "No session found",

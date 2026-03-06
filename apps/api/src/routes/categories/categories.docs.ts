@@ -22,10 +22,14 @@ export const getAllCategoriesDoc = describeRoute({
   description: "Get all categories",
   tags,
   responses: {
-    [HttpStatusCodes.OK]: createSuccessResponse("All categories retrieved", {
-      details: "All categories retrieved successfully",
-      dataSchema: z.array(CategorySelectSchema),
-    }),
+    [HttpStatusCodes.OK]: createSuccessResponse(
+      "All categories retrieved",
+      {
+        details: "All categories retrieved successfully",
+        dataSchema: z.array(CategorySelectSchema),
+      },
+      true,
+    ),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },

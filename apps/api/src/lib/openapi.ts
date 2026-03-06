@@ -7,12 +7,27 @@ import { z } from "zod";
 export const createSuccessResponseSchema = <T extends z.ZodType>(
   details: string,
   dataSchema: T,
+  isPaginated?: boolean,
 ) => {
-  return z.object({
+  const baseSchema = {
     status: z.literal("success"),
     details: z.literal(details),
     data: dataSchema,
-  });
+  };
+
+  if (isPaginated) {
+    return z.object({
+      ...baseSchema,
+      pagination: z.object({
+        page: z.number().int().positive(),
+        limit: z.number().int().positive(),
+        total: z.number().int().nonnegative(),
+        totalPages: z.number().int().nonnegative(),
+      }),
+    });
+  }
+
+  return z.object(baseSchema);
 };
 
 /**
@@ -38,12 +53,15 @@ export const createSuccessResponse = <T extends z.ZodType>(
     details: string;
     dataSchema: T;
   },
+  isPaginated?: boolean,
 ) => {
   return {
     description,
     content: {
       "application/json": {
-        schema: resolver(createSuccessResponseSchema(schema.details, schema.dataSchema)),
+        schema: resolver(
+          createSuccessResponseSchema(schema.details, schema.dataSchema, isPaginated),
+        ),
       },
     },
   };

@@ -7,7 +7,12 @@ import { validateFile, validateProductImages } from "@/lib/file";
 import HttpStatusCodes from "@/lib/http-status-codes";
 import { getErrDetailsFromErrFields } from "@/lib/openapi";
 import { deleteImageFromR2, uploadImageToR2 } from "@/lib/r2";
-import { CreateProductSchema, InStockSchema, UpdateProductSchema } from "@/lib/schemas";
+import {
+  CreateProductSchema,
+  InStockSchema,
+  PaginationQuerySchema,
+  UpdateProductSchema,
+} from "@/lib/schemas";
 import { errorResponse, parseJsonField, successResponse } from "@/lib/utils";
 import { authed } from "@/middleware/authed";
 import { permit } from "@/middleware/permit";
@@ -27,14 +32,31 @@ import {
 const products = createRouter();
 
 // Get all products
-products.get("/", getAllProductsDoc, async (c) => {
-  const allProducts = await getProducts();
+products.get(
+  "/",
+  getAllProductsDoc,
+  validator("query", PaginationQuerySchema, validationHook),
+  async (c) => {
+    const { page, limit } = c.req.valid("query");
 
-  return c.json(
-    successResponse(allProducts, "All products retrieved successfully"),
-    HttpStatusCodes.OK,
-  );
-});
+    const { products: allProducts, total } = await getProducts(page, limit);
+
+    let pagination;
+    if (limit) {
+      pagination = {
+        page: page ?? 1,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      };
+    }
+
+    return c.json(
+      successResponse(allProducts, "All products retrieved successfully", pagination),
+      HttpStatusCodes.OK,
+    );
+  },
+);
 
 // Get product by ID
 products.get(

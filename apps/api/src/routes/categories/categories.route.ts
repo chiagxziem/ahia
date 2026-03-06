@@ -4,11 +4,12 @@ import { z } from "zod";
 
 import { createRouter } from "@/app";
 import HttpStatusCodes from "@/lib/http-status-codes";
+import { PaginationQuerySchema } from "@/lib/schemas";
 import { errorResponse, successResponse } from "@/lib/utils";
 import { authed } from "@/middleware/authed";
 import { permit } from "@/middleware/permit";
 import { validationHook } from "@/middleware/validation-hook";
-import { getCategoryById } from "@/queries/category-queries";
+import { getCategories, getCategoryById } from "@/queries/category-queries";
 import { db, eq } from "@repo/db";
 import { category } from "@repo/db/schemas/product.schema";
 import { CreateCategorySchema, UpdateCategorySchema } from "@repo/db/validators/product.validator";
@@ -24,22 +25,39 @@ import {
 const categories = createRouter();
 
 // Get all categories
-categories.get("/", getAllCategoriesDoc, async (c) => {
-  try {
-    const allCategories = await db.query.category.findMany();
+categories.get(
+  "/",
+  getAllCategoriesDoc,
+  validator("query", PaginationQuerySchema, validationHook),
+  async (c) => {
+    try {
+      const { page, limit } = c.req.valid("query");
 
-    return c.json(
-      successResponse(allCategories, "All categories retrieved successfully"),
-      HttpStatusCodes.OK,
-    );
-  } catch (error) {
-    console.error("Error retrieving categories:", error);
-    return c.json(
-      errorResponse("INTERNAL_SERVER_ERROR", "Failed to retrieve categories"),
-      HttpStatusCodes.INTERNAL_SERVER_ERROR,
-    );
-  }
-});
+      const { categories: allCategories, total } = await getCategories(page, limit);
+
+      let pagination;
+      if (limit) {
+        pagination = {
+          page: page ?? 1,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        };
+      }
+
+      return c.json(
+        successResponse(allCategories, "All categories retrieved successfully", pagination),
+        HttpStatusCodes.OK,
+      );
+    } catch (error) {
+      console.error("Error retrieving categories:", error);
+      return c.json(
+        errorResponse("INTERNAL_SERVER_ERROR", "Failed to retrieve categories"),
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+  },
+);
 
 // Get category by ID
 categories.get(
