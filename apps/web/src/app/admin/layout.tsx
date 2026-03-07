@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { ReactNode, Suspense } from "react";
 
@@ -7,8 +7,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { getUser } from "@/features/user/queries";
 
 const AdminAuthWrapper = async ({ children }: { children: ReactNode }) => {
-  const cookieStore = await cookies();
-  const user = await getUser(cookieStore.toString());
+  const user = await getUser((await headers()).get("cookie") ?? undefined);
 
   if (!user || (user.role !== "admin" && user.role !== "superadmin")) {
     redirect("/");
