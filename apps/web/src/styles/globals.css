@@ -4,6 +4,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@utility big-container {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 96rem;
+}
+
 @utility container {
   margin-inline: auto;
   max-width: 75rem;
@@ -12,6 +18,20 @@
 @utility small-container {
   margin-inline: auto;
   max-width: 50rem;
+}
+
+@utility hide-scrollbar {
+  padding: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility tiny-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #666 transparent;
 }
 
 @theme inline {

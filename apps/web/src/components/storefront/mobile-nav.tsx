@@ -148,8 +148,8 @@ export const MobileNavUserContent = () => {
               </AvatarFallback>
             </Avatar>
           )}
-          <div className="flex min-w-0 flex-col">
-            <span className="truncate text-sm font-medium">{user.name}</span>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate text-sm font-medium text-foreground">{user.name}</span>
             <span className="truncate text-xs text-muted-foreground">
               {truncateEmail(user.email)}
             </span>
@@ -166,7 +166,7 @@ export const MobileNavUserContent = () => {
 
         {(user.role === roles.ADMIN || user.role === roles.SUPERADMIN) && (
           <Link
-            href="/admin"
+            href="/admin/overview"
             className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted/60 hover:text-foreground"
           >
             <HugeiconsIcon

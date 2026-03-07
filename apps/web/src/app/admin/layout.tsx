@@ -1,12 +1,12 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import * as React from "react";
+import { ReactNode, Suspense } from "react";
 
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { getUser } from "@/features/user/queries";
 
-const AdminAuthWrapper = async ({ children }: { children: React.ReactNode }) => {
+const AdminAuthWrapper = async ({ children }: { children: ReactNode }) => {
   const cookieStore = await cookies();
   const user = await getUser(cookieStore.toString());
 
@@ -18,7 +18,12 @@ const AdminAuthWrapper = async ({ children }: { children: React.ReactNode }) => 
     <>
       <AdminSidebar user={user} />
       <SidebarInset>
-        <div className="flex flex-1 flex-col p-4 md:p-6 lg:p-8">{children}</div>
+        <header className="sticky top-0 big-container flex items-center gap-2 px-2 py-2 md:hidden">
+          <SidebarTrigger size={"icon-lg"} />
+        </header>
+        <div className="big-container flex w-full flex-1 flex-col p-4 md:p-6 lg:p-8">
+          {children}
+        </div>
       </SidebarInset>
     </>
   );
@@ -27,13 +32,13 @@ const AdminAuthWrapper = async ({ children }: { children: React.ReactNode }) => 
 const AdminLayout = ({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) => {
   return (
     <SidebarProvider>
-      <React.Suspense fallback={null}>
+      <Suspense fallback={null}>
         <AdminAuthWrapper>{children}</AdminAuthWrapper>
-      </React.Suspense>
+      </Suspense>
     </SidebarProvider>
   );
 };

@@ -5,6 +5,7 @@ import {
   DashboardSquare01Icon,
   Login01Icon,
   Logout01Icon,
+  PaintBrush02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -85,32 +86,32 @@ export const UserMenu = () => {
             variant="ghost"
             size="icon"
             className="relative text-foreground/80 hover:text-foreground"
-          >
-            {!user.image ? (
-              <Facehash
-                name={user.name}
-                size={24}
-                variant="solid"
-                intensity3d="none"
-                enableBlink
-                className="shrink-0 rounded-md border bg-muted text-muted-foreground"
-              />
-            ) : (
-              <Avatar size="sm" className={"shrink-0 rounded-md after:rounded-md"}>
-                {user.image && (
-                  <AvatarImage src={user.image} alt={user.name} className={"rounded-md"} />
-                )}
-                <AvatarFallback className="rounded-md text-[10px] font-semibold">
-                  {getInitials(user.name)}
-                </AvatarFallback>
-              </Avatar>
-            )}
-            <span className="sr-only">User menu</span>
-          </Button>
+          />
         }
-      />
+      >
+        {!user.image ? (
+          <Facehash
+            name={user.name}
+            size={24}
+            variant="solid"
+            intensity3d="none"
+            enableBlink
+            className="shrink-0 rounded-md border bg-muted text-muted-foreground"
+          />
+        ) : (
+          <Avatar size="sm" className={"shrink-0 rounded-md after:rounded-md"}>
+            {user.image && (
+              <AvatarImage src={user.image} alt={user.name} className={"rounded-md"} />
+            )}
+            <AvatarFallback className="rounded-md text-[10px] font-semibold">
+              {getInitials(user.name)}
+            </AvatarFallback>
+          </Avatar>
+        )}
+        <span className="sr-only">User menu</span>
+      </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" sideOffset={8} className="w-64">
+      <DropdownMenuContent align="end" sideOffset={8} className="min-w-64">
         {/* User info */}
         <DropdownMenuGroup>
           <DropdownMenuLabel className="flex items-center gap-2 font-normal">
@@ -133,11 +134,9 @@ export const UserMenu = () => {
                 </AvatarFallback>
               </Avatar>
             )}
-            <div className="flex min-w-0 flex-col gap-1">
-              <span className="truncate text-sm leading-none font-medium text-foreground">
-                {user.name}
-              </span>
-              <span className="truncate text-xs leading-none text-muted-foreground">
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate text-sm font-medium text-foreground">{user.name}</span>
+              <span className="truncate text-xs text-muted-foreground">
                 {truncateEmail(user.email)}
               </span>
             </div>
@@ -152,10 +151,14 @@ export const UserMenu = () => {
             <HugeiconsIcon icon={AccountSetting01Icon} className="size-4" />
             Settings
           </DropdownMenuItem>
+          <DropdownMenuItem disabled>
+            <HugeiconsIcon icon={PaintBrush02Icon} className="size-4" />
+            Theme
+          </DropdownMenuItem>
 
           {/* Admin-only: Dashboard link */}
           {(user.role === roles.ADMIN || user.role === roles.SUPERADMIN) && (
-            <DropdownMenuItem render={<Link href="/admin" />}>
+            <DropdownMenuItem render={<Link href="/admin/overview" />}>
               <HugeiconsIcon icon={DashboardSquare01Icon} className="size-4" />
               Admin Dashboard
             </DropdownMenuItem>
