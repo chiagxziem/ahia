@@ -1,8 +1,6 @@
 import { Resend } from "resend";
 
-import env from "./env";
-
-const resend = new Resend(env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 type SendEmail = {
   to: string;
@@ -12,10 +10,10 @@ type SendEmail = {
 };
 
 export const sendVerificationEmail = async ({ to, token, name, url }: SendEmail) => {
-  const verificationUrl = url ?? `${env.WEB_URL}/verify-email?token=${token}`;
+  const verificationUrl = url ?? `${process.env.WEB_URL}/verify-email?token=${token}`;
 
   await resend.emails.send({
-    from: `Ahia <ahia@${env.RESEND_DOMAIN}>`,
+    from: `Ahia <ahia@${process.env.RESEND_DOMAIN}>`,
     to,
     subject: "Verify your email address",
     html: `
@@ -28,10 +26,10 @@ export const sendVerificationEmail = async ({ to, token, name, url }: SendEmail)
 };
 
 export const sendResetPasswordEmail = async ({ to, token, name, url }: SendEmail) => {
-  const resetPasswordUrl = url ?? `${env.WEB_URL}/reset-password?token=${token}`;
+  const resetPasswordUrl = url ?? `${process.env.WEB_URL}/reset-password?token=${token}`;
 
   await resend.emails.send({
-    from: `Ahia <ahia@${env.RESEND_DOMAIN}>`,
+    from: `Ahia <ahia@${process.env.RESEND_DOMAIN}>`,
     to,
     subject: "Reset your password",
     html: `
@@ -55,7 +53,7 @@ export const sendAccountCreatedEmail = async ({
   password: string;
 }) => {
   await resend.emails.send({
-    from: `Ahia <ahia@${env.RESEND_DOMAIN}>`,
+    from: `Ahia <ahia@${process.env.RESEND_DOMAIN}>`,
     to,
     subject: `Your ${role} account has been created`,
     html: `

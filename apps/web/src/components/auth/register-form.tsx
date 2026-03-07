@@ -6,8 +6,8 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { cancelToastEl } from "@/components/ui/sonner";
-import { authClient } from "@/lib/auth-client";
 import env from "@/lib/env";
+import { authClient } from "@repo/auth/client";
 
 export const RegisterForm = () => {
   const [isGooglePending, setIsGooglePending] = useState(false);
@@ -106,4 +106,4 @@ export const RegisterForm = () => {
       </p>
     </div>
   );
-}
+};

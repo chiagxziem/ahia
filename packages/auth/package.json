@@ -1,0 +1,22 @@
+{
+  "name": "@repo/auth",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./server": "./src/server.ts",
+    "./client": "./src/client.ts",
+    "./utils/email": "./src/lib/email.ts",
+    "./utils/permissions": "./src/lib/permissions.ts"
+  },
+  "scripts": {},
+  "dependencies": {
+    "@t3-oss/env-core": "^0.13.10",
+    "better-auth": "^1.4.18",
+    "resend": "^6.9.2",
+    "zod": "^4.3.5"
+  },
+  "devDependencies": {
+    "@repo/db": "workspace:*",
+    "@types/bun": "^1.3.9"
+  }
+}

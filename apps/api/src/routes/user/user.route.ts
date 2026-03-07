@@ -3,11 +3,11 @@ import { validator } from "hono-openapi";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 
 import { createRouter } from "@/app";
-import { auth } from "@/lib/auth";
 import HttpStatusCodes from "@/lib/http-status-codes";
 import { errorResponse, successResponse } from "@/lib/utils";
 import { authed } from "@/middleware/authed";
 import { validationHook } from "@/middleware/validation-hook";
+import { auth } from "@repo/auth/server";
 import { UserUpdateSchema } from "@repo/db/validators/user.validator";
 
 import { getUserDoc, updateUserDoc } from "./user.docs";

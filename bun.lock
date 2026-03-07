@@ -31,6 +31,7 @@
         "zod": "^4.3.6",
       },
       "devDependencies": {
+        "@repo/auth": "workspace:*",
         "@repo/db": "workspace:*",
         "@types/bun": "^1.3.9",
       },
@@ -70,6 +71,7 @@
         "zod": "^4.3.6",
       },
       "devDependencies": {
+        "@repo/auth": "workspace:*",
         "@repo/db": "workspace:*",
         "@tailwindcss/postcss": "^4",
         "@types/node": "^20",
@@ -78,6 +80,19 @@
         "babel-plugin-react-compiler": "1.0.0",
         "tailwindcss": "^4",
         "typescript": "^5",
+      },
+    },
+    "packages/auth": {
+      "name": "@repo/auth",
+      "dependencies": {
+        "@t3-oss/env-core": "^0.13.10",
+        "better-auth": "^1.4.18",
+        "resend": "^6.9.2",
+        "zod": "^4.3.5",
+      },
+      "devDependencies": {
+        "@repo/db": "workspace:*",
+        "@types/bun": "^1.3.9",
       },
     },
     "packages/db": {
@@ -531,6 +546,8 @@
     "@react-email/render": ["@react-email/render@2.0.4", "", { "dependencies": { "html-to-text": "^9.0.5", "prettier": "^3.5.3" }, "peerDependencies": { "react": "^18.0 || ^19.0 || ^19.0.0-rc", "react-dom": "^18.0 || ^19.0 || ^19.0.0-rc" } }, "sha512-kht2oTFQ1SwrLpd882ahTvUtNa9s53CERHstiTbzhm6aR2Hbykp/mQ4tpPvsBGkKAEvKRlDEoooh60Uk6nHK1g=="],
 
     "@repo/api": ["@repo/api@workspace:apps/api"],
+
+    "@repo/auth": ["@repo/auth@workspace:packages/auth"],
 
     "@repo/db": ["@repo/db@workspace:packages/db"],
 

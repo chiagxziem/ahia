@@ -1,4 +1,4 @@
-import type { auth } from "@/lib/auth";
+import type { auth } from "@repo/auth/server";
 
 export type AppEnv = {
   Variables: {

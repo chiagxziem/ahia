@@ -4,10 +4,9 @@ import { admin as adminPlugin, bearer, openAPI } from "better-auth/plugins";
 
 import { db } from "@repo/db";
 
-import { createCartForUser } from "../queries/cart-queries";
-import { sendResetPasswordEmail, sendVerificationEmail } from "./email";
-import env from "./env";
-import { ac, admin, superadmin, user } from "./permissions";
+import { createCartForUser } from "./lib/actions";
+import { sendResetPasswordEmail, sendVerificationEmail } from "./lib/email";
+import { ac, admin, superadmin, user } from "./lib/permissions";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -39,8 +38,8 @@ export const auth = betterAuth({
 
   socialProviders: {
     google: {
-      clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     },
   },
 
@@ -60,8 +59,8 @@ export const auth = betterAuth({
     },
   },
 
-  baseURL: env.API_URL,
-  trustedOrigins: [env.WEB_URL, env.API_URL],
+  baseURL: process.env.API_URL,
+  trustedOrigins: [process.env.WEB_URL!, process.env.API_URL!],
 
   session: {
     expiresIn: 60 * 60 * 24 * 30,

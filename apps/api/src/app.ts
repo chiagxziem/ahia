@@ -6,12 +6,12 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 
-import { auth } from "@/lib/auth";
 import env from "@/lib/env";
 import emojiFavicon from "@/middleware/emoji-favicon";
 import errorHandler from "@/middleware/error-handler";
 import notFoundRoute from "@/middleware/not-found-route";
 import type { AppEnv } from "@/types";
+import { auth } from "@repo/auth/server";
 
 import { apiRateLimiter, authRateLimiter } from "./lib/rate-limit";
 

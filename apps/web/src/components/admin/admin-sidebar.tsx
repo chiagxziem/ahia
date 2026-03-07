@@ -39,9 +39,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { cancelToastEl } from "@/components/ui/sonner";
-import { authClient } from "@/lib/auth-client";
 import { queryKeys } from "@/lib/query-keys";
 import { getInitials, truncateEmail } from "@/lib/utils";
+import { authClient } from "@repo/auth/client";
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "../ui/dropdown-menu";
 

@@ -5,7 +5,13 @@ const env = createEnv({
   server: {
     API_URL: z.string().min(1),
     WEB_URL: z.string().min(1),
+    DOMAIN: z.string().optional(),
     DATABASE_URL: z.url(),
+    BETTER_AUTH_SECRET: z.string().min(1),
+    GOOGLE_CLIENT_ID: z.string().min(1),
+    GOOGLE_CLIENT_SECRET: z.string().min(1),
+    RESEND_API_KEY: z.string().min(1),
+    RESEND_DOMAIN: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_WEB_URL: z.string().min(1),

@@ -17,9 +17,9 @@ import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
 import { updateUser } from "@/features/user/actions";
 import { getUser } from "@/features/user/queries";
-import { authClient } from "@/lib/auth-client";
 import { queryKeys } from "@/lib/query-keys";
 import { getInitials } from "@/lib/utils";
+import { authClient } from "@repo/auth/client";
 
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "../ui/input-group";
 

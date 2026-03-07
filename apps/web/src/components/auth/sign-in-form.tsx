@@ -13,8 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
-import { authClient } from "@/lib/auth-client";
 import env from "@/lib/env";
+import { authClient } from "@repo/auth/client";
 
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "../ui/input-group";
 

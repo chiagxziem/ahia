@@ -31,9 +31,9 @@ import {
 } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getUser } from "@/features/user/queries";
-import { authClient } from "@/lib/auth-client";
 import { queryKeys } from "@/lib/query-keys";
 import { getInitials, roles, truncateEmail } from "@/lib/utils";
+import { authClient } from "@repo/auth/client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { cancelToastEl } from "../ui/sonner";
