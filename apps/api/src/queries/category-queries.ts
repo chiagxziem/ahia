@@ -1,6 +1,7 @@
 import { count, db } from "@repo/db";
 import { category } from "@repo/db/schemas/product.schema";
 
+/** Fetches categories with optional pagination and total count */
 export const getCategories = async (page: number = 1, limit?: number) => {
   let result;
   if (limit) {
@@ -20,6 +21,7 @@ export const getCategories = async (page: number = 1, limit?: number) => {
   return { categories: result, total };
 };
 
+/** Fetches a single category with its related products */
 export const getCategoryById = async (id: string) => {
   const result = await db.query.category.findFirst({
     where: (category, { eq }) => eq(category.id, id),

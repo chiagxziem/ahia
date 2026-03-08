@@ -15,6 +15,12 @@ import { UserSelectSchema } from "@repo/db/validators/user.validator";
 
 const tags = ["Admin"];
 
+const windowNumberSchema = z.object({
+  "24h": z.number(),
+  "7d": z.number(),
+  "1m": z.number(),
+});
+
 export const getAllUsersDoc = describeRoute({
   description: "Get all users (admin only)",
   tags,
@@ -88,6 +94,53 @@ export const getUserDoc = describeRoute({
     [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse("User not found", {
       code: "NOT_FOUND",
       details: "User not found",
+    }),
+    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
+  },
+});
+
+export const getAdminStatsDoc = describeRoute({
+  description: "Get admin overview stats",
+  tags,
+  security: [
+    {
+      Bearer: [],
+    },
+  ],
+  responses: {
+    [HttpStatusCodes.OK]: createSuccessResponse("Admin stats retrieved", {
+      details: "Admin stats retrieved successfully",
+      dataSchema: z.object({
+        revenue: z.object({
+          value: windowNumberSchema,
+          changePct: windowNumberSchema,
+        }),
+        orders: z.object({
+          value: windowNumberSchema,
+          changePct: windowNumberSchema,
+        }),
+        products: z.object({
+          value: z.object({
+            total: z.number().int().nonnegative(),
+          }),
+          changePct: windowNumberSchema,
+        }),
+        users: z.object({
+          value: z.object({
+            total: z.number().int().nonnegative(),
+          }),
+          change: windowNumberSchema,
+        }),
+      }),
+    }),
+    [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
+      code: "UNAUTHORIZED",
+      details: "No session found",
+    }),
+    [HttpStatusCodes.FORBIDDEN]: createGenericErrorResponse("Forbidden", {
+      code: "FORBIDDEN",
+      details: "User does not have the required permission",
     }),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),

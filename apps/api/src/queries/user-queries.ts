@@ -1,8 +1,6 @@
 import { db } from "@repo/db";
 
-/**
- * Returns the user with the given ID, or null if not found.
- */
+/** Fetches a user record by id */
 export const getUserById = async (userId: string) => {
   const user = await db.query.user.findFirst({
     where: (user, { eq }) => eq(user.id, userId),
@@ -11,9 +9,7 @@ export const getUserById = async (userId: string) => {
   return user || null;
 };
 
-/**
- * Returns the user with the given email, or null if not found.
- */
+/** Fetches a user record by email address */
 export const getUserByEmail = async (email: string) => {
   const user = await db.query.user.findFirst({
     where: (user, { eq }) => eq(user.email, email),
@@ -22,9 +18,7 @@ export const getUserByEmail = async (email: string) => {
   return user || null;
 };
 
-/**
- * Returns the session with the given token, or null if not found.
- */
+/** Fetches a session record by session token */
 export const getSessionByToken = async (sessionToken: string) => {
   const session = await db.query.session.findFirst({
     where: (session, { eq }) => eq(session.token, sessionToken),

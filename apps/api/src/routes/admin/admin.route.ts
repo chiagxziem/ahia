@@ -9,10 +9,11 @@ import { errorResponse, successResponse } from "@/lib/utils";
 import { authed } from "@/middleware/authed";
 import { permit } from "@/middleware/permit";
 import { validationHook } from "@/middleware/validation-hook";
+import { getAdminOverviewStats } from "@/queries/stats-queries";
 import { getUserById } from "@/queries/user-queries";
 import { auth } from "@repo/auth/server";
 
-import { getAllUsersDoc, getUserDoc } from "./admin.docs";
+import { getAdminStatsDoc, getAllUsersDoc, getUserDoc } from "./admin.docs";
 
 const listUsersQuerySchema = z.object({
   searchValue: z.string().optional(),
@@ -30,6 +31,12 @@ const listUsersQuerySchema = z.object({
 const admin = createRouter()
   .use(authed)
   .use(permit({ user: ["list"] }));
+
+admin.get("/stats", getAdminStatsDoc, async (c) => {
+  const stats = await getAdminOverviewStats();
+
+  return c.json(successResponse(stats, "Admin stats retrieved successfully"), HttpStatusCodes.OK);
+});
 
 admin.get(
   "/users",

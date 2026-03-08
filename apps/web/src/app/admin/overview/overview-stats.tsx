@@ -52,8 +52,8 @@ export const OverviewStats = () => {
           <HugeiconsIcon icon={UserMultipleIcon} className="size-5 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">+573</div>
-          <p className="text-xs text-muted-foreground">+201 since last hour</p>
+          <div className="text-2xl font-bold">1573</div>
+          <p className="text-xs text-muted-foreground">+21 since last 24 hours</p>
         </CardContent>
       </Card>
     </div>

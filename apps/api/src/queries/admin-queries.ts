@@ -7,6 +7,7 @@ import { sendAccountCreatedEmail } from "@repo/auth/utils/email";
 import { db } from "@repo/db";
 import type { User } from "@repo/db/validators/user.validator";
 
+/** Creates an admin-managed user account when it does not already exist */
 export const createUser = async (user: {
   name: string;
   email: string;
@@ -48,6 +49,7 @@ export const createUser = async (user: {
   return newUser as User;
 };
 
+/** Ensures a superadmin account exists for platform administration */
 export const createSuperadmin = async () => {
   const superadmin = await db.query.user.findFirst({
     where: (user, { eq }) => eq(user.role, "superadmin"),

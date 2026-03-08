@@ -82,3 +82,34 @@ export const generatePassword = (length = 16) => {
     .map((x) => chars[x % chars.length])
     .join("");
 };
+
+/**
+ * Converts a value to a number, returning 0 if the value is null, undefined, or not a finite number.
+ * @param value - The value to convert.
+ * @returns The converted number or 0.
+ */
+export const toNumber = (value: unknown) => {
+  if (value === null || value === undefined) return 0;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+/** Rounds a number to 2 decimal places.
+ * @param value - The number to round.
+ * @returns The rounded number.
+ */
+export const round = (value: number) => Number(value.toFixed(2));
+
+/**
+ * Calculates the percentage change between two numbers.
+ * @param current - The current value.
+ * @param previous - The previous value.
+ * @returns The percentage change.
+ */
+export const pctChange = (current: number, previous: number) => {
+  if (previous === 0) {
+    return current === 0 ? 0 : 100;
+  }
+
+  return round(((current - previous) / previous) * 100);
+};

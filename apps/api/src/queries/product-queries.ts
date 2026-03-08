@@ -1,6 +1,7 @@
 import { count, db } from "@repo/db";
 import { product } from "@repo/db/schemas/product.schema";
 
+/** Fetches products with related creator and categories, plus total count */
 export const getProducts = async (page: number = 1, limit?: number) => {
   let result;
   if (limit) {
@@ -54,6 +55,7 @@ export const getProducts = async (page: number = 1, limit?: number) => {
   return { products, total };
 };
 
+/** Fetches a single product with creator and categories */
 export const getProductById = async (id: string) => {
   const result = await db.query.product.findFirst({
     where: (product, { eq }) => eq(product.id, id),
