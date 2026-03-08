@@ -1,3 +1,4 @@
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { ReactNode, Suspense } from "react";
@@ -5,17 +6,23 @@ import { ReactNode, Suspense } from "react";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { getUser } from "@/features/user/queries";
+import { queryKeys } from "@/lib/query-keys";
 
 const AdminAuthWrapper = async ({ children }: { children: ReactNode }) => {
-  const user = await getUser((await headers()).get("cookie") ?? undefined);
+  const queryClient = new QueryClient();
+
+  const user = await queryClient.fetchQuery({
+    queryKey: queryKeys.user(),
+    queryFn: async () => getUser((await headers()).get("cookie") ?? undefined),
+  });
 
   if (!user || (user.role !== "admin" && user.role !== "superadmin")) {
     redirect("/");
   }
 
   return (
-    <>
-      <AdminSidebar user={user} />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <AdminSidebar />
       <SidebarInset>
         <header className="sticky top-0 big-container flex items-center gap-2 px-2 py-2 md:hidden">
           <SidebarTrigger size={"icon-lg"} />
@@ -24,7 +31,7 @@ const AdminAuthWrapper = async ({ children }: { children: ReactNode }) => {
           {children}
         </div>
       </SidebarInset>
-    </>
+    </HydrationBoundary>
   );
 };
 

@@ -94,8 +94,7 @@ const getUsersTotal = async () => {
 };
 
 /**
- * Get overview stats for admin dashboard, including revenue, orders, products, and active users with percentage change compared to the previous period.
- * The periods are 24 hours, 7 days, and 1 month.
+ * Gets overview stats for the admin dashboard across 24h, 7d, and 1m windows.
  */
 export const getAdminOverviewStats = async () => {
   const now = new Date();
@@ -146,7 +145,6 @@ export const getAdminOverviewStats = async () => {
         currentProductsCreated,
         previousProductsCreated,
         currentActiveUsers,
-        previousActiveUsers,
       ] = await Promise.all([
         getPaidRevenueBetween(currentStart, now),
         getPaidRevenueBetween(previousStart, currentStart),
@@ -155,7 +153,6 @@ export const getAdminOverviewStats = async () => {
         getProductsCreatedBetween(currentStart, now),
         getProductsCreatedBetween(previousStart, currentStart),
         getActiveUsersBetween(currentStart, now),
-        getActiveUsersBetween(previousStart, currentStart),
       ]);
 
       return {
@@ -172,7 +169,7 @@ export const getAdminOverviewStats = async () => {
           changePct: pctChange(currentProductsCreated, previousProductsCreated),
         },
         users: {
-          change: currentActiveUsers - previousActiveUsers,
+          change: currentActiveUsers,
         },
       };
     }),

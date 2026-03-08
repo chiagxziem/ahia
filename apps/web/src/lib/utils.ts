@@ -51,3 +51,14 @@ export const truncateEmail = (email: string) => {
   const lastThree = localPart.slice(-3);
   return `${firstThree}...${lastThree}@${domain}`;
 };
+
+export const formatPct = (value: number) => `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
+
+export const formatSigned = (value: number) => `${value >= 0 ? "+" : ""}${value}`;
+
+export const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  }).format(value);
