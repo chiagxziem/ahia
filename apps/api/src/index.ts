@@ -1,5 +1,6 @@
 import { createApp } from "@/app";
 import { createSuperadmin } from "@/queries/admin-queries";
+import admin from "@/routes/admin/admin.route";
 import cart from "@/routes/cart/cart.route";
 import categories from "@/routes/categories/categories.route";
 import health from "@/routes/health/health.route";
@@ -16,6 +17,7 @@ const app = createApp();
 app
   .route("/api/health", health)
   .route("/api/user", user)
+  .route("/api/admin", admin)
   .route("/api/categories", categories)
   .route("/api/products", products)
   .route("/api/orders", orders)
