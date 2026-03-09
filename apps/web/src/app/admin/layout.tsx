@@ -5,20 +5,27 @@ import { ReactNode, Suspense } from "react";
 
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { defaultAdminUsersListParams, getAdminUsers } from "@/features/admin/queries";
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
 
 const AdminAuthWrapper = async ({ children }: { children: ReactNode }) => {
   const queryClient = new QueryClient();
+  const cookie = (await headers()).get("cookie") ?? undefined;
 
   const user = await queryClient.fetchQuery({
     queryKey: queryKeys.user(),
-    queryFn: async () => getUser((await headers()).get("cookie") ?? undefined),
+    queryFn: async () => getUser(cookie),
   });
 
   if (!user || (user.role !== "admin" && user.role !== "superadmin")) {
     redirect("/");
   }
+
+  await queryClient.prefetchQuery({
+    queryKey: queryKeys.adminUsers(defaultAdminUsersListParams),
+    queryFn: async () => getAdminUsers(defaultAdminUsersListParams, cookie),
+  });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
