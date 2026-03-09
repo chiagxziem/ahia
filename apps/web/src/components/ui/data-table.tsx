@@ -1,5 +1,3 @@
-// oxlint-disable jsx_a11y/click-events-have-key-events
-
 "use client";
 
 import {
@@ -21,7 +19,7 @@ import {
   type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { type ReactNode, useState } from "react";
+import { type Dispatch, type ReactNode, type SetStateAction, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -58,49 +56,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { usePagination } from "@/hooks/use-pagination";
 import { cn } from "@/lib/utils";
-
-// Pagination hook (adapted directly inline or basic setup)
-const usePagination = ({
-  currentPage,
-  totalPages,
-  paginationItemsToDisplay,
-}: {
-  currentPage: number;
-  totalPages: number;
-  paginationItemsToDisplay: number;
-}) => {
-  const showLeftEllipsis = currentPage > paginationItemsToDisplay - 1;
-  const showRightEllipsis = totalPages - currentPage > paginationItemsToDisplay - 2;
-
-  const getPages = () => {
-    if (totalPages <= paginationItemsToDisplay) {
-      return Array.from({ length: totalPages }).map((_, i) => i + 1);
-    }
-    const half = Math.floor(paginationItemsToDisplay / 2);
-    let start = currentPage - half;
-    let end = currentPage + half;
-    if (start < 1) {
-      start = 1;
-      end = paginationItemsToDisplay;
-    }
-    if (end > totalPages) {
-      end = totalPages;
-      start = totalPages - paginationItemsToDisplay + 1;
-    }
-    const pages = [];
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-    return pages;
-  };
-
-  return {
-    pages: getPages(),
-    showLeftEllipsis,
-    showRightEllipsis,
-  };
-};
 
 // Filter configuration types
 interface FilterOption {
@@ -120,6 +77,7 @@ interface SingleDropdownFilter {
 interface MultiDropdownFilter {
   type: "multi-dropdown";
   label: string;
+  subMenus?: boolean;
   groups: {
     columnId: string;
     label: string;
@@ -160,6 +118,12 @@ interface DataTableProps<TData, TValue> {
   emptyMessage?: string;
   className?: string;
   onRowClick?: (row: TData) => void;
+  /** Total row count from the server. When provided, enables manual server-side pagination. */
+  rowCount?: number;
+  /** Controlled pagination state (required when using rowCount for server-side pagination). */
+  pagination?: PaginationState;
+  /** Pagination state setter (required when using rowCount for server-side pagination). */
+  onPaginationChange?: Dispatch<SetStateAction<PaginationState>>;
 }
 
 const DEFAULT_PAGE_SIZE_OPTIONS = [5, 10, 25, 50, 100];
@@ -176,14 +140,23 @@ export const DataTable = <TData, TValue>({
   emptyMessage = "No results.",
   className,
   onRowClick,
+  rowCount,
+  pagination: controlledPagination,
+  onPaginationChange: setControlledPagination,
 }: DataTableProps<TData, TValue>) => {
+  const isServerSide = rowCount !== undefined;
+
   const [sorting, setSorting] = useState<SortingState>(defaultSorting);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState<string>("");
-  const [pagination, setPagination] = useState<PaginationState>(defaultPagination);
+  const [internalPagination, setInternalPagination] = useState<PaginationState>(defaultPagination);
+
+  const pagination = isServerSide
+    ? (controlledPagination ?? defaultPagination)
+    : internalPagination;
 
   // For tracking active filters for all dropdown types
-  const [activeFilters, setActiveFilters] = useState<Record<string, string | null>>({});
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
 
   const table = useReactTable({
     columns,
@@ -195,10 +168,12 @@ export const DataTable = <TData, TValue>({
     enableMultiSort: false,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnFiltersChange: setColumnFilters,
-    getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
+    getPaginationRowModel: isServerSide ? undefined : getPaginationRowModel(),
+    manualPagination: isServerSide,
+    rowCount: isServerSide ? rowCount : undefined,
+    onPaginationChange: isServerSide ? setControlledPagination : setInternalPagination,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: (row, filterValue) => {
+    globalFilterFn: (row, _columnId, filterValue) => {
       const searchFilter = filters.find((f) => f.type === "search") as SearchFilter | undefined;
 
       if (!searchFilter) return true;
@@ -218,32 +193,41 @@ export const DataTable = <TData, TValue>({
     },
   });
 
-  const handleFilterChange = (
+  const handleFilterToggle = (
     columnId: string,
-    selectedValue: string | null,
+    selectedValue: string,
     transformValue?: (value: string) => unknown,
   ) => {
+    const currentValues = activeFilters[columnId] ?? [];
+    const hasValue = currentValues.includes(selectedValue);
+    const nextValues = hasValue
+      ? currentValues.filter((value) => value !== selectedValue)
+      : [...currentValues, selectedValue];
+
     setActiveFilters((prev) => ({
       ...prev,
-      [columnId]: selectedValue,
+      [columnId]: nextValues,
     }));
 
-    if (selectedValue === null) {
-      setColumnFilters((prev) => prev.filter((f) => f.id !== columnId));
-    } else {
-      setColumnFilters((prev) => {
-        const otherFilters = prev.filter((f) => f.id !== columnId);
-        const filterValue = transformValue ? transformValue(selectedValue) : selectedValue;
+    setColumnFilters((prev) => {
+      const otherFilters = prev.filter((f) => f.id !== columnId);
 
-        return [
-          ...otherFilters,
-          {
-            id: columnId,
-            value: filterValue,
-          },
-        ];
-      });
-    }
+      if (nextValues.length === 0) {
+        return otherFilters;
+      }
+
+      const filterValue = transformValue
+        ? nextValues.map((value) => transformValue(value))
+        : nextValues;
+
+      return [
+        ...otherFilters,
+        {
+          id: columnId,
+          value: filterValue,
+        },
+      ];
+    });
   };
 
   const searchFilter = filters.find((f) => f.type === "search") as SearchFilter | undefined;
@@ -255,7 +239,9 @@ export const DataTable = <TData, TValue>({
   ) as MultiDropdownFilter[];
 
   const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
-    currentPage: pagination.pageIndex + 1,
+    currentPage:
+      (isServerSide ? (controlledPagination ?? defaultPagination) : internalPagination).pageIndex +
+      1,
     totalPages: table.getPageCount(),
     paginationItemsToDisplay,
   });
@@ -292,9 +278,9 @@ export const DataTable = <TData, TValue>({
                   <Button size="sm" variant="outline">
                     <HugeiconsIcon icon={FilterIcon} className="size-4" />
                     <span className="hidden md:inline-block">{filter.label}</span>
-                    {activeFilters[filter.columnId] && (
+                    {(activeFilters[filter.columnId]?.length ?? 0) > 0 && (
                       <span className="border-primary-600/50 bg-primary-600/20 text-primary-600 rounded border px-1 text-xs transition-all duration-300 md:ml-2">
-                        1
+                        {activeFilters[filter.columnId]?.length}
                       </span>
                     )}
                   </Button>
@@ -306,16 +292,13 @@ export const DataTable = <TData, TValue>({
                   <DropdownMenuLabel>Filter by {filter.label}</DropdownMenuLabel>
                   {filter.options.map((option) => (
                     <DropdownMenuCheckboxItem
-                      checked={activeFilters[filter.columnId] === option.value}
+                      checked={(activeFilters[filter.columnId] ?? []).includes(option.value)}
                       className="group"
+                      closeOnClick={false}
                       disabled={option.count === 0}
                       key={`${filter.columnId}-${option.value}`}
-                      onSelect={() =>
-                        handleFilterChange(
-                          filter.columnId,
-                          activeFilters[filter.columnId] === option.value ? null : option.value,
-                          filter.transformValue,
-                        )
+                      onCheckedChange={() =>
+                        handleFilterToggle(filter.columnId, option.value, filter.transformValue)
                       }
                     >
                       <span>{option.label}</span>
@@ -334,7 +317,7 @@ export const DataTable = <TData, TValue>({
           {/* Multi Dropdown Filters */}
           {multiDropdownFilters.map((filter, index) => {
             const activeCount = filter.groups.reduce((count, group) => {
-              return count + (activeFilters[group.columnId] ? 1 : 0);
+              return count + (activeFilters[group.columnId]?.length ?? 0);
             }, 0);
 
             return (
@@ -354,32 +337,64 @@ export const DataTable = <TData, TValue>({
                 />
 
                 <DropdownMenuContent align="start" className="min-w-48" side="bottom">
-                  <DropdownMenuLabel>{filter.label}</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-
-                  {filter.groups.map((group) => (
-                    <DropdownMenuSub key={`group-${group.columnId}`}>
-                      <DropdownMenuSubTrigger className="flex items-center justify-between">
-                        <span>{group.label}</span>
-                        {activeFilters[group.columnId] && (
-                          <span className="bg-primary-600/20 text-primary-600 h-1.5 w-1.5 rounded-full" />
-                        )}
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent>
+                  {filter.subMenus ? (
+                    // Sub-menu mode: each group is a nested sub-menu
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel>{filter.label}</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {filter.groups.map((group) => (
+                        <DropdownMenuSub key={`group-${group.columnId}`}>
+                          <DropdownMenuSubTrigger className="flex items-center justify-between">
+                            <span>{group.label}</span>
+                            {(activeFilters[group.columnId]?.length ?? 0) > 0 && (
+                              <span className="bg-primary-600/20 text-primary-600 h-1.5 w-1.5 rounded-full" />
+                            )}
+                          </DropdownMenuSubTrigger>
+                          <DropdownMenuSubContent>
+                            {group.options.map((option) => (
+                              <DropdownMenuCheckboxItem
+                                checked={(activeFilters[group.columnId] ?? []).includes(
+                                  option.value,
+                                )}
+                                className="group"
+                                closeOnClick={false}
+                                disabled={option.count === 0}
+                                key={`${group.columnId}-${option.value}`}
+                                onCheckedChange={() =>
+                                  handleFilterToggle(
+                                    group.columnId,
+                                    option.value,
+                                    group.transformValue,
+                                  )
+                                }
+                              >
+                                <span>{option.label}</span>
+                                {option.count !== undefined && (
+                                  <span className="ml-auto text-xs text-muted-foreground group-focus:text-primary">
+                                    {option.count}
+                                  </span>
+                                )}
+                              </DropdownMenuCheckboxItem>
+                            ))}
+                          </DropdownMenuSubContent>
+                        </DropdownMenuSub>
+                      ))}
+                    </DropdownMenuGroup>
+                  ) : (
+                    // Flat mode: checkboxes directly in the dropdown with a label per group
+                    filter.groups.map((group, groupIndex) => (
+                      <DropdownMenuGroup key={`group-${group.columnId}`}>
+                        {groupIndex > 0 && <DropdownMenuSeparator />}
+                        <DropdownMenuLabel>{group.label}</DropdownMenuLabel>
                         {group.options.map((option) => (
                           <DropdownMenuCheckboxItem
-                            checked={activeFilters[group.columnId] === option.value}
+                            checked={(activeFilters[group.columnId] ?? []).includes(option.value)}
                             className="group"
+                            closeOnClick={false}
                             disabled={option.count === 0}
                             key={`${group.columnId}-${option.value}`}
-                            onSelect={() =>
-                              handleFilterChange(
-                                group.columnId,
-                                activeFilters[group.columnId] === option.value
-                                  ? null
-                                  : option.value,
-                                group.transformValue,
-                              )
+                            onCheckedChange={() =>
+                              handleFilterToggle(group.columnId, option.value, group.transformValue)
                             }
                           >
                             <span>{option.label}</span>
@@ -390,9 +405,9 @@ export const DataTable = <TData, TValue>({
                             )}
                           </DropdownMenuCheckboxItem>
                         ))}
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
-                  ))}
+                      </DropdownMenuGroup>
+                    ))
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             );
@@ -434,6 +449,7 @@ export const DataTable = <TData, TValue>({
                             "group flex h-full cursor-pointer items-center justify-start gap-1 select-none",
                         )}
                         onClick={header.column.getToggleSortingHandler()}
+                        onKeyUp={header.column.getToggleSortingHandler()}
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         <HugeiconsIcon
