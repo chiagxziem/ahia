@@ -5,7 +5,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import QueryClientProviderWrapper from "@/lib/query-client";
-import { bricolage, inter } from "@/styles/fonts";
+import { bricolage, inter, jetbrains } from "@/styles/fonts";
 
 import "@/styles/globals.css";
 
@@ -25,7 +25,7 @@ const RootLayout = ({
 }>) => {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${bricolage.variable} antialiased`}>
+      <body className={`${inter.variable} ${jetbrains.variable} ${bricolage.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
           disableTransitionOnChange

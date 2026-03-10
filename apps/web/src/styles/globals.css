@@ -37,6 +37,7 @@
 @theme inline {
   /* fonts */
   --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
   --font-heading: var(--font-bricolage);
 
   /* colors */
