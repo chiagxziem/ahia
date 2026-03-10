@@ -52,13 +52,36 @@ export const truncateEmail = (email: string) => {
   return `${firstThree}...${lastThree}@${domain}`;
 };
 
+/**
+ * Formats a number as a signed percentage string, e.g. `+3.5%` or `-1.2%`.
+ * @param value - The numeric value to format.
+ */
 export const formatPct = (value: number) => `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
 
+/**
+ * Formats a number as a signed integer string, e.g. `+5` or `-3`.
+ * @param value - The numeric value to format.
+ */
 export const formatSigned = (value: number) => `${value >= 0 ? "+" : ""}${value}`;
 
+/**
+ * Formats a number as a USD currency string, e.g. `$1,234.56`.
+ * @param value - The numeric value to format.
+ */
 export const formatCurrency = (value: number) =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
   }).format(value);
+
+/**
+ * Truncates a long ID (e.g. UUID) for display.
+ * Shows the first 8 characters, an ellipsis, and the last 4 characters.
+ * @param id - The ID string to truncate.
+ * @returns A shortened display string like `550e8400…0000`.
+ */
+export const truncateId = (id: string): string => {
+  if (id.length <= 14) return id;
+  return `${id.slice(0, 8)}…${id.slice(-4)}`;
+};

@@ -17,6 +17,7 @@ import { queryKeys } from "@/lib/query-keys";
 import { roles } from "@/lib/utils";
 import { User } from "@repo/db/schemas/auth.schema";
 
+import { UserDetailDialog } from "./user-detail-dialog";
 import { UserRowActions } from "./user-row-actions";
 
 type UserRow = AdminUserRow;
@@ -178,6 +179,7 @@ export const UsersClient = () => {
     pageIndex: 0,
     pageSize: 100,
   });
+  const [selectedUser, setSelectedUser] = useState<AdminUserRow | null>(null);
 
   const { data: user } = useQuery({
     queryKey: queryKeys.user(),
@@ -201,17 +203,32 @@ export const UsersClient = () => {
 
   const tableData = data?.users ?? ([] as const);
 
+  const currentSelectedUser = selectedUser
+    ? (tableData.find((u) => u.id === selectedUser.id) ?? selectedUser)
+    : null;
+
   if (!user) return null;
 
   return (
-    <DataTable
-      columns={columns(user)}
-      data={tableData}
-      emptyMessage={isLoading ? "Loading users..." : "No users found."}
-      filters={filters}
-      rowCount={data?.total}
-      pagination={pagination}
-      onPaginationChange={setPagination}
-    />
+    <>
+      <DataTable
+        columns={columns(user)}
+        data={tableData}
+        emptyMessage={isLoading ? "Loading users..." : "No users found."}
+        filters={filters}
+        rowCount={data?.total}
+        pagination={pagination}
+        onPaginationChange={setPagination}
+        onRowClick={(row) => setSelectedUser(row)}
+      />
+      <UserDetailDialog
+        user={currentSelectedUser}
+        currentUser={user}
+        open={selectedUser !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedUser(null);
+        }}
+      />
+    </>
   );
 };

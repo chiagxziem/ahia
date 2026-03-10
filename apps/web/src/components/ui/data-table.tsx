@@ -476,7 +476,24 @@ export const DataTable = <TData, TValue>({
                   className={cn(onRowClick && "cursor-pointer")}
                   data-state={row.getIsSelected() && "selected"}
                   key={row.id}
-                  onClick={onRowClick ? () => onRowClick(row.original) : undefined}
+                  onClick={
+                    onRowClick
+                      ? (e: React.MouseEvent) => {
+                          // Don't fire when clicking interactive elements or portaled
+                          // dialogs/menus — their e.target lives in document.body but
+                          // React still bubbles synthetic events up the fiber tree.
+                          const target = e.target as Element;
+                          if (
+                            target.closest(
+                              'button, a, input, select, textarea, [role="button"], [role="menuitem"], [role="menu"], [role="dialog"], [role="alertdialog"]',
+                            )
+                          ) {
+                            return;
+                          }
+                          onRowClick(row.original);
+                        }
+                      : undefined
+                  }
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
