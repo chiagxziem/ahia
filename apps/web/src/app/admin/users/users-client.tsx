@@ -1,12 +1,14 @@
 "use client";
 
+import { UserAdd01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
-import { DataTable, type FilterConfig } from "@/components/ui/data-table";
+import { DataTable, type ActionButton, type FilterConfig } from "@/components/ui/data-table";
 import {
   defaultAdminUsersListParams,
   getAdminUsers,
@@ -17,6 +19,7 @@ import { queryKeys } from "@/lib/query-keys";
 import { roles } from "@/lib/utils";
 import { User } from "@repo/db/schemas/auth.schema";
 
+import { CreateUserDialog } from "./create-user-dialog";
 import { UserDetailDialog } from "./user-detail-dialog";
 import { UserRowActions } from "./user-row-actions";
 
@@ -180,6 +183,7 @@ export const UsersClient = () => {
     pageSize: 100,
   });
   const [selectedUser, setSelectedUser] = useState<AdminUserRow | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: queryKeys.user(),
@@ -209,6 +213,15 @@ export const UsersClient = () => {
 
   if (!user) return null;
 
+  const actionButtons: ActionButton[] = [
+    {
+      label: "New User",
+      icon: <HugeiconsIcon icon={UserAdd01Icon} className="size-4" />,
+      onClick: () => setCreateOpen(true),
+      hideLabelOnMobile: true,
+    },
+  ] as const;
+
   return (
     <>
       <DataTable
@@ -216,6 +229,7 @@ export const UsersClient = () => {
         data={tableData}
         emptyMessage={isLoading ? "Loading users..." : "No users found."}
         filters={filters}
+        actionButtons={actionButtons}
         rowCount={data?.total}
         pagination={pagination}
         onPaginationChange={setPagination}
@@ -229,6 +243,7 @@ export const UsersClient = () => {
           if (!open) setSelectedUser(null);
         }}
       />
+      <CreateUserDialog currentUser={user} open={createOpen} onOpenChange={setCreateOpen} />
     </>
   );
 };

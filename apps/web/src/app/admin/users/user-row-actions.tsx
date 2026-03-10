@@ -717,7 +717,7 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
                       <FieldLabel htmlFor={field.name} className="text-sm font-medium">
                         Image URL
                       </FieldLabel>
-                      <InputGroup className="h-10 rounded-xl">
+                      <InputGroup>
                         <InputGroupInput
                           id={field.name}
                           name={field.name}
@@ -731,9 +731,8 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
                         />
                         <InputGroupAddon align="inline-end">
                           <InputGroupButton
-                            size="sm"
+                            size="xs"
                             variant="secondary"
-                            className="h-7 rounded-md"
                             type="button"
                             onClick={handleClearImage}
                             disabled={isLoading || isClearing}
@@ -774,7 +773,6 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
                         placeholder="Enter user name"
                         disabled={isLoading || isClearing}
                         aria-invalid={field.state.meta.errors.length > 0}
-                        className="h-10 rounded-xl"
                       />
                       {field.state.meta.errors.length > 0 && (
                         <FieldError>{field.state.meta.errors.join(", ")}</FieldError>

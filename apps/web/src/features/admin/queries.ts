@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { $fetch } from "@/lib/fetch";
+import { $fetch, $fetchAndThrow } from "@/lib/fetch";
 import { successResSchema } from "@/lib/schemas";
 import { UserSelectSchema } from "@repo/db/validators/user.validator";
 
@@ -95,4 +95,18 @@ export const getAdminUsers = async (queryParams: AdminUsersListParams = {}, cook
   }
 
   return data?.data ?? null;
+};
+
+export const createAdminUser = async (body: {
+  name: string;
+  email: string;
+  role: "user" | "admin";
+}) => {
+  const { data } = await $fetchAndThrow("/admin/users", {
+    method: "POST",
+    output: successResSchema(UserSelectSchema),
+    body,
+  });
+
+  return data ?? null;
 };
