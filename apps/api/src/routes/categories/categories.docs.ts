@@ -14,6 +14,7 @@ import { authExamples, categoriesExamples } from "@/lib/openapi-examples";
 import {
   CategoryExtendedSchema,
   CategorySelectSchema,
+  CategoryWithCountSchema,
 } from "@repo/db/validators/product.validator";
 
 const tags = ["Categories"];
@@ -26,7 +27,7 @@ export const getAllCategoriesDoc = describeRoute({
       "All categories retrieved",
       {
         details: "All categories retrieved successfully",
-        dataSchema: z.array(CategorySelectSchema),
+        dataSchema: z.array(CategoryWithCountSchema),
       },
       true,
     ),

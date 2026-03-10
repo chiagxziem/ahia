@@ -5,7 +5,12 @@ import { ReactNode, Suspense } from "react";
 
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { defaultAdminUsersListParams, getAdminUsers } from "@/features/admin/queries";
+import {
+  defaultAdminUsersListParams,
+  defaultCategoriesListParams,
+  getAdminUsers,
+  getCategories,
+} from "@/features/admin/queries";
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -22,9 +27,16 @@ const AdminAuthWrapper = async ({ children }: { children: ReactNode }) => {
     redirect("/");
   }
 
+  // Users
   await queryClient.prefetchQuery({
     queryKey: queryKeys.adminUsers(defaultAdminUsersListParams),
     queryFn: async () => getAdminUsers(defaultAdminUsersListParams, cookie),
+  });
+
+  // Categories
+  await queryClient.prefetchQuery({
+    queryKey: queryKeys.adminCategories(defaultCategoriesListParams),
+    queryFn: async () => getCategories(defaultCategoriesListParams, cookie),
   });
 
   return (

@@ -2,18 +2,23 @@
 
 import { Edit01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { ColumnDef } from "@tanstack/react-table";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import type { ColumnDef, PaginationState } from "@tanstack/react-table";
+import { format } from "date-fns";
+import { useState } from "react";
 
 import { type ActionButton, DataTable, type FilterConfig } from "@/components/ui/data-table";
+import {
+  type CategoryRow,
+  defaultCategoriesListParams,
+  getCategories,
+} from "@/features/admin/queries";
+import { queryKeys } from "@/lib/query-keys";
 
-type Category = {
-  id: string;
-  name: string;
-  slug: string;
-  productCount: number;
-};
+import { CategoryRowActions } from "./category-row-actions";
+import { CreateCategoryDialog } from "./create-category-dialog";
 
-const columns: ColumnDef<Category>[] = [
+const columns: ColumnDef<CategoryRow>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -27,6 +32,17 @@ const columns: ColumnDef<Category>[] = [
     accessorKey: "productCount",
     header: "Products",
   },
+  {
+    accessorKey: "createdAt",
+    header: "Created",
+    cell: ({ row }) => format(row.original.createdAt, "MMM d, yyyy"),
+  },
+  {
+    id: "options",
+    header: "",
+    enableSorting: false,
+    cell: ({ row }) => <CategoryRowActions category={row.original} />,
+  },
 ];
 
 const filters: FilterConfig[] = [
@@ -37,16 +53,48 @@ const filters: FilterConfig[] = [
   },
 ];
 
-const actionButtons: ActionButton[] = [
-  {
-    label: "New Category",
-    icon: <HugeiconsIcon icon={Edit01Icon} className="mr-2 size-4" />,
-    onClick: () => console.log("New category"),
-  },
-];
+export const CategoriesClient = () => {
+  const [createOpen, setCreateOpen] = useState(false);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: defaultCategoriesListParams.limit!,
+  });
 
-export const CategoriesClient = ({ data }: { data: Category[] }) => {
+  const queryParams = {
+    ...defaultCategoriesListParams,
+    page: pagination.pageIndex + 1,
+    limit: pagination.pageSize,
+  };
+
+  const { data, isLoading } = useQuery({
+    queryKey: queryKeys.adminCategories(queryParams),
+    queryFn: () => getCategories(queryParams),
+    placeholderData: keepPreviousData,
+  });
+
+  const tableData = data?.categories ?? ([] as const);
+
+  const actionButtons: ActionButton[] = [
+    {
+      label: "New Category",
+      icon: <HugeiconsIcon icon={Edit01Icon} className="size-4" />,
+      onClick: () => setCreateOpen(true),
+    },
+  ] as const;
+
   return (
-    <DataTable columns={columns} data={data} filters={filters} actionButtons={actionButtons} />
+    <>
+      <DataTable
+        columns={columns}
+        data={tableData}
+        emptyMessage={isLoading ? "Loading categories..." : "No categories found."}
+        filters={filters}
+        actionButtons={actionButtons}
+        rowCount={data?.total}
+        pagination={pagination}
+        onPaginationChange={setPagination}
+      />
+      <CreateCategoryDialog open={createOpen} onOpenChange={setCreateOpen} />
+    </>
   );
 };

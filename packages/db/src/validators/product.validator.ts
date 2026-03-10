@@ -14,6 +14,10 @@ export const ProductSelectSchema = createSelectSchema(product).extend({
   updatedAt: z.iso.datetime().transform((n) => new Date(n)),
 });
 
+export const CategoryWithCountSchema = CategorySelectSchema.extend({
+  productCount: z.number(),
+});
+
 export const CategoryExtendedSchema = CategorySelectSchema.extend({
   products: ProductSelectSchema.array(),
 });

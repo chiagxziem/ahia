@@ -3,22 +3,27 @@ import { category } from "@repo/db/schemas/product.schema";
 
 /** Fetches categories with optional pagination and total count */
 export const getCategories = async (page: number = 1, limit?: number) => {
-  let result;
-  if (limit) {
-    result = await db.query.category.findMany({
-      limit,
-      offset: (page - 1) * limit,
-    });
-  } else {
-    result = await db.query.category.findMany();
-  }
+  const queryOpts = {
+    ...(limit ? { limit, offset: (page - 1) * limit } : {}),
+    with: {
+      productCategories: {
+        columns: { id: true },
+      },
+    },
+  } as const;
+
+  const result = await db.query.category.findMany(queryOpts);
 
   if (!result) return { categories: [], total: 0 };
+
+  const categories = result.map(({ productCategories, ...cat }) =>
+    Object.assign(cat, { productCount: productCategories.length }),
+  );
 
   const totalResult = await db.select({ count: count() }).from(category);
   const total = totalResult[0].count;
 
-  return { categories: result, total };
+  return { categories, total };
 };
 
 /** Fetches a single category with its related products */

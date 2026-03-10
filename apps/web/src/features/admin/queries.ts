@@ -2,51 +2,39 @@ import { z } from "zod";
 
 import { $fetch, $fetchAndThrow } from "@/lib/fetch";
 import { successResSchema } from "@/lib/schemas";
+import { ListUsersQuerySchema, WindowNumberSchema } from "@repo/db/validators/admin.validator";
+import {
+  CategorySelectSchema,
+  CategoryWithCountSchema,
+} from "@repo/db/validators/product.validator";
 import { UserSelectSchema } from "@repo/db/validators/user.validator";
 
-const windowNumberSchema = z.object({
-  "24h": z.number(),
-  "7d": z.number(),
-  "1m": z.number(),
-});
+// ── Users ──────────────────────────────────────────────────
 
 const adminStatsSchema = z.object({
   revenue: z.object({
-    value: windowNumberSchema,
-    changePct: windowNumberSchema,
+    value: WindowNumberSchema,
+    changePct: WindowNumberSchema,
   }),
   orders: z.object({
-    value: windowNumberSchema,
-    changePct: windowNumberSchema,
+    value: WindowNumberSchema,
+    changePct: WindowNumberSchema,
   }),
   products: z.object({
     value: z.object({
       total: z.number(),
     }),
-    changePct: windowNumberSchema,
+    changePct: WindowNumberSchema,
   }),
   users: z.object({
     value: z.object({
       total: z.number(),
     }),
-    change: windowNumberSchema,
+    change: WindowNumberSchema,
   }),
 });
 
 export type AdminStats = z.infer<typeof adminStatsSchema>;
-
-const adminUsersListParamsSchema = z.object({
-  searchValue: z.string().optional(),
-  searchField: z.enum(["email", "name"]).optional(),
-  searchOperator: z.enum(["contains", "starts_with", "ends_with"]).optional(),
-  limit: z.number().int().positive().optional(),
-  offset: z.number().int().nonnegative().optional(),
-  sortBy: z.string().optional(),
-  sortDirection: z.enum(["asc", "desc"]).optional(),
-  filterField: z.string().optional(),
-  filterValue: z.union([z.string(), z.number(), z.boolean()]).optional(),
-  filterOperator: z.enum(["eq", "ne", "lt", "lte", "gt", "gte", "contains"]).optional(),
-});
 
 const adminUsersListSchema = z.object({
   users: z.array(UserSelectSchema),
@@ -55,7 +43,7 @@ const adminUsersListSchema = z.object({
   offset: z.number().int().nonnegative().optional(),
 });
 
-export type AdminUsersListParams = z.infer<typeof adminUsersListParamsSchema>;
+export type AdminUsersListParams = z.infer<typeof ListUsersQuerySchema>;
 export type AdminUsersListResponse = z.infer<typeof adminUsersListSchema>;
 export type AdminUserRow = AdminUsersListResponse["users"][number];
 
@@ -81,7 +69,7 @@ export const getAdminStats = async (cookie?: string) => {
 };
 
 export const getAdminUsers = async (queryParams: AdminUsersListParams = {}, cookie?: string) => {
-  const validatedQueryParams = adminUsersListParamsSchema.parse(queryParams);
+  const validatedQueryParams = ListUsersQuerySchema.parse(queryParams);
 
   const { data, error } = await $fetch("/admin/users", {
     output: successResSchema(adminUsersListSchema),
@@ -106,6 +94,69 @@ export const createAdminUser = async (body: {
     method: "POST",
     output: successResSchema(UserSelectSchema),
     body,
+  });
+
+  return data ?? null;
+};
+
+// ── Categories ──────────────────────────────────────────────────
+
+const categoriesListSchema = z.array(CategoryWithCountSchema);
+
+export type CategoryRow = z.infer<typeof CategoryWithCountSchema>;
+
+export type CategoriesListParams = {
+  page?: number;
+  limit?: number;
+};
+
+export const defaultCategoriesListParams: CategoriesListParams = {
+  page: 1,
+  limit: 50,
+};
+
+export const getCategories = async (queryParams: CategoriesListParams = {}, cookie?: string) => {
+  const { data, error } = await $fetch("/categories", {
+    output: successResSchema(categoriesListSchema),
+    headers: cookie ? { cookie } : undefined,
+    query: queryParams,
+  });
+
+  if (error) {
+    console.error(error);
+    return null;
+  }
+
+  return {
+    categories: data?.data ?? [],
+    total: data?.pagination?.total ?? 0,
+  };
+};
+
+export const createCategory = async (body: { name: string }) => {
+  const { data } = await $fetchAndThrow("/categories", {
+    method: "POST",
+    output: successResSchema(CategorySelectSchema),
+    body,
+  });
+
+  return data ?? null;
+};
+
+export const updateCategory = async ({ id, body }: { id: string; body: { name: string } }) => {
+  const { data } = await $fetchAndThrow(`/categories/${id}`, {
+    method: "PUT",
+    output: successResSchema(CategorySelectSchema),
+    body,
+  });
+
+  return data ?? null;
+};
+
+export const deleteCategory = async (id: string) => {
+  const { data } = await $fetchAndThrow(`/categories/${id}`, {
+    method: "DELETE",
+    output: successResSchema(CategorySelectSchema),
   });
 
   return data ?? null;
