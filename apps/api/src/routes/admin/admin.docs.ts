@@ -100,6 +100,44 @@ export const getUserDoc = describeRoute({
   },
 });
 
+export const createUserDoc = describeRoute({
+  description: "Create a new user account (admin only)",
+  tags,
+  security: [
+    {
+      Bearer: [],
+    },
+  ],
+  responses: {
+    [HttpStatusCodes.CREATED]: createSuccessResponse("User created", {
+      details: "User created successfully",
+      dataSchema: UserSelectSchema,
+    }),
+    [HttpStatusCodes.BAD_REQUEST]: createErrorResponse("Invalid request data", {
+      validationError: {
+        summary: "Invalid request data",
+        code: "INVALID_DATA",
+        details: getErrDetailsFromErrFields(authExamples.uuidValErr),
+        fields: authExamples.uuidValErr,
+      },
+    }),
+    [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
+      code: "UNAUTHORIZED",
+      details: "No session found",
+    }),
+    [HttpStatusCodes.FORBIDDEN]: createGenericErrorResponse("Forbidden", {
+      code: "FORBIDDEN",
+      details: "User does not have the required permission",
+    }),
+    [HttpStatusCodes.CONFLICT]: createGenericErrorResponse("User already exists", {
+      code: "CONFLICT",
+      details: "A user with this email already exists",
+    }),
+    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
+  },
+});
+
 export const getAdminStatsDoc = describeRoute({
   description: "Get admin overview stats",
   tags,

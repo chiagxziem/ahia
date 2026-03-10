@@ -9,11 +9,12 @@ import { errorResponse, successResponse } from "@/lib/utils";
 import { authed } from "@/middleware/authed";
 import { permit } from "@/middleware/permit";
 import { validationHook } from "@/middleware/validation-hook";
+import { createUser } from "@/queries/admin-queries";
 import { getAdminOverviewStats } from "@/queries/stats-queries";
 import { getUserById } from "@/queries/user-queries";
 import { auth } from "@repo/auth/server";
 
-import { getAdminStatsDoc, getAllUsersDoc, getUserDoc } from "./admin.docs";
+import { createUserDoc, getAdminStatsDoc, getAllUsersDoc, getUserDoc } from "./admin.docs";
 
 const listUsersQuerySchema = z.object({
   searchValue: z.string().optional(),
@@ -90,5 +91,34 @@ admin.get(
     }
   },
 );
+
+const createUserBodySchema = z.object({
+  name: z.string().min(1),
+  email: z.email(),
+  role: z.enum(["user", "admin"]),
+});
+
+admin
+  .use(permit({ user: ["create"] }))
+  .post(
+    "/users",
+    createUserDoc,
+    validator("json", createUserBodySchema, validationHook),
+    async (c) => {
+      try {
+        const body = c.req.valid("json");
+        const user = await createUser(body);
+        return c.json(successResponse(user, "User created successfully"), HttpStatusCodes.CREATED);
+      } catch (error) {
+        if (error instanceof APIError) {
+          return c.json(
+            errorResponse(error.body?.code ?? "AUTH_ERROR", error.body?.message ?? error.message),
+            error.statusCode as ContentfulStatusCode,
+          );
+        }
+        throw error;
+      }
+    },
+  );
 
 export default admin;
