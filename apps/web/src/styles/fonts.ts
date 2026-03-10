@@ -14,4 +14,3 @@ export const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
   subsets: ["latin"],
 });
-

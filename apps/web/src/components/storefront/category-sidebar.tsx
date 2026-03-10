@@ -73,7 +73,7 @@ const FilterContent = () => {
       ))}
     </div>
   );
-}
+};
 
 // Desktop sidebar
 export const CategorySidebar = () => {
@@ -90,7 +90,7 @@ export const CategorySidebar = () => {
       </div>
     </aside>
   );
-}
+};
 
 // Mobile filter drawer
 export const MobileFilterDrawer = () => {
@@ -134,4 +134,4 @@ export const MobileFilterDrawer = () => {
       </DrawerContent>
     </Drawer>
   );
-}
+};
