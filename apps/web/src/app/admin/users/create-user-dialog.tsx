@@ -3,6 +3,7 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -71,7 +72,7 @@ export function CreateUserDialog({ currentUser, open, onOpenChange }: CreateUser
         onOpenChange(next);
       }}
     >
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Create new user</DialogTitle>
           <DialogDescription>
@@ -109,6 +110,7 @@ export function CreateUserDialog({ currentUser, open, onOpenChange }: CreateUser
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder="John Doe"
+                    aria-invalid={field.state.meta.errors.length > 0}
                     disabled={createMutation.isPending}
                   />
                   {field.state.meta.errors.length > 0 && (
@@ -123,10 +125,8 @@ export function CreateUserDialog({ currentUser, open, onOpenChange }: CreateUser
               name="email"
               validators={{
                 onChange: ({ value }) => {
-                  if (!value) return "Email is required";
-                  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
-                    return "Please enter a valid email";
-                  return undefined;
+                  const res = z.email("Please enter a valid email address").safeParse(value);
+                  return res.success ? undefined : res.error.issues[0]?.message;
                 },
               }}
             >
@@ -141,6 +141,7 @@ export function CreateUserDialog({ currentUser, open, onOpenChange }: CreateUser
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder="john@example.com"
+                    aria-invalid={field.state.meta.errors.length > 0}
                     disabled={createMutation.isPending}
                   />
                   {field.state.meta.errors.length > 0 && (

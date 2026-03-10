@@ -190,18 +190,15 @@ export const UsersClient = () => {
     queryFn: () => getUser(),
   });
 
+  const queryParams = {
+    ...defaultAdminUsersListParams,
+    limit: pagination.pageSize,
+    offset: pagination.pageIndex * pagination.pageSize,
+  };
+
   const { data, isLoading } = useQuery({
-    queryKey: queryKeys.adminUsers({
-      ...defaultAdminUsersListParams,
-      limit: pagination.pageSize,
-      offset: pagination.pageIndex * pagination.pageSize,
-    }),
-    queryFn: () =>
-      getAdminUsers({
-        ...defaultAdminUsersListParams,
-        limit: pagination.pageSize,
-        offset: pagination.pageIndex * pagination.pageSize,
-      }),
+    queryKey: queryKeys.adminUsers(queryParams),
+    queryFn: () => getAdminUsers(queryParams),
     placeholderData: keepPreviousData,
   });
 

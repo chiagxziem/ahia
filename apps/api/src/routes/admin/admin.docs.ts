@@ -11,15 +11,10 @@ import {
   getErrDetailsFromErrFields,
 } from "@/lib/openapi";
 import { authExamples } from "@/lib/openapi-examples";
+import { WindowNumberSchema } from "@repo/db/validators/admin.validator";
 import { UserSelectSchema } from "@repo/db/validators/user.validator";
 
 const tags = ["Admin"];
-
-const windowNumberSchema = z.object({
-  "24h": z.number(),
-  "7d": z.number(),
-  "1m": z.number(),
-});
 
 export const getAllUsersDoc = describeRoute({
   description: "Get all users (admin only)",
@@ -151,24 +146,24 @@ export const getAdminStatsDoc = describeRoute({
       details: "Admin stats retrieved successfully",
       dataSchema: z.object({
         revenue: z.object({
-          value: windowNumberSchema,
-          changePct: windowNumberSchema,
+          value: WindowNumberSchema,
+          changePct: WindowNumberSchema,
         }),
         orders: z.object({
-          value: windowNumberSchema,
-          changePct: windowNumberSchema,
+          value: WindowNumberSchema,
+          changePct: WindowNumberSchema,
         }),
         products: z.object({
           value: z.object({
             total: z.number().int().nonnegative(),
           }),
-          changePct: windowNumberSchema,
+          changePct: WindowNumberSchema,
         }),
         users: z.object({
           value: z.object({
             total: z.number().int().nonnegative(),
           }),
-          change: windowNumberSchema,
+          change: WindowNumberSchema,
         }),
       }),
     }),

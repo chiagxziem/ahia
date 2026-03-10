@@ -45,7 +45,7 @@ export function UserDetailDialog({ user, currentUser, open, onOpenChange }: User
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md" showCloseButton={false}>
+      <DialogContent showCloseButton={false}>
         <DialogHeader className="sr-only">
           <DialogTitle>{user.name}</DialogTitle>
         </DialogHeader>

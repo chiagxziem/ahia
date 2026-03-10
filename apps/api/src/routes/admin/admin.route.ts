@@ -13,21 +13,9 @@ import { createUser } from "@/queries/admin-queries";
 import { getAdminOverviewStats } from "@/queries/stats-queries";
 import { getUserById } from "@/queries/user-queries";
 import { auth } from "@repo/auth/server";
+import { ListUsersQuerySchema } from "@repo/db/validators/admin.validator";
 
 import { createUserDoc, getAdminStatsDoc, getAllUsersDoc, getUserDoc } from "./admin.docs";
-
-const listUsersQuerySchema = z.object({
-  searchValue: z.string().optional(),
-  searchField: z.enum(["email", "name"]).optional(),
-  searchOperator: z.enum(["contains", "starts_with", "ends_with"]).optional(),
-  limit: z.coerce.number().int().positive().optional(),
-  offset: z.coerce.number().int().nonnegative().optional(),
-  sortBy: z.string().optional(),
-  sortDirection: z.enum(["asc", "desc"]).optional(),
-  filterField: z.string().optional(),
-  filterValue: z.union([z.string(), z.number(), z.boolean()]).optional(),
-  filterOperator: z.enum(["eq", "ne", "lt", "lte", "gt", "gte", "contains"]).optional(),
-});
 
 const admin = createRouter()
   .use(authed)
@@ -42,7 +30,7 @@ admin.get("/stats", getAdminStatsDoc, async (c) => {
 admin.get(
   "/users",
   getAllUsersDoc,
-  validator("query", listUsersQuerySchema, validationHook),
+  validator("query", ListUsersQuerySchema, validationHook),
   async (c) => {
     try {
       const query = c.req.valid("query");
