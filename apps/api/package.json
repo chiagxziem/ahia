@@ -24,6 +24,6 @@
   "devDependencies": {
     "@repo/auth": "workspace:*",
     "@repo/db": "workspace:*",
-    "@types/bun": "^1.3.9"
+    "@types/bun": "^1.3.10"
   }
 }
