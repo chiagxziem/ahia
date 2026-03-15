@@ -154,7 +154,7 @@ products.post(
     // Validate and transform categoryIds using Zod
     const categoryIdsResult = parseJsonField(
       rawFormData.categoryIds,
-      z.array(z.string().uuid({ message: "Must be a valid UUID" })),
+      z.array(z.uuid({ message: "Must be a valid UUID" })),
       "Category IDs",
     );
     let categoryIds: string[] = [];

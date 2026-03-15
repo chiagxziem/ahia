@@ -8,8 +8,10 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import {
   defaultAdminUsersListParams,
   defaultCategoriesListParams,
+  defaultProductsListParams,
   getAdminUsers,
   getCategories,
+  getProducts,
 } from "@/features/admin/queries";
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
@@ -37,6 +39,12 @@ const AdminAuthWrapper = async ({ children }: { children: ReactNode }) => {
   await queryClient.prefetchQuery({
     queryKey: queryKeys.adminCategories(defaultCategoriesListParams),
     queryFn: async () => getCategories(defaultCategoriesListParams, cookie),
+  });
+
+  // Products
+  await queryClient.prefetchQuery({
+    queryKey: queryKeys.adminProducts(defaultProductsListParams),
+    queryFn: async () => getProducts(defaultProductsListParams, cookie),
   });
 
   return (

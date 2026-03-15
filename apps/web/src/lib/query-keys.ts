@@ -5,4 +5,6 @@ export const queryKeys = {
     ["admin", "users", params] as const,
   adminCategories: (params: Record<string, string | number | boolean | undefined> = {}) =>
     ["admin", "categories", params] as const,
+  adminProducts: (params: Record<string, string | number | boolean | undefined> = {}) =>
+    ["admin", "products", params] as const,
 };

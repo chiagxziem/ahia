@@ -6,6 +6,7 @@ import { ListUsersQuerySchema, WindowNumberSchema } from "@repo/db/validators/ad
 import {
   CategorySelectSchema,
   CategoryWithCountSchema,
+  ProductExtendedSchema,
 } from "@repo/db/validators/product.validator";
 import { UserSelectSchema } from "@repo/db/validators/user.validator";
 
@@ -157,6 +158,133 @@ export const deleteCategory = async (id: string) => {
   const { data } = await $fetchAndThrow(`/categories/${id}`, {
     method: "DELETE",
     output: successResSchema(CategorySelectSchema),
+  });
+
+  return data ?? null;
+};
+
+// ── Products ──────────────────────────────────────────────────
+
+const productsListSchema = z.array(ProductExtendedSchema);
+
+export type ProductRow = z.infer<typeof ProductExtendedSchema>;
+
+export type ProductsListParams = {
+  page?: number;
+  limit?: number;
+};
+
+export const defaultProductsListParams: ProductsListParams = {
+  page: 1,
+  limit: 50,
+};
+
+export const getProducts = async (queryParams: ProductsListParams = {}, cookie?: string) => {
+  const { data, error } = await $fetch("/products", {
+    output: successResSchema(productsListSchema),
+    headers: cookie ? { cookie } : undefined,
+    query: queryParams,
+  });
+
+  if (error) {
+    console.error(error);
+    return null;
+  }
+
+  return {
+    products: data?.data ?? [],
+    total: data?.pagination?.total ?? 0,
+  };
+};
+
+export interface CreateProductInput {
+  name: string;
+  description?: string;
+  price: string;
+  stockQuantity: string;
+  categoryIds: string[];
+  sizes?: { name: string; inStock: boolean }[];
+  colors?: { name: string; inStock: boolean }[];
+  images: File[];
+  createdBy: string;
+}
+
+export const createProduct = async (input: CreateProductInput) => {
+  const formData = new FormData();
+  formData.append("name", input.name);
+  if (input.description) formData.append("description", input.description);
+  formData.append("price", input.price);
+  formData.append("stockQuantity", input.stockQuantity);
+  formData.append("createdBy", input.createdBy);
+  formData.append("categoryIds", JSON.stringify(input.categoryIds));
+  if (input.sizes && input.sizes.length > 0) {
+    formData.append("sizes", JSON.stringify(input.sizes));
+  }
+  if (input.colors && input.colors.length > 0) {
+    formData.append("colors", JSON.stringify(input.colors));
+  }
+  for (const image of input.images) {
+    formData.append("images", image);
+  }
+
+  const { data } = await $fetchAndThrow("/products", {
+    method: "POST",
+    output: successResSchema(ProductExtendedSchema),
+    body: formData,
+  });
+
+  return data ?? null;
+};
+
+export interface UpdateProductInput {
+  name?: string;
+  description?: string;
+  price?: string;
+  stockQuantity?: string;
+  categoryIds?: string[];
+  sizes?: { name: string; inStock: boolean }[];
+  colors?: { name: string; inStock: boolean }[];
+  keepImageKeys?: string[];
+  newImages?: File[];
+}
+
+export const updateProduct = async ({ id, input }: { id: string; input: UpdateProductInput }) => {
+  const formData = new FormData();
+  if (input.name !== undefined) formData.append("name", input.name);
+  if (input.description !== undefined) formData.append("description", input.description);
+  if (input.price !== undefined) formData.append("price", input.price);
+  if (input.stockQuantity !== undefined) formData.append("stockQuantity", input.stockQuantity);
+  if (input.categoryIds !== undefined) {
+    formData.append("categoryIds", JSON.stringify(input.categoryIds));
+  }
+  if (input.sizes !== undefined) {
+    formData.append("sizes", JSON.stringify(input.sizes));
+  }
+  if (input.colors !== undefined) {
+    formData.append("colors", JSON.stringify(input.colors));
+  }
+  if (input.keepImageKeys !== undefined) {
+    formData.append("keepImageKeys", JSON.stringify(input.keepImageKeys));
+  }
+  if (input.newImages && input.newImages.length > 0) {
+    for (const image of input.newImages) {
+      formData.append("newImages", image);
+    }
+  }
+
+  const { data } = await $fetchAndThrow(`/products/${id}`, {
+    method: "PUT",
+    output: successResSchema(ProductExtendedSchema),
+    body: formData,
+  });
+
+  return data ?? null;
+};
+
+export const deleteProduct = async (id: string) => {
+  const { data } = await $fetchAndThrow(`/products/${id}`, {
+    method: "DELETE",
+    output: successResSchema(ProductExtendedSchema),
   });
 
   return data ?? null;

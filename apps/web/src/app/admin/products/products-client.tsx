@@ -2,63 +2,125 @@
 
 import { PlusSignIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { ColumnDef } from "@tanstack/react-table";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import type { ColumnDef, PaginationState } from "@tanstack/react-table";
+import { format } from "date-fns";
+import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { type ActionButton, DataTable, type FilterConfig } from "@/components/ui/data-table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { defaultProductsListParams, getProducts, type ProductRow } from "@/features/admin/queries";
+import { queryKeys } from "@/lib/query-keys";
+import { formatCurrency } from "@/lib/utils";
 
-type Product = {
-  id: string;
-  name: string;
-  category: string;
-  price: number;
-  stock: number;
-  status: string;
+import { CreateProductDialog } from "./create-product-dialog";
+import { ProductRowActions } from "./product-row-actions";
+
+const LOW_STOCK_THRESHOLD = 10;
+
+type StockStatus = "in_stock" | "low_stock" | "out_of_stock";
+
+const getStockStatus = (qty: number | null): StockStatus => {
+  if (!qty || qty <= 0) return "out_of_stock";
+  if (qty <= LOW_STOCK_THRESHOLD) return "low_stock";
+  return "in_stock";
 };
 
-const columns: ColumnDef<Product>[] = [
+const stockStatusLabel: Record<StockStatus, string> = {
+  in_stock: "In Stock",
+  low_stock: "Low Stock",
+  out_of_stock: "Out of Stock",
+};
+
+const stockStatusVariant: Record<StockStatus, "default" | "secondary" | "destructive"> = {
+  in_stock: "default",
+  low_stock: "secondary",
+  out_of_stock: "destructive",
+};
+
+const CategoryCell = ({ categories }: { categories: ProductRow["categories"] }) => {
+  if (categories.length === 0) {
+    return <span className="text-muted-foreground">—</span>;
+  }
+
+  if (categories.length === 1) {
+    return <Badge variant="outline">{categories[0].name}</Badge>;
+  }
+
+  const remaining = categories.slice(1);
+
+  return (
+    <div className="flex items-center gap-1">
+      <Badge variant="outline">{categories[0].name}</Badge>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <Badge variant="secondary" className="cursor-default">
+              +{remaining.length}
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent>
+            <div className="flex flex-col gap-0.5">
+              {remaining.map((c) => (
+                <span key={c.id}>{c.name}</span>
+              ))}
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </div>
+  );
+};
+
+const columns: ColumnDef<ProductRow>[] = [
   {
     accessorKey: "name",
-    header: "Product Name",
-    cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
+    header: "Name",
+    cell: ({ row }) => <div className="font-medium">{row.original.name}</div>,
   },
   {
-    accessorKey: "category",
+    id: "categories",
     header: "Category",
+    accessorFn: (row) => row.categories.map((c) => c.name).join(", "),
+    cell: ({ row }) => <CategoryCell categories={row.original.categories} />,
   },
   {
     accessorKey: "price",
     header: "Price",
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("price"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-      return <div className="font-medium">{formatted}</div>;
-    },
+    cell: ({ row }) => (
+      <div className="font-medium">{formatCurrency(Number(row.original.price))}</div>
+    ),
   },
   {
-    accessorKey: "stock",
+    accessorKey: "stockQuantity",
     header: "Stock",
+    cell: ({ row }) => row.original.stockQuantity ?? 0,
   },
   {
-    accessorKey: "status",
+    id: "status",
     header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string;
-      const labels: Record<string, string> = {
-        in_stock: "In Stock",
-        out_of_stock: "Out of Stock",
-        low_stock: "Low Stock",
-      };
-      const variants: Record<string, "default" | "secondary" | "destructive"> = {
-        in_stock: "default",
-        out_of_stock: "destructive",
-        low_stock: "secondary",
-      };
-      return <Badge variant={variants[status] || "default"}>{labels[status] || status}</Badge>;
+    accessorFn: (row) => getStockStatus(row.stockQuantity),
+    filterFn: (row, _columnId, filterValue) => {
+      const status = getStockStatus(row.original.stockQuantity);
+      if (!Array.isArray(filterValue) || filterValue.length === 0) return true;
+      return filterValue.includes(status);
     },
+    cell: ({ row }) => {
+      const status = getStockStatus(row.original.stockQuantity);
+      return <Badge variant={stockStatusVariant[status]}>{stockStatusLabel[status]}</Badge>;
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created",
+    cell: ({ row }) => format(row.original.createdAt, "MMM d, yyyy"),
+  },
+  {
+    id: "options",
+    header: "",
+    enableSorting: false,
+    cell: ({ row }) => <ProductRowActions product={row.original} />,
   },
 ];
 
@@ -66,30 +128,68 @@ const filters: FilterConfig[] = [
   {
     type: "search",
     placeholder: "Search products...",
-    searchColumns: ["name", "category"],
+    searchColumns: ["name", "categories"],
   },
   {
-    type: "single-dropdown",
-    columnId: "status",
-    label: "Status",
-    options: [
-      { label: "In Stock", value: "in_stock" },
-      { label: "Out of Stock", value: "out_of_stock" },
-      { label: "Low Stock", value: "low_stock" },
+    type: "multi-dropdown",
+    label: "Filters",
+    groups: [
+      {
+        columnId: "status",
+        label: "Stock Status",
+        options: [
+          { label: "In Stock", value: "in_stock" },
+          { label: "Low Stock", value: "low_stock" },
+          { label: "Out of Stock", value: "out_of_stock" },
+        ],
+      },
     ],
   },
 ];
 
-const actionButtons: ActionButton[] = [
-  {
-    label: "Add Product",
-    icon: <HugeiconsIcon icon={PlusSignIcon} className="mr-2 size-4" />,
-    onClick: () => console.log("Add product"),
-  },
-];
+export const ProductsClient = () => {
+  const [createOpen, setCreateOpen] = useState(false);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: defaultProductsListParams.limit!,
+  });
 
-export function ProductsClient({ data }: { data: Product[] }) {
+  const queryParams = {
+    ...defaultProductsListParams,
+    page: pagination.pageIndex + 1,
+    limit: pagination.pageSize,
+  };
+
+  const { data, isLoading } = useQuery({
+    queryKey: queryKeys.adminProducts(queryParams),
+    queryFn: () => getProducts(queryParams),
+    placeholderData: keepPreviousData,
+  });
+
+  const tableData = data?.products ?? ([] as const);
+
+  const actionButtons: ActionButton[] = [
+    {
+      label: "Add Product",
+      icon: <HugeiconsIcon icon={PlusSignIcon} className="size-4" />,
+      onClick: () => setCreateOpen(true),
+      hideLabelOnMobile: true,
+    },
+  ] as const;
+
   return (
-    <DataTable columns={columns} data={data} filters={filters} actionButtons={actionButtons} />
+    <>
+      <DataTable
+        columns={columns}
+        data={tableData}
+        emptyMessage={isLoading ? "Loading products..." : "No products found."}
+        filters={filters}
+        actionButtons={actionButtons}
+        rowCount={data?.total}
+        pagination={pagination}
+        onPaginationChange={setPagination}
+      />
+      <CreateProductDialog open={createOpen} onOpenChange={setCreateOpen} />
+    </>
   );
-}
+};
