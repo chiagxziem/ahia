@@ -9,16 +9,16 @@ import { useState } from "react";
 
 import { type ActionButton, DataTable, type FilterConfig } from "@/components/ui/data-table";
 import {
-  type CategoryRow,
-  defaultCategoriesListParams,
-  getCategories,
+  type AdminCategoryRow,
+  defaultAdminCategoriesListParams,
+  getAdminCategories,
 } from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";
 
 import { CategoryRowActions } from "./category-row-actions";
 import { CreateCategoryDialog } from "./create-category-dialog";
 
-const columns: ColumnDef<CategoryRow>[] = [
+const columns: ColumnDef<AdminCategoryRow>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -57,18 +57,18 @@ export const CategoriesClient = () => {
   const [createOpen, setCreateOpen] = useState(false);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: defaultCategoriesListParams.limit!,
+    pageSize: defaultAdminCategoriesListParams.limit!,
   });
 
   const queryParams = {
-    ...defaultCategoriesListParams,
+    ...defaultAdminCategoriesListParams,
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
   };
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.adminCategories(queryParams),
-    queryFn: () => getCategories(queryParams),
+    queryFn: () => getAdminCategories(queryParams),
     placeholderData: keepPreviousData,
   });
 

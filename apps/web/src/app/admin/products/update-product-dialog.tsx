@@ -35,11 +35,15 @@ import { UpdateImagePicker } from "@/components/ui/image-picker";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
 import { Textarea } from "@/components/ui/textarea";
-import { getCategories, type ProductRow, updateProduct } from "@/features/admin/queries";
+import {
+  getAdminCategories,
+  updateAdminProduct,
+  type AdminProductRow,
+} from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";
 
 interface UpdateProductDialogProps {
-  product: ProductRow;
+  product: AdminProductRow;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -54,7 +58,7 @@ export function UpdateProductDialog({ product, open, onOpenChange }: UpdateProdu
 
   const { data: categoriesData } = useQuery({
     queryKey: queryKeys.adminCategories({ page: 1, limit: 200 }),
-    queryFn: () => getCategories({ page: 1, limit: 200 }),
+    queryFn: () => getAdminCategories({ page: 1, limit: 200 }),
     enabled: open,
   });
 
@@ -65,7 +69,7 @@ export function UpdateProductDialog({ product, open, onOpenChange }: UpdateProdu
   };
 
   const updateMutation = useMutation({
-    mutationFn: updateProduct,
+    mutationFn: updateAdminProduct,
     onSuccess: async () => {
       toast.success("Product updated successfully", cancelToastEl);
       onOpenChange(false);

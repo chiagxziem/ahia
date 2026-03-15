@@ -5,21 +5,30 @@ import { z } from "zod";
 
 import { createRouter } from "@/app";
 import HttpStatusCodes from "@/lib/http-status-codes";
+import { PaginationQuerySchema } from "@/lib/schemas";
 import { errorResponse, successResponse } from "@/lib/utils";
 import { authed } from "@/middleware/authed";
 import { permit } from "@/middleware/permit";
 import { validationHook } from "@/middleware/validation-hook";
 import { createUser } from "@/queries/admin-queries";
+import { getAdminOrderById, getAllOrders } from "@/queries/order-queries";
 import { getAdminOverviewStats } from "@/queries/stats-queries";
 import { getUserById } from "@/queries/user-queries";
 import { auth } from "@repo/auth/server";
 import { ListUsersQuerySchema } from "@repo/db/validators/admin.validator";
 
-import { createUserDoc, getAdminStatsDoc, getAllUsersDoc, getUserDoc } from "./admin.docs";
+import {
+  createUserDoc,
+  getAdminOrderDoc,
+  getAdminOrdersDoc,
+  getAdminStatsDoc,
+  getAllUsersDoc,
+  getUserDoc,
+} from "./admin.docs";
 
 const admin = createRouter()
   .use(authed)
-  .use(permit({ user: ["list"] }));
+  .use(permit({ user: ["list"], order: ["view-user", "view-all"] }));
 
 admin.get("/stats", getAdminStatsDoc, async (c) => {
   const stats = await getAdminOverviewStats();
@@ -27,6 +36,7 @@ admin.get("/stats", getAdminStatsDoc, async (c) => {
   return c.json(successResponse(stats, "Admin stats retrieved successfully"), HttpStatusCodes.OK);
 });
 
+// Get all users (admin)
 admin.get(
   "/users",
   getAllUsersDoc,
@@ -53,6 +63,7 @@ admin.get(
   },
 );
 
+// Get user by ID (admin)
 admin.get(
   "/users/:id",
   getUserDoc,
@@ -80,12 +91,75 @@ admin.get(
   },
 );
 
+// Get all orders (admin)
+admin.get(
+  "/orders",
+  getAdminOrdersDoc,
+  validator("query", PaginationQuerySchema, validationHook),
+  async (c) => {
+    try {
+      const { page, limit } = c.req.valid("query");
+      const { orders: allOrders, total } = await getAllOrders(page, limit);
+
+      let pagination;
+      if (limit) {
+        pagination = {
+          page: page ?? 1,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        };
+      }
+
+      return c.json(
+        successResponse(allOrders, "Orders retrieved successfully", pagination),
+        HttpStatusCodes.OK,
+      );
+    } catch (error) {
+      console.error("Error retrieving orders:", error);
+      return c.json(
+        errorResponse("INTERNAL_SERVER_ERROR", "Failed to retrieve orders"),
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+  },
+);
+
+// Get order by ID (admin)
+admin.get(
+  "/orders/:id",
+  getAdminOrderDoc,
+  validator("param", z.object({ id: z.uuid() }), validationHook),
+  async (c) => {
+    try {
+      const { id } = c.req.valid("param");
+      const orderWithItems = await getAdminOrderById(id);
+
+      if (!orderWithItems) {
+        return c.json(errorResponse("NOT_FOUND", "Order not found"), HttpStatusCodes.NOT_FOUND);
+      }
+
+      return c.json(
+        successResponse(orderWithItems, "Order retrieved successfully"),
+        HttpStatusCodes.OK,
+      );
+    } catch (error) {
+      console.error("Error retrieving order:", error);
+      return c.json(
+        errorResponse("INTERNAL_SERVER_ERROR", "Failed to retrieve order"),
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+  },
+);
+
 const createUserBodySchema = z.object({
   name: z.string().min(1),
   email: z.email(),
   role: z.enum(["user", "admin"]),
 });
 
+// Create new user (admin)
 admin
   .use(permit({ user: ["create"] }))
   .post(

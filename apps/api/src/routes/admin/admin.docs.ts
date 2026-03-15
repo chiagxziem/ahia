@@ -12,6 +12,7 @@ import {
 } from "@/lib/openapi";
 import { authExamples } from "@/lib/openapi-examples";
 import { WindowNumberSchema } from "@repo/db/validators/admin.validator";
+import { OrderWithCustomerSelectSchema } from "@repo/db/validators/order.validator";
 import { UserSelectSchema } from "@repo/db/validators/user.validator";
 
 const tags = ["Admin"];
@@ -174,6 +175,74 @@ export const getAdminStatsDoc = describeRoute({
     [HttpStatusCodes.FORBIDDEN]: createGenericErrorResponse("Forbidden", {
       code: "FORBIDDEN",
       details: "User does not have the required permission",
+    }),
+    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
+  },
+});
+
+export const getAdminOrdersDoc = describeRoute({
+  description: "Get all orders (admin only)",
+  tags,
+  security: [
+    {
+      Bearer: [],
+    },
+  ],
+  responses: {
+    [HttpStatusCodes.OK]: createSuccessResponse(
+      "Orders retrieved",
+      {
+        details: "Orders retrieved successfully",
+        dataSchema: z.array(OrderWithCustomerSelectSchema),
+      },
+      true,
+    ),
+    [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
+      code: "UNAUTHORIZED",
+      details: "No session found",
+    }),
+    [HttpStatusCodes.FORBIDDEN]: createGenericErrorResponse("Forbidden", {
+      code: "FORBIDDEN",
+      details: "User does not have the required permission",
+    }),
+    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
+  },
+});
+
+export const getAdminOrderDoc = describeRoute({
+  description: "Get order by ID (admin only)",
+  tags,
+  security: [
+    {
+      Bearer: [],
+    },
+  ],
+  responses: {
+    [HttpStatusCodes.OK]: createSuccessResponse("Order retrieved", {
+      details: "Order retrieved successfully",
+      dataSchema: OrderWithCustomerSelectSchema,
+    }),
+    [HttpStatusCodes.BAD_REQUEST]: createErrorResponse("Invalid request data", {
+      invalidUUID: {
+        summary: "Invalid order ID",
+        code: "INVALID_DATA",
+        details: getErrDetailsFromErrFields(authExamples.uuidValErr),
+        fields: authExamples.uuidValErr,
+      },
+    }),
+    [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
+      code: "UNAUTHORIZED",
+      details: "No session found",
+    }),
+    [HttpStatusCodes.FORBIDDEN]: createGenericErrorResponse("Forbidden", {
+      code: "FORBIDDEN",
+      details: "User does not have the required permission",
+    }),
+    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse("Order not found", {
+      code: "NOT_FOUND",
+      details: "Order not found",
     }),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),

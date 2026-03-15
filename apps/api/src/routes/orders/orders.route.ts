@@ -9,18 +9,25 @@ import { stripe } from "@/lib/stripe";
 import { errorResponse, successResponse } from "@/lib/utils";
 import { authed } from "@/middleware/authed";
 import { validationHook } from "@/middleware/validation-hook";
-import { getUserCartWithItems } from "@/queries/cart-queries";
+import { clearCartItemsByUserId, getUserCartWithItems } from "@/queries/cart-queries";
 import {
   createOrder,
   createOrderItems,
   getOrderById,
+  getOrderByStripeSessionId,
   getUserOrders,
   reserveStock,
+  updateOrderStatus,
 } from "@/queries/order-queries";
 import { db, eq } from "@repo/db";
 import { order } from "@repo/db/schemas/order.schema";
 
-import { createCheckoutDoc, getUserOrderDoc, getUserOrdersDoc } from "./orders.docs";
+import {
+  createCheckoutDoc,
+  getUserOrderDoc,
+  getUserOrdersDoc,
+  verifySessionDoc,
+} from "./orders.docs";
 
 const orders = createRouter().use(authed);
 
@@ -84,6 +91,68 @@ orders.get(
       console.error("Error retrieving order details:", error);
       return c.json(
         errorResponse("INTERNAL_SERVER_ERROR", "Failed to retrieve order details"),
+        HttpStatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+  },
+);
+
+// Verify checkout session and update order status
+orders.post(
+  "/verify-session",
+  verifySessionDoc,
+  validator("json", z.object({ sessionId: z.string() }), validationHook),
+  async (c) => {
+    const user = c.get("user");
+    const { sessionId } = c.req.valid("json");
+
+    try {
+      // Retrieve the session from Stripe to get the real payment status
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+      if (!session) {
+        return c.json(
+          errorResponse("NOT_FOUND", "Checkout session not found"),
+          HttpStatusCodes.NOT_FOUND,
+        );
+      }
+
+      // Find the order by stripe session ID
+      const existingOrder = await getOrderByStripeSessionId(sessionId);
+
+      if (!existingOrder || existingOrder.userId !== user.id) {
+        return c.json(
+          errorResponse("NOT_FOUND", "Order not found for this session"),
+          HttpStatusCodes.NOT_FOUND,
+        );
+      }
+
+      // Only update if order is still pending
+      if (existingOrder.status === "pending" && session.payment_status === "paid") {
+        await updateOrderStatus(
+          existingOrder.id,
+          "completed",
+          "paid",
+          session.payment_method_types?.[0] || "card",
+        );
+
+        // Clear cart
+        await clearCartItemsByUserId(user.id);
+
+        console.log(`[Verify Session] Order ${existingOrder.orderNumber} marked as paid`);
+      }
+
+      // Return the updated order
+      const updatedOrder = await getOrderById(existingOrder.id);
+
+      return c.json(
+        successResponse(updatedOrder, "Session verified successfully"),
+        HttpStatusCodes.OK,
+      );
+    } catch (error) {
+      console.error("Error verifying checkout session:", error);
+      return c.json(
+        errorResponse("INTERNAL_SERVER_ERROR", "Failed to verify checkout session"),
         HttpStatusCodes.INTERNAL_SERVER_ERROR,
       );
     }

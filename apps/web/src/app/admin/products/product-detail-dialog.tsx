@@ -16,13 +16,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import type { ProductRow } from "@/features/admin/queries";
+import type { AdminProductRow } from "@/features/admin/queries";
 import { formatCurrency, truncateId } from "@/lib/utils";
 
 import { ProductRowActions } from "./product-row-actions";
 
 interface ProductDetailDialogProps {
-  product: ProductRow | null;
+  product: AdminProductRow | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }

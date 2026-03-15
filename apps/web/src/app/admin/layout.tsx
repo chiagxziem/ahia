@@ -6,12 +6,14 @@ import { ReactNode, Suspense } from "react";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import {
+  defaultAdminCategoriesListParams,
+  defaultAdminProductsListParams,
+  defaultAdminsOrdersListParams,
   defaultAdminUsersListParams,
-  defaultCategoriesListParams,
-  defaultProductsListParams,
+  getAdminCategories,
+  getAdminOrders,
+  getAdminProducts,
   getAdminUsers,
-  getCategories,
-  getProducts,
 } from "@/features/admin/queries";
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
@@ -37,14 +39,20 @@ const AdminAuthWrapper = async ({ children }: { children: ReactNode }) => {
 
   // Categories
   await queryClient.prefetchQuery({
-    queryKey: queryKeys.adminCategories(defaultCategoriesListParams),
-    queryFn: async () => getCategories(defaultCategoriesListParams, cookie),
+    queryKey: queryKeys.adminCategories(defaultAdminCategoriesListParams),
+    queryFn: async () => getAdminCategories(defaultAdminCategoriesListParams, cookie),
   });
 
   // Products
   await queryClient.prefetchQuery({
-    queryKey: queryKeys.adminProducts(defaultProductsListParams),
-    queryFn: async () => getProducts(defaultProductsListParams, cookie),
+    queryKey: queryKeys.adminProducts(defaultAdminProductsListParams),
+    queryFn: async () => getAdminProducts(defaultAdminProductsListParams, cookie),
+  });
+
+  // Orders
+  await queryClient.prefetchQuery({
+    queryKey: queryKeys.adminOrders(defaultAdminsOrdersListParams),
+    queryFn: async () => getAdminOrders(defaultAdminsOrdersListParams, cookie),
   });
 
   return (

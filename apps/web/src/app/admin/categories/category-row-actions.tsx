@@ -35,11 +35,11 @@ import {
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
-import { deleteCategory, updateCategory, type CategoryRow } from "@/features/admin/queries";
+import { deleteCategory, updateCategory, type AdminCategoryRow } from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";
 
 interface CategoryRowActionsProps {
-  category: CategoryRow;
+  category: AdminCategoryRow;
 }
 
 type ActionType = "update" | "delete";

@@ -26,13 +26,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cancelToastEl } from "@/components/ui/sonner";
-import { deleteProduct, type ProductRow } from "@/features/admin/queries";
+import { deleteProduct, type AdminProductRow } from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";
 
 import { UpdateProductDialog } from "./update-product-dialog";
 
 interface ProductRowActionsProps {
-  product: ProductRow;
+  product: AdminProductRow;
 }
 
 type ActionType = "update" | "delete";

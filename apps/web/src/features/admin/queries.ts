@@ -3,6 +3,7 @@ import { z } from "zod";
 import { $fetch, $fetchAndThrow } from "@/lib/fetch";
 import { successResSchema } from "@/lib/schemas";
 import { ListUsersQuerySchema, WindowNumberSchema } from "@repo/db/validators/admin.validator";
+import { OrderWithCustomerSelectSchema } from "@repo/db/validators/order.validator";
 import {
   CategorySelectSchema,
   CategoryWithCountSchema,
@@ -12,7 +13,7 @@ import { UserSelectSchema } from "@repo/db/validators/user.validator";
 
 // ── Users ──────────────────────────────────────────────────
 
-const adminStatsSchema = z.object({
+const AdminStatsSchema = z.object({
   revenue: z.object({
     value: WindowNumberSchema,
     changePct: WindowNumberSchema,
@@ -35,9 +36,9 @@ const adminStatsSchema = z.object({
   }),
 });
 
-export type AdminStats = z.infer<typeof adminStatsSchema>;
+export type AdminStats = z.infer<typeof AdminStatsSchema>;
 
-const adminUsersListSchema = z.object({
+const AdminUsersListSchema = z.object({
   users: z.array(UserSelectSchema),
   total: z.number().int().nonnegative(),
   limit: z.number().int().positive().optional(),
@@ -45,7 +46,7 @@ const adminUsersListSchema = z.object({
 });
 
 export type AdminUsersListParams = z.infer<typeof ListUsersQuerySchema>;
-export type AdminUsersListResponse = z.infer<typeof adminUsersListSchema>;
+export type AdminUsersListResponse = z.infer<typeof AdminUsersListSchema>;
 export type AdminUserRow = AdminUsersListResponse["users"][number];
 
 export const defaultAdminUsersListParams: AdminUsersListParams = {
@@ -57,7 +58,7 @@ export const defaultAdminUsersListParams: AdminUsersListParams = {
 
 export const getAdminStats = async (cookie?: string) => {
   const { data, error } = await $fetch("/admin/stats", {
-    output: successResSchema(adminStatsSchema),
+    output: successResSchema(AdminStatsSchema),
     headers: cookie ? { cookie } : undefined,
   });
 
@@ -73,7 +74,7 @@ export const getAdminUsers = async (queryParams: AdminUsersListParams = {}, cook
   const validatedQueryParams = ListUsersQuerySchema.parse(queryParams);
 
   const { data, error } = await $fetch("/admin/users", {
-    output: successResSchema(adminUsersListSchema),
+    output: successResSchema(AdminUsersListSchema),
     headers: cookie ? { cookie } : undefined,
     query: validatedQueryParams,
   });
@@ -102,23 +103,26 @@ export const createAdminUser = async (body: {
 
 // ── Categories ──────────────────────────────────────────────────
 
-const categoriesListSchema = z.array(CategoryWithCountSchema);
+const AdminCategoriesListSchema = z.array(CategoryWithCountSchema);
 
-export type CategoryRow = z.infer<typeof CategoryWithCountSchema>;
+export type AdminCategoryRow = z.infer<typeof CategoryWithCountSchema>;
 
-export type CategoriesListParams = {
+export type AdminCategoriesListParams = {
   page?: number;
   limit?: number;
 };
 
-export const defaultCategoriesListParams: CategoriesListParams = {
+export const defaultAdminCategoriesListParams: AdminCategoriesListParams = {
   page: 1,
   limit: 50,
 };
 
-export const getCategories = async (queryParams: CategoriesListParams = {}, cookie?: string) => {
+export const getAdminCategories = async (
+  queryParams: AdminCategoriesListParams = {},
+  cookie?: string,
+) => {
   const { data, error } = await $fetch("/categories", {
-    output: successResSchema(categoriesListSchema),
+    output: successResSchema(AdminCategoriesListSchema),
     headers: cookie ? { cookie } : undefined,
     query: queryParams,
   });
@@ -165,23 +169,26 @@ export const deleteCategory = async (id: string) => {
 
 // ── Products ──────────────────────────────────────────────────
 
-const productsListSchema = z.array(ProductExtendedSchema);
+const ProductsAdminListSchema = z.array(ProductExtendedSchema);
 
-export type ProductRow = z.infer<typeof ProductExtendedSchema>;
+export type AdminProductRow = z.infer<typeof ProductExtendedSchema>;
 
-export type ProductsListParams = {
+export type AdminProductsListParams = {
   page?: number;
   limit?: number;
 };
 
-export const defaultProductsListParams: ProductsListParams = {
+export const defaultAdminProductsListParams: AdminProductsListParams = {
   page: 1,
   limit: 50,
 };
 
-export const getProducts = async (queryParams: ProductsListParams = {}, cookie?: string) => {
+export const getAdminProducts = async (
+  queryParams: AdminProductsListParams = {},
+  cookie?: string,
+) => {
   const { data, error } = await $fetch("/products", {
-    output: successResSchema(productsListSchema),
+    output: successResSchema(ProductsAdminListSchema),
     headers: cookie ? { cookie } : undefined,
     query: queryParams,
   });
@@ -197,7 +204,7 @@ export const getProducts = async (queryParams: ProductsListParams = {}, cookie?:
   };
 };
 
-export interface CreateProductInput {
+export interface CreateAdminProductInput {
   name: string;
   description?: string;
   price: string;
@@ -209,7 +216,7 @@ export interface CreateProductInput {
   createdBy: string;
 }
 
-export const createProduct = async (input: CreateProductInput) => {
+export const createAdminProduct = async (input: CreateAdminProductInput) => {
   const formData = new FormData();
   formData.append("name", input.name);
   if (input.description) formData.append("description", input.description);
@@ -236,7 +243,7 @@ export const createProduct = async (input: CreateProductInput) => {
   return data ?? null;
 };
 
-export interface UpdateProductInput {
+export interface UpdateAdminProductInput {
   name?: string;
   description?: string;
   price?: string;
@@ -248,7 +255,13 @@ export interface UpdateProductInput {
   newImages?: File[];
 }
 
-export const updateProduct = async ({ id, input }: { id: string; input: UpdateProductInput }) => {
+export const updateAdminProduct = async ({
+  id,
+  input,
+}: {
+  id: string;
+  input: UpdateAdminProductInput;
+}) => {
   const formData = new FormData();
   if (input.name !== undefined) formData.append("name", input.name);
   if (input.description !== undefined) formData.append("description", input.description);
@@ -288,4 +301,38 @@ export const deleteProduct = async (id: string) => {
   });
 
   return data ?? null;
+};
+
+// ── Orders ──────────────────────────────────────────────────
+
+const AdminOrdersListSchema = z.array(OrderWithCustomerSelectSchema);
+
+export type AdminOrderRow = z.infer<typeof OrderWithCustomerSelectSchema>;
+
+export type AdminOrdersListParams = {
+  page?: number;
+  limit?: number;
+};
+
+export const defaultAdminsOrdersListParams: AdminOrdersListParams = {
+  page: 1,
+  limit: 50,
+};
+
+export const getAdminOrders = async (queryParams: AdminOrdersListParams = {}, cookie?: string) => {
+  const { data, error } = await $fetch("/admin/orders", {
+    output: successResSchema(AdminOrdersListSchema),
+    headers: cookie ? { cookie } : undefined,
+    query: queryParams,
+  });
+
+  if (error) {
+    console.error(error);
+    return null;
+  }
+
+  return {
+    orders: data?.data ?? [],
+    total: data?.pagination?.total ?? 0,
+  };
 };

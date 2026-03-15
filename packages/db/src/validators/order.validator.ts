@@ -6,8 +6,8 @@ import { ProductSelectSchema } from "./product.validator";
 import { UserSelectSchema } from "./user.validator";
 
 export const OrderItemSelectSchema = createSelectSchema(orderItem).extend({
-  createdAt: z
-    .number()
+  createdAt: z.iso
+    .datetime()
     .transform((n) => new Date(n))
     .nullable(),
   product: ProductSelectSchema,

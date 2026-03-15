@@ -35,7 +35,7 @@ import { ImagePicker } from "@/components/ui/image-picker";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
 import { Textarea } from "@/components/ui/textarea";
-import { createProduct, getCategories } from "@/features/admin/queries";
+import { createAdminProduct, getAdminCategories } from "@/features/admin/queries";
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -55,7 +55,7 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
 
   const { data: categoriesData } = useQuery({
     queryKey: queryKeys.adminCategories({ page: 1, limit: 200 }),
-    queryFn: () => getCategories({ page: 1, limit: 200 }),
+    queryFn: () => getAdminCategories({ page: 1, limit: 200 }),
     enabled: open,
   });
 
@@ -66,7 +66,7 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
   };
 
   const createMutation = useMutation({
-    mutationFn: createProduct,
+    mutationFn: createAdminProduct,
     onSuccess: async () => {
       toast.success("Product created successfully", cancelToastEl);
       onOpenChange(false);

@@ -18,6 +18,39 @@ import {
 
 const tags = ["Orders"];
 
+export const verifySessionDoc = describeRoute({
+  description: "Verify a Stripe checkout session and update order status",
+  tags,
+  security: [
+    {
+      Bearer: [],
+    },
+  ],
+  responses: {
+    [HttpStatusCodes.OK]: createSuccessResponse("Session verified", {
+      details: "Session verified successfully",
+      dataSchema: OrderSelectSchema,
+    }),
+    [HttpStatusCodes.BAD_REQUEST]: createErrorResponse("Invalid request data", {
+      invalidSessionId: {
+        summary: "Invalid session ID",
+        code: "INVALID_DATA",
+        details: "sessionId: Required",
+      },
+    }),
+    [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
+      code: "UNAUTHORIZED",
+      details: "No session found",
+    }),
+    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse("Not found", {
+      code: "NOT_FOUND",
+      details: "Order not found for this session",
+    }),
+    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
+  },
+});
+
 export const getUserOrdersDoc = describeRoute({
   description: "Get user's order history",
   tags,

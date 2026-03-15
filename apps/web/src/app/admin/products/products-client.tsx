@@ -8,9 +8,13 @@ import { format } from "date-fns";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
-import { type ActionButton, DataTable, type FilterConfig } from "@/components/ui/data-table";
+import { DataTable, type ActionButton, type FilterConfig } from "@/components/ui/data-table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { defaultProductsListParams, getProducts, type ProductRow } from "@/features/admin/queries";
+import {
+  defaultAdminProductsListParams,
+  getAdminProducts,
+  type AdminProductRow,
+} from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { formatCurrency } from "@/lib/utils";
 
@@ -40,7 +44,7 @@ const stockStatusVariant: Record<StockStatus, "default" | "secondary" | "destruc
   out_of_stock: "destructive",
 };
 
-const CategoryCell = ({ categories }: { categories: ProductRow["categories"] }) => {
+const CategoryCell = ({ categories }: { categories: AdminProductRow["categories"] }) => {
   if (categories.length === 0) {
     return <span className="text-muted-foreground">—</span>;
   }
@@ -74,7 +78,7 @@ const CategoryCell = ({ categories }: { categories: ProductRow["categories"] }) 
   );
 };
 
-const columns: ColumnDef<ProductRow>[] = [
+const columns: ColumnDef<AdminProductRow>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -150,21 +154,21 @@ const filters: FilterConfig[] = [
 
 export const ProductsClient = () => {
   const [createOpen, setCreateOpen] = useState(false);
-  const [detailProduct, setDetailProduct] = useState<ProductRow | null>(null);
+  const [detailProduct, setDetailProduct] = useState<AdminProductRow | null>(null);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: defaultProductsListParams.limit!,
+    pageSize: defaultAdminProductsListParams.limit!,
   });
 
   const queryParams = {
-    ...defaultProductsListParams,
+    ...defaultAdminProductsListParams,
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
   };
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.adminProducts(queryParams),
-    queryFn: () => getProducts(queryParams),
+    queryFn: () => getAdminProducts(queryParams),
     placeholderData: keepPreviousData,
   });
 
