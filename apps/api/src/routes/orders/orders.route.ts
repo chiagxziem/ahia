@@ -2,6 +2,7 @@ import { validator } from "hono-openapi";
 import { z } from "zod";
 
 import { createRouter } from "@/app";
+import { sendOrderReceiptEmail } from "@/lib/email";
 import env from "@/lib/env";
 import HttpStatusCodes from "@/lib/http-status-codes";
 import { PaginationQuerySchema } from "@/lib/schemas";
@@ -138,6 +139,14 @@ orders.post(
 
         // Clear cart
         await clearCartItemsByUserId(user.id);
+
+        // Send receipt email
+        const orderWithReceipt = await getOrderById(existingOrder.id);
+        if (orderWithReceipt) {
+          sendOrderReceiptEmail(orderWithReceipt, user.name).catch((err) => {
+            console.error("[Verify Session] Failed to send receipt email:", err);
+          });
+        }
 
         console.log(`[Verify Session] Order ${existingOrder.orderNumber} marked as paid`);
       }

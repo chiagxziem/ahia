@@ -3,6 +3,7 @@ import { createHmac } from "crypto";
 import { Hono } from "hono";
 import type { Stripe } from "stripe";
 
+import { sendOrderReceiptEmail } from "@/lib/email";
 import env from "@/lib/env";
 import { clearCartItemsByUserId } from "@/queries/cart-queries";
 import { getOrderById, restoreStock, updateOrderStatus } from "@/queries/order-queries";
@@ -126,6 +127,16 @@ stripeWebhook.post("/", async (c) => {
 
         if (order.userId) {
           await clearCartItemsByUserId(order.userId);
+        }
+
+        // Send receipt email (fire and forget — don't block webhook response)
+        const updatedOrder = await getOrderById(orderId);
+        if (updatedOrder) {
+          sendOrderReceiptEmail(updatedOrder, session.customer_details?.name ?? undefined).catch(
+            (err) => {
+              console.error("[Stripe Webhook] Failed to send receipt email:", err);
+            },
+          );
         }
 
         console.log(`[Stripe Webhook] Order ${order.orderNumber} marked as paid and completed`);
