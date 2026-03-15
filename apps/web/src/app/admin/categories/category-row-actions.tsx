@@ -135,10 +135,10 @@ export const CategoryRowActions = ({ category }: CategoryRowActionsProps) => {
           </DialogHeader>
 
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
               e.stopPropagation();
-              updateForm.handleSubmit();
+              await updateForm.handleSubmit();
             }}
             className="flex flex-col gap-4"
           >

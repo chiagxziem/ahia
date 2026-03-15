@@ -174,7 +174,7 @@ export const DataTable = <TData, TValue>({
     onPaginationChange: isServerSide ? setControlledPagination : setInternalPagination,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: (row, _columnId, filterValue) => {
-      const searchFilter = filters.find((f) => f.type === "search") as SearchFilter | undefined;
+      const searchFilter = filters.find((f) => f.type === "search");
 
       if (!searchFilter) return true;
 
@@ -230,13 +230,9 @@ export const DataTable = <TData, TValue>({
     });
   };
 
-  const searchFilter = filters.find((f) => f.type === "search") as SearchFilter | undefined;
-  const singleDropdownFilters = filters.filter(
-    (f) => f.type === "single-dropdown",
-  ) as SingleDropdownFilter[];
-  const multiDropdownFilters = filters.filter(
-    (f) => f.type === "multi-dropdown",
-  ) as MultiDropdownFilter[];
+  const searchFilter = filters.find((f) => f.type === "search");
+  const singleDropdownFilters = filters.filter((f) => f.type === "single-dropdown");
+  const multiDropdownFilters = filters.filter((f) => f.type === "multi-dropdown");
 
   const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
     currentPage:
@@ -559,7 +555,7 @@ export const DataTable = <TData, TValue>({
                         aria-current={isActive ? "page" : undefined}
                         onClick={() => table.setPageIndex(page - 1)}
                         size="icon"
-                        variant={`${isActive ? "outline" : "ghost"}`}
+                        variant={isActive ? "outline" : "ghost"}
                       >
                         {page}
                       </Button>

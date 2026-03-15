@@ -81,10 +81,10 @@ export function CreateUserDialog({ currentUser, open, onOpenChange }: CreateUser
         </DialogHeader>
 
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             e.stopPropagation();
-            form.handleSubmit();
+            await form.handleSubmit();
           }}
           className="flex flex-col gap-4"
         >

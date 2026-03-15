@@ -39,9 +39,9 @@ export const UserSettings = () => {
 
   const updateProfileMutation = useMutation({
     mutationFn: updateUser,
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Profile updated successfully", cancelToastEl);
-      queryClient.invalidateQueries({ queryKey: queryKeys.user() });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.user() });
       router.refresh();
     },
     onError: (error) => {
@@ -142,10 +142,10 @@ export const UserSettings = () => {
         <div className="h-px bg-border/30" />
 
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             e.stopPropagation();
-            profileForm.handleSubmit();
+            await profileForm.handleSubmit();
           }}
           className="flex flex-col gap-6"
         >
@@ -300,10 +300,10 @@ export const UserSettings = () => {
         <div className="h-px bg-border/30" />
 
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             e.stopPropagation();
-            passwordForm.handleSubmit();
+            await passwordForm.handleSubmit();
           }}
           className="flex flex-col gap-6"
         >

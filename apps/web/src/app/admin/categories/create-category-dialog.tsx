@@ -66,10 +66,10 @@ export function CreateCategoryDialog({ open, onOpenChange }: CreateCategoryDialo
         </DialogHeader>
 
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             e.stopPropagation();
-            form.handleSubmit();
+            await form.handleSubmit();
           }}
           className="flex flex-col gap-4"
         >

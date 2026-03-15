@@ -411,9 +411,9 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
               <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 disabled={isLoading}
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.preventDefault();
-                  handleSetRole(newRole as "admin" | "user");
+                  await handleSetRole(newRole as "admin" | "user");
                 }}
               >
                 {isLoading ? "Changing..." : "Change Role"}
@@ -450,9 +450,9 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
               <AlertDialogAction
                 disabled={isLoading}
                 variant={user.banned ? "default" : "destructive"}
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.preventDefault();
-                  handleBanToggle();
+                  await handleBanToggle();
                 }}
               >
                 {isLoading
@@ -485,9 +485,9 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
               <AlertDialogAction
                 disabled={isLoading}
                 variant="destructive"
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.preventDefault();
-                  handleRevokeSessions();
+                  await handleRevokeSessions();
                 }}
               >
                 {isLoading ? "Revoking..." : "Revoke Sessions"}
@@ -514,9 +514,9 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
               <AlertDialogAction
                 disabled={isLoading}
                 variant="destructive"
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.preventDefault();
-                  handleRemoveUser();
+                  await handleRemoveUser();
                 }}
               >
                 {isLoading ? "Removing..." : "Remove User"}
@@ -538,10 +538,10 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
             </DialogHeader>
 
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                passwordForm.handleSubmit();
+                await passwordForm.handleSubmit();
               }}
               className="flex flex-col gap-4"
             >
@@ -670,10 +670,10 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
             </DialogHeader>
 
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                updateUserForm.handleSubmit();
+                await updateUserForm.handleSubmit();
               }}
               className="flex flex-col gap-4"
             >

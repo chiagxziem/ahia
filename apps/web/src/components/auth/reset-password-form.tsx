@@ -75,10 +75,10 @@ export const ResetPasswordForm = () => {
 
       {/* Form */}
       <form
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
           e.stopPropagation();
-          form.handleSubmit();
+          await form.handleSubmit();
         }}
         className="flex flex-col gap-5"
       >
