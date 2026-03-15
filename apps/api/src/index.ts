@@ -1,3 +1,5 @@
+import { Hono } from "hono";
+
 import { createApp } from "@/app";
 import { createSuperadmin } from "@/queries/admin-queries";
 import admin from "@/routes/admin/admin.route";
@@ -11,9 +13,12 @@ import user from "@/routes/user/user.route";
 
 import env from "./lib/env";
 
-const app = createApp();
+// Bare Hono app for Stripe webhooks
+const webhookApp = new Hono();
+webhookApp.route("/api/webhooks/stripe", stripeWebhook);
 
-// Register routers
+// Main app with full middleware
+const app = createApp();
 app
   .route("/api/health", health)
   .route("/api/user", user)
@@ -21,8 +26,7 @@ app
   .route("/api/categories", categories)
   .route("/api/products", products)
   .route("/api/orders", orders)
-  .route("/api/cart", cart)
-  .route("/api/webhooks/stripe", stripeWebhook);
+  .route("/api/cart", cart);
 
 // Create superadmin if not exists
 if (env.NODE_ENV !== "test") {
@@ -35,5 +39,11 @@ if (env.NODE_ENV !== "test") {
 
 export default {
   port: 8000,
-  fetch: app.fetch,
+  fetch: (req: Request, server: unknown) => {
+    // Route webhook requests to the bare app
+    if (new URL(req.url).pathname.startsWith("/api/webhooks/")) {
+      return webhookApp.fetch(req);
+    }
+    return app.fetch(req, server);
+  },
 };

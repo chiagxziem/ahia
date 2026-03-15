@@ -1,193 +1,186 @@
-import { validator } from "hono-openapi";
+import { createHmac } from "crypto";
+
+import { Hono } from "hono";
 import type { Stripe } from "stripe";
-import { z } from "zod";
 
-import { createRouter } from "@/app";
 import env from "@/lib/env";
-import HttpStatusCodes from "@/lib/http-status-codes";
-import { stripe } from "@/lib/stripe";
-import { errorResponse, successResponse } from "@/lib/utils";
-import { validationHook } from "@/middleware/validation-hook";
 import { clearCartItemsByUserId } from "@/queries/cart-queries";
-import {
-  getOrderByStripeSessionId,
-  restoreStock,
-  updateOrderStatus,
-} from "@/queries/order-queries";
-import { db } from "@repo/db";
+import { getOrderById, restoreStock, updateOrderStatus } from "@/queries/order-queries";
 
-import { stripeWebhookDoc } from "./stripe.docs";
-
-const stripeWebhook = createRouter();
+const stripeWebhook = new Hono();
 
 /**
- * Handle successful checkout session
+ * Extracts the order ID from a Stripe Checkout Session.
+ * Uses client_reference_id (set during checkout creation) as primary,
+ * with metadata.orderId as fallback.
  */
-const handleCheckoutSuccess = async (session: Stripe.Checkout.Session) => {
-  console.log(`Processing checkout success for session: ${session.id}`);
-
-  try {
-    await db.transaction(async () => {
-      const order = await getOrderByStripeSessionId(session.id);
-
-      if (!order) {
-        console.error(`Order not found for checkout session: ${session.id}`);
-        return;
-      }
-
-      // Update order status to completed and payment status to paid
-      await updateOrderStatus(
-        order.id,
-        "completed",
-        "paid",
-        session.payment_method_types?.[0] || "card",
-      );
-
-      // Clear user's cart
-      if (order.userId) {
-        await clearCartItemsByUserId(order.userId);
-        console.log(`Cart cleared for user: ${order.userId}`);
-      }
-
-      console.log(`Order ${order.orderNumber} marked as paid and completed`);
-    });
-  } catch (error) {
-    console.error("Error handling checkout success:", error);
-    throw error;
-  }
+const getOrderIdFromSession = (session: Stripe.Checkout.Session): string | null => {
+  return session.client_reference_id ?? session.metadata?.orderId ?? null;
 };
 
 /**
- * Handle expired checkout session
+ * Manually verify Stripe webhook signature and parse event.
+ * Bypasses the Stripe SDK's constructEvent which can have issues in Bun.
  */
-const handleCheckoutExpired = async (session: Stripe.Checkout.Session) => {
-  console.log(`Processing checkout expiration for session: ${session.id}`);
+const verifyAndParseWebhook = (
+  body: string,
+  signatureHeader: string,
+  secret: string,
+  toleranceSeconds = 300,
+): Stripe.Event => {
+  // Parse the signature header: "t=TIMESTAMP,v1=SIG1,v1=SIG2,..."
+  const parts = signatureHeader.split(",");
+  let timestamp: string | null = null;
+  const signatures: string[] = [];
 
-  try {
-    await db.transaction(async () => {
-      const order = await getOrderByStripeSessionId(session.id);
-
-      if (!order) {
-        console.error(`Order not found for checkout session: ${session.id}`);
-        return;
-      }
-
-      // Update order status to cancelled and payment status to failed
-      await updateOrderStatus(order.id, "cancelled", "failed");
-
-      // RESTORE RESERVED STOCK
-      const stockToRestore = order.orderItems.map((item) => ({
-        productId: item.productId,
-        quantity: item.quantity,
-      }));
-
-      await restoreStock(stockToRestore);
-
-      console.log(`Stock restored for expired session ${order.orderNumber}`);
-    });
-  } catch (error) {
-    console.error("Error handling checkout expiration:", error);
-    throw error;
+  for (const part of parts) {
+    const [key, value] = part.split("=");
+    if (key === "t") timestamp = value;
+    else if (key === "v1") signatures.push(value);
   }
-};
 
-/**
- * Handle cancelled checkout session (payment failure)
- */
-const handleCheckoutCancelled = async (session: Stripe.Checkout.Session) => {
-  console.log(`Processing checkout cancellation for session: ${session.id}`);
-
-  try {
-    await db.transaction(async () => {
-      const order = await getOrderByStripeSessionId(session.id);
-
-      if (!order) {
-        console.error(`Order not found for checkout session: ${session.id}`);
-        return;
-      }
-
-      // Update order status to cancelled and payment status to failed
-      await updateOrderStatus(order.id, "cancelled", "failed");
-
-      // RESTORE RESERVED STOCK
-      const stockToRestore = order.orderItems.map((item) => ({
-        productId: item.productId,
-        quantity: item.quantity,
-      }));
-
-      await restoreStock(stockToRestore);
-
-      console.log(`Stock restored for cancelled session ${order.orderNumber}`);
-    });
-  } catch (error) {
-    console.error("Error handling checkout cancellation:", error);
-    throw error;
+  if (!timestamp || signatures.length === 0) {
+    throw new Error("Invalid signature header format");
   }
-};
 
-// Handle Stripe webhook
-stripeWebhook.post(
-  "/",
-  stripeWebhookDoc,
-  validator(
-    "header",
-    z.object({
-      "stripe-signature": z.string(),
-    }),
-    validationHook,
-  ),
-  async (c) => {
-    const signature = c.req.header("stripe-signature");
-    const body = await c.req.text();
+  // Check timestamp tolerance
+  const ts = parseInt(timestamp, 10);
+  const now = Math.floor(Date.now() / 1000);
+  if (now - ts > toleranceSeconds) {
+    throw new Error(`Timestamp outside tolerance: event=${ts}, now=${now}, diff=${now - ts}s`);
+  }
 
-    if (!signature) {
-      return c.json(
-        errorResponse("BAD_REQUEST", "Missing Stripe signature in request headers"),
-        HttpStatusCodes.BAD_REQUEST,
-      );
+  // Compute expected signature: HMAC-SHA256(timestamp.body, secret)
+  const payload = `${timestamp}.${body}`;
+  const expectedSignature = createHmac("sha256", secret).update(payload, "utf8").digest("hex");
+
+  // Compare with all provided v1 signatures
+  const isValid = signatures.some((sig) => {
+    if (sig.length !== expectedSignature.length) return false;
+    // Constant-time comparison
+    let result = 0;
+    for (let i = 0; i < sig.length; i++) {
+      result |= sig.charCodeAt(i) ^ expectedSignature.charCodeAt(i);
     }
+    return result === 0;
+  });
 
-    try {
-      // Webhook verification
-      const event = await stripe.webhooks.constructEventAsync(
-        body,
-        signature,
-        env.STRIPE_WEBHOOK_SECRET,
-      );
+  if (!isValid) {
+    throw new Error(
+      "Signature mismatch. " +
+        `Expected: ${expectedSignature.slice(0, 16)}..., ` +
+        `Got: ${signatures[0]?.slice(0, 16)}...`,
+    );
+  }
 
-      console.log(`Received Stripe webhook: ${event.type}`);
+  return JSON.parse(body) as Stripe.Event;
+};
 
-      // Handle different event types
-      switch (event.type) {
-        // Checkout Session Events
-        case "checkout.session.completed":
-          await handleCheckoutSuccess(event.data.object);
+stripeWebhook.post("/", async (c) => {
+  const signature = c.req.header("stripe-signature");
+
+  if (!signature) {
+    console.error("[Stripe Webhook] Missing stripe-signature header");
+    return c.json({ error: "Missing stripe-signature header" }, 400);
+  }
+
+  // Read raw body directly from the underlying Request
+  const body = await c.req.raw.text();
+
+  let event: Stripe.Event;
+  try {
+    event = verifyAndParseWebhook(body, signature, env.STRIPE_WEBHOOK_SECRET);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`[Stripe Webhook] Verification failed: ${message}`);
+    return c.json({ error: "Invalid webhook signature" }, 400);
+  }
+
+  console.log(`[Stripe Webhook] Verified event: ${event.type} [${event.id}]`);
+
+  try {
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const orderId = getOrderIdFromSession(session);
+
+        if (!orderId) {
+          console.error("[Stripe Webhook] checkout.session.completed: no order ID in session");
           break;
+        }
 
-        case "checkout.session.expired":
-          await handleCheckoutExpired(event.data.object);
+        console.log(`[Stripe Webhook] Processing payment success for order: ${orderId}`);
+
+        const order = await getOrderById(orderId);
+        if (!order) {
+          console.error(`[Stripe Webhook] Order ${orderId} not found in database`);
           break;
+        }
 
-        case "checkout.session.async_payment_failed":
-          await handleCheckoutCancelled(event.data.object);
-          break;
+        await updateOrderStatus(
+          order.id,
+          "completed",
+          "paid",
+          session.payment_method_types?.[0] || "card",
+        );
 
-        default:
-          console.log(`Unhandled event type: ${event.type}`);
+        if (order.userId) {
+          await clearCartItemsByUserId(order.userId);
+        }
+
+        console.log(`[Stripe Webhook] Order ${order.orderNumber} marked as paid and completed`);
+        break;
       }
 
-      return c.json(
-        successResponse({ received: true }, "Webhook processed successfully"),
-        HttpStatusCodes.OK,
-      );
-    } catch (error) {
-      console.error("Webhook signature verification failed:", error);
-      return c.json(
-        errorResponse("BAD_REQUEST", "Invalid webhook signature or payload"),
-        HttpStatusCodes.BAD_REQUEST,
-      );
+      case "checkout.session.expired": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const orderId = getOrderIdFromSession(session);
+        if (!orderId) break;
+
+        const order = await getOrderById(orderId);
+        if (!order) break;
+
+        await updateOrderStatus(order.id, "cancelled", "failed");
+        await restoreStock(
+          order.orderItems.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+          })),
+        );
+
+        console.log(`[Stripe Webhook] Order ${order.orderNumber}: expired, stock restored`);
+        break;
+      }
+
+      case "checkout.session.async_payment_failed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const orderId = getOrderIdFromSession(session);
+        if (!orderId) break;
+
+        const order = await getOrderById(orderId);
+        if (!order) break;
+
+        await updateOrderStatus(order.id, "cancelled", "failed");
+        await restoreStock(
+          order.orderItems.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+          })),
+        );
+
+        console.log(`[Stripe Webhook] Order ${order.orderNumber}: payment failed, stock restored`);
+        break;
+      }
+
+      default:
+        console.log(`[Stripe Webhook] Unhandled event: ${event.type}`);
     }
-  },
-);
+  } catch (err) {
+    console.error(`[Stripe Webhook] Error processing ${event.type}:`, err);
+    return c.json({ error: "Webhook handler failed" }, 500);
+  }
+
+  return c.json({ received: true }, 200);
+});
 
 export default stripeWebhook;
