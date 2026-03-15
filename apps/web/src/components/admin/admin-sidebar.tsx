@@ -6,7 +6,6 @@ import {
   Home03Icon,
   LabelIcon,
   Logout01Icon,
-  PaintBrush02Icon,
   ShoppingBag01Icon,
   ShoppingBasketSecure01Icon,
   ShoppingCart01Icon,
@@ -19,6 +18,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 
+import { ThemeSubMenu } from "@/components/theme-sub-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenuGroup,
@@ -231,10 +231,7 @@ export const AdminSidebar = () => {
                       <HugeiconsIcon icon={Home03Icon} className="size-4" />
                       Storefront
                     </DropdownMenuItem>
-                    <DropdownMenuItem disabled>
-                      <HugeiconsIcon icon={PaintBrush02Icon} className="size-4" />
-                      Theme
-                    </DropdownMenuItem>
+                    <ThemeSubMenu />
                     <DropdownMenuItem render={<Link href="/settings" />}>
                       <HugeiconsIcon icon={AccountSetting01Icon} className="size-4" />
                       Settings

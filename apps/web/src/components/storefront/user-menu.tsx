@@ -5,7 +5,6 @@ import {
   DashboardSquare01Icon,
   Login01Icon,
   Logout01Icon,
-  PaintBrush02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -14,6 +13,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
+import { ThemeSubMenu } from "@/components/theme-sub-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -151,10 +151,7 @@ export const UserMenu = () => {
             <HugeiconsIcon icon={AccountSetting01Icon} className="size-4" />
             Settings
           </DropdownMenuItem>
-          <DropdownMenuItem disabled>
-            <HugeiconsIcon icon={PaintBrush02Icon} className="size-4" />
-            Theme
-          </DropdownMenuItem>
+          <ThemeSubMenu />
 
           {/* Admin-only: Dashboard link */}
           {(user.role === roles.ADMIN || user.role === roles.SUPERADMIN) && (

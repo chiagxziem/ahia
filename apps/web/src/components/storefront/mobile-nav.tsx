@@ -20,6 +20,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { ThemeInlineSwitcher } from "@/components/theme-inline-switcher";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -90,6 +91,14 @@ export const MobileNav = ({ children }: { children?: ReactNode }) => {
             </Link>
           ))}
         </nav>
+
+        {/* Theme Switcher */}
+        <div className="border-t border-border/30 px-5 py-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-muted-foreground">Theme</span>
+            <ThemeInlineSwitcher />
+          </div>
+        </div>
 
         {/* Footer — User section */}
         <div className="border-t border-border/30 px-3 py-4">{children}</div>

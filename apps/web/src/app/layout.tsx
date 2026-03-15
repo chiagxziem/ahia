@@ -29,7 +29,6 @@ const RootLayout = ({
         <ThemeProvider
           attribute="class"
           disableTransitionOnChange
-          // defaultTheme="light"
           enableSystem
         >
           <NuqsAdapter>
