@@ -79,10 +79,10 @@ export const ProductRowActions = ({ product }: ProductRowActionsProps) => {
             </Button>
           }
         />
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align="end" className="min-w-56">
           <DropdownMenuItem
             render={
-              <Link href={`/products/${product.slug}`} target="_blank" rel="noopener noreferrer" />
+              <Link href={`/products/${product.id}`} target="_blank" rel="noopener noreferrer" />
             }
           >
             Visit product page

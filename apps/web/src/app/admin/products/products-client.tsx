@@ -15,6 +15,7 @@ import { queryKeys } from "@/lib/query-keys";
 import { formatCurrency } from "@/lib/utils";
 
 import { CreateProductDialog } from "./create-product-dialog";
+import { ProductDetailDialog } from "./product-detail-dialog";
 import { ProductRowActions } from "./product-row-actions";
 
 const LOW_STOCK_THRESHOLD = 10;
@@ -149,6 +150,7 @@ const filters: FilterConfig[] = [
 
 export const ProductsClient = () => {
   const [createOpen, setCreateOpen] = useState(false);
+  const [detailProduct, setDetailProduct] = useState<ProductRow | null>(null);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: defaultProductsListParams.limit!,
@@ -188,8 +190,16 @@ export const ProductsClient = () => {
         rowCount={data?.total}
         pagination={pagination}
         onPaginationChange={setPagination}
+        onRowClick={(row) => setDetailProduct(row)}
       />
       <CreateProductDialog open={createOpen} onOpenChange={setCreateOpen} />
+      <ProductDetailDialog
+        product={detailProduct}
+        open={!!detailProduct}
+        onOpenChange={(next) => {
+          if (!next) setDetailProduct(null);
+        }}
+      />
     </>
   );
 };

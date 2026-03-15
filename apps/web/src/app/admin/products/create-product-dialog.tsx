@@ -1,11 +1,15 @@
 "use client";
 
+import { Cancel01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Combobox,
   ComboboxChip,
@@ -80,6 +84,8 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
       description: "",
       price: "",
       stockQuantity: "",
+      sizes: [] as { name: string; inStock: boolean }[],
+      colors: [] as { name: string; inStock: boolean }[],
       categoryIds: [] as string[],
       images: [] as File[],
     },
@@ -90,6 +96,8 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
         description: value.description || undefined,
         price: Number(value.price).toFixed(2),
         stockQuantity: value.stockQuantity,
+        sizes: value.sizes.length > 0 ? value.sizes : undefined,
+        colors: value.colors.length > 0 ? value.colors : undefined,
         categoryIds: value.categoryIds,
         images: value.images,
         createdBy: user.id,
@@ -250,6 +258,144 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                   )}
                 </form.Field>
               </div>
+
+              {/* Sizes */}
+              <form.Field name="sizes">
+                {(field) => (
+                  <Field>
+                    <FieldLabel>
+                      Sizes <span className="font-normal text-muted-foreground">(optional)</span>
+                    </FieldLabel>
+                    <div className="flex flex-col gap-2">
+                      {field.state.value.map((size, index) => (
+                        <ButtonGroup key={index} className="w-full">
+                          <Input
+                            value={size.name}
+                            onChange={(e) => {
+                              const next = [...field.state.value];
+                              next[index] = { ...next[index], name: e.target.value };
+                              field.handleChange(next);
+                            }}
+                            placeholder="e.g. S, M, L"
+                            disabled={createMutation.isPending}
+                          />
+                          <Button
+                            type="button"
+                            variant={size.inStock ? "default" : "outline"}
+                            className="shrink-0"
+                            disabled={createMutation.isPending}
+                            onClick={() => {
+                              const next = [...field.state.value];
+                              next[index] = { ...next[index], inStock: !next[index].inStock };
+                              field.handleChange(next);
+                            }}
+                          >
+                            <Checkbox checked={size.inStock} className="pointer-events-none" />
+                            In stock
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="shrink-0"
+                            disabled={createMutation.isPending}
+                            onClick={() =>
+                              field.handleChange(field.state.value.filter((_, i) => i !== index))
+                            }
+                          >
+                            <HugeiconsIcon icon={Cancel01Icon} className="size-3.5" />
+                          </Button>
+                        </ButtonGroup>
+                      ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="self-start"
+                        disabled={
+                          createMutation.isPending ||
+                          (field.state.value.length > 0 &&
+                            !field.state.value[field.state.value.length - 1].name.trim())
+                        }
+                        onClick={() =>
+                          field.handleChange([...field.state.value, { name: "", inStock: true }])
+                        }
+                      >
+                        Add size
+                      </Button>
+                    </div>
+                  </Field>
+                )}
+              </form.Field>
+
+              {/* Colors */}
+              <form.Field name="colors">
+                {(field) => (
+                  <Field>
+                    <FieldLabel>
+                      Colors <span className="font-normal text-muted-foreground">(optional)</span>
+                    </FieldLabel>
+                    <div className="flex flex-col gap-2">
+                      {field.state.value.map((color, index) => (
+                        <ButtonGroup key={index} className="w-full">
+                          <Input
+                            value={color.name}
+                            onChange={(e) => {
+                              const next = [...field.state.value];
+                              next[index] = { ...next[index], name: e.target.value };
+                              field.handleChange(next);
+                            }}
+                            placeholder="e.g. Red, Blue"
+                            disabled={createMutation.isPending}
+                          />
+                          <Button
+                            type="button"
+                            variant={color.inStock ? "default" : "outline"}
+                            className="shrink-0"
+                            disabled={createMutation.isPending}
+                            onClick={() => {
+                              const next = [...field.state.value];
+                              next[index] = { ...next[index], inStock: !next[index].inStock };
+                              field.handleChange(next);
+                            }}
+                          >
+                            <Checkbox checked={color.inStock} className="pointer-events-none" />
+                            In stock
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="shrink-0"
+                            disabled={createMutation.isPending}
+                            onClick={() =>
+                              field.handleChange(field.state.value.filter((_, i) => i !== index))
+                            }
+                          >
+                            <HugeiconsIcon icon={Cancel01Icon} className="size-3.5" />
+                          </Button>
+                        </ButtonGroup>
+                      ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="self-start"
+                        disabled={
+                          createMutation.isPending ||
+                          (field.state.value.length > 0 &&
+                            !field.state.value[field.state.value.length - 1].name.trim())
+                        }
+                        onClick={() =>
+                          field.handleChange([...field.state.value, { name: "", inStock: true }])
+                        }
+                      >
+                        Add color
+                      </Button>
+                    </div>
+                  </Field>
+                )}
+              </form.Field>
 
               {/* Categories */}
               <form.Field

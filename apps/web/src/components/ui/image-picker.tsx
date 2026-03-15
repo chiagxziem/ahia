@@ -2,6 +2,7 @@
 
 import { Cancel01Icon, Image02Icon, Upload04Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import Image from "next/image";
 import { useCallback, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -202,10 +203,12 @@ const ImagePreview = ({
 
   return (
     <div className="group relative aspect-square overflow-hidden rounded-lg border bg-muted">
-      <img
+      <Image
         src={src}
         alt={file.name}
-        className="size-full object-cover"
+        fill
+        className="object-cover"
+        unoptimized
         onLoad={() => {
           // Revoke on load to prevent leaks while keeping the preview visible
           URL.revokeObjectURL(src);
@@ -314,10 +317,13 @@ export function UpdateImagePicker({
   return (
     <div className="flex flex-col gap-3">
       {canAddMore && (
-        <button
-          type="button"
-          disabled={disabled}
+        <div
+          // oxlint-disable-next-line jsx_a11y/prefer-tag-over-role
+          role="button"
+          tabIndex={0}
+          aria-disabled={disabled}
           onClick={() => inputRef.current?.click()}
+          onKeyUp={() => inputRef.current?.click()}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
@@ -344,7 +350,7 @@ export function UpdateImagePicker({
             <HugeiconsIcon icon={Upload04Icon} className="mr-1.5 size-3.5" />
             Select images
           </Button>
-        </button>
+        </div>
       )}
 
       <input
@@ -357,10 +363,11 @@ export function UpdateImagePicker({
         disabled={disabled}
       />
 
+      {/* Image previews */}
       {totalCount > 0 && (
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">
+            <span className="text-xs font-medium">
               Images ({totalCount}/{maxFiles})
             </span>
             {canAddMore && (
@@ -383,12 +390,12 @@ export function UpdateImagePicker({
                 key={img.key}
                 className="group relative aspect-square overflow-hidden rounded-lg border bg-muted"
               >
-                <img src={img.url} alt="" className="size-full object-cover" />
+                <Image src={img.url} alt="" fill className="object-cover" unoptimized />
                 <button
                   type="button"
                   disabled={disabled}
                   onClick={() => onExistingRemove(img.key)}
-                  className="absolute top-1 right-1 flex size-5 items-center justify-center rounded-full bg-black/70 text-white transition-opacity hover:bg-black/90 disabled:pointer-events-none"
+                  className="absolute top-1 right-1 flex size-5 items-center justify-center rounded-full bg-black/70 text-white hover:bg-black/90 disabled:pointer-events-none"
                   aria-label="Remove image"
                 >
                   <HugeiconsIcon icon={Cancel01Icon} className="size-3" strokeWidth={2} />
