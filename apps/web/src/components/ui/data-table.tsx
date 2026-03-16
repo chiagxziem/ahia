@@ -481,7 +481,7 @@ export const DataTable = <TData, TValue>({
                           const target = e.target as Element;
                           if (
                             target.closest(
-                              'button, a, input, select, textarea, [role="button"], [role="menuitem"], [role="menu"], [role="dialog"], [role="alertdialog"]',
+                              'button, a, input, select, textarea, [role="button"], [role="menuitem"], [role="menu"], [role="dialog"], [role="alertdialog"], [role="option"], [role="listbox"]',
                             )
                           ) {
                             return;

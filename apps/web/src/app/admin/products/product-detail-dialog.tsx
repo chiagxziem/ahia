@@ -80,7 +80,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: ProductDeta
             <p className="text-sm font-medium text-muted-foreground">
               {formatCurrency(Number(product.price))}
             </p>
-            <div className="mt-1.5 flex items-center gap-1.5">
+            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
               <Badge variant={stockVariant}>{stockStatus}</Badge>
               {product.categories.map((cat) => (
                 <Badge key={cat.id} variant="outline">

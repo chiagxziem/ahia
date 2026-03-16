@@ -174,6 +174,10 @@ export const ProductsClient = () => {
 
   const tableData = data?.products ?? ([] as const);
 
+  const currentDetailProduct = detailProduct
+    ? (tableData.find((p) => p.id === detailProduct.id) ?? detailProduct)
+    : null;
+
   const actionButtons: ActionButton[] = [
     {
       label: "Add Product",
@@ -198,7 +202,7 @@ export const ProductsClient = () => {
       />
       <CreateProductDialog open={createOpen} onOpenChange={setCreateOpen} />
       <ProductDetailDialog
-        product={detailProduct}
+        product={currentDetailProduct}
         open={!!detailProduct}
         onOpenChange={(next) => {
           if (!next) setDetailProduct(null);
