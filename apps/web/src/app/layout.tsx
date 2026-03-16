@@ -26,11 +26,7 @@ const RootLayout = ({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${jetbrains.variable} ${bricolage.variable} antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          disableTransitionOnChange
-          enableSystem
-        >
+        <ThemeProvider attribute="class" disableTransitionOnChange enableSystem>
           <NuqsAdapter>
             <QueryClientProviderWrapper>
               <TooltipProvider>{children}</TooltipProvider>
