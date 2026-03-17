@@ -74,7 +74,7 @@ const getActiveUsersBetween = async (start: Date, end: Date) => {
   const [result] = await db
     .select({ total: countDistinct(session.userId) })
     .from(session)
-    .where(and(gte(session.createdAt, start), lt(session.createdAt, end)));
+    .where(and(gte(session.updatedAt, start), lt(session.updatedAt, end)));
 
   return toNumber(result?.total);
 };
