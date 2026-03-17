@@ -38,6 +38,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { createAdminProduct, getAdminCategories } from "@/features/admin/queries";
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
+import { getApiError } from "@/lib/utils";
 
 interface CreateProductDialogProps {
   open: boolean;
@@ -73,8 +74,8 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
       form.reset();
       await queryClient.invalidateQueries({ queryKey: queryKeys.adminProducts() });
     },
-    onError: (err: Error) => {
-      toast.error(err.message || "Failed to create product.", cancelToastEl);
+    onError: (err) => {
+      toast.error(getApiError(err) || "Failed to create product.", cancelToastEl);
     },
   });
 

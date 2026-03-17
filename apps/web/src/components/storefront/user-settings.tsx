@@ -18,7 +18,7 @@ import { cancelToastEl } from "@/components/ui/sonner";
 import { updateUser } from "@/features/user/actions";
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
-import { getInitials } from "@/lib/utils";
+import { getApiError, getInitials } from "@/lib/utils";
 import { authClient } from "@repo/auth/client";
 
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "../ui/input-group";
@@ -44,8 +44,8 @@ export const UserSettings = () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.user() });
       router.refresh();
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to update profile", cancelToastEl);
+    onError: (err) => {
+      toast.error(getApiError(err) || "Failed to update profile", cancelToastEl);
     },
   });
 

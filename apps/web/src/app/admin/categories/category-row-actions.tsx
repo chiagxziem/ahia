@@ -37,6 +37,7 @@ import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
 import { deleteCategory, updateCategory, type AdminCategoryRow } from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";
+import { getApiError } from "@/lib/utils";
 
 interface CategoryRowActionsProps {
   category: AdminCategoryRow;
@@ -67,8 +68,8 @@ export const CategoryRowActions = ({ category }: CategoryRowActionsProps) => {
       updateForm.reset();
       await queryClient.invalidateQueries({ queryKey: queryKeys.adminCategories() });
     },
-    onError: (err: Error) => {
-      toast.error(err.message || "Failed to update category.", cancelToastEl);
+    onError: (err) => {
+      toast.error(getApiError(err) || "Failed to update category.", cancelToastEl);
     },
   });
 
@@ -79,8 +80,8 @@ export const CategoryRowActions = ({ category }: CategoryRowActionsProps) => {
       closeDialog();
       await queryClient.invalidateQueries({ queryKey: queryKeys.adminCategories() });
     },
-    onError: (err: Error) => {
-      toast.error(err.message || "Failed to delete category.", cancelToastEl);
+    onError: (err) => {
+      toast.error(getApiError(err) || "Failed to delete category.", cancelToastEl);
     },
   });
 

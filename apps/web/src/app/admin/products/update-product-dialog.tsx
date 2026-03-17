@@ -4,7 +4,7 @@ import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -41,6 +41,7 @@ import {
   type AdminProductRow,
 } from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";
+import { getApiError } from "@/lib/utils";
 
 interface UpdateProductDialogProps {
   product: AdminProductRow;
@@ -52,7 +53,7 @@ export function UpdateProductDialog({ product, open, onOpenChange }: UpdateProdu
   const queryClient = useQueryClient();
   const anchorRef = useComboboxAnchor();
 
-  // Track which existing images to keep and which new files to add
+  // track which existing images to keep and which new files to add
   const [keepImages, setKeepImages] = useState(product.images);
   const [newFiles, setNewFiles] = useState<File[]>([]);
 
@@ -62,7 +63,7 @@ export function UpdateProductDialog({ product, open, onOpenChange }: UpdateProdu
     enabled: open,
   });
 
-  const categories = useMemo(() => categoriesData?.categories ?? [], [categoriesData?.categories]);
+  const categories = categoriesData?.categories ?? ([] as const);
 
   const getSelectedCategories = (categoryIds: string[]) => {
     return categories.filter((c) => categoryIds.includes(c.id));
@@ -75,8 +76,8 @@ export function UpdateProductDialog({ product, open, onOpenChange }: UpdateProdu
       onOpenChange(false);
       await queryClient.invalidateQueries({ queryKey: queryKeys.adminProducts() });
     },
-    onError: (err: Error) => {
-      toast.error(err.message || "Failed to update product.", cancelToastEl);
+    onError: (err) => {
+      toast.error(getApiError(err) || "Failed to update product.", cancelToastEl);
     },
   });
 
@@ -118,15 +119,15 @@ export function UpdateProductDialog({ product, open, onOpenChange }: UpdateProdu
     },
   });
 
-  const handleExistingRemove = useCallback((key: string) => {
+  const handleExistingRemove = (key: string) => {
     setKeepImages((prev) => prev.filter((img) => img.key !== key));
-  }, []);
+  };
 
-  const resetState = useCallback(() => {
+  const resetState = () => {
     form.reset();
     setKeepImages(product.images);
     setNewFiles([]);
-  }, [form, product.images]);
+  };
 
   const imageError = (() => {
     const total = keepImages.length + newFiles.length;

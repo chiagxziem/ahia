@@ -1,5 +1,8 @@
+import { BetterFetchError } from "@better-fetch/fetch";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+
+import { errorResSchema } from "@/lib/schemas";
 
 /**
  * Merges class names using clsx and resolves Tailwind conflicts with twMerge.
@@ -84,4 +87,23 @@ export const formatCurrency = (value: number) =>
 export const truncateId = (id: string): string => {
   if (id.length <= 14) return id;
   return `${id.slice(0, 8)}…${id.slice(-4)}`;
+};
+
+/**
+ * Extracts a human-readable error message from any error thrown by
+ * $fetchAndThrow (BetterFetchError) or a plain Error.
+ * @param err - The error object to extract the message from.
+ * @returns A user-friendly error message string.
+ *
+ * Usage in onError:
+ *   onError: (err) => toast.error(getApiError(err))
+ */
+export const getApiError = (err: unknown): string => {
+  if (err instanceof BetterFetchError) {
+    const parsed = errorResSchema.safeParse(err.error);
+    if (parsed.success) return parsed.data.error.details;
+    return err.statusText || err.message || "Something went wrong.";
+  }
+  if (err instanceof Error) return err.message;
+  return "Something went wrong.";
 };

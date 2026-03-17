@@ -81,28 +81,35 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
   const canChangeRole = user.role !== roles.SUPERADMIN && currentUser.role === roles.SUPERADMIN;
 
   const handleSetRole = async (newRole: "admin" | "user") => {
-    setIsLoading(true);
-    try {
-      const response = await authClient.admin.setRole({
+    await authClient.admin.setRole(
+      {
         userId: user.id,
         role: newRole,
-      });
-
-      if (response.error) {
-        toast.error(response.error.message || "Failed to change role. Please try again.");
-        return;
-      }
-
-      setOpenDialog(false);
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.adminUsers(),
-      });
-    } catch {
-      toast.error("An error occurred while changing the role. Please try again.");
-    } finally {
-      setIsLoading(false);
-      setPendingAction(null);
-    }
+      },
+      {
+        onRequest() {
+          setIsLoading(true);
+        },
+        onSuccess: async () => {
+          setIsLoading(false);
+          setOpenDialog(false);
+          await queryClient.invalidateQueries({
+            queryKey: queryKeys.adminUsers(),
+          });
+        },
+        onError(ctx) {
+          setIsLoading(false);
+          toast.error(
+            ctx.error.message || "Failed to change role. Please try again.",
+            cancelToastEl,
+          );
+        },
+        onSettled() {
+          setIsLoading(false);
+          setPendingAction(null);
+        },
+      },
+    );
   };
 
   const passwordForm = useForm({
@@ -121,36 +128,36 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
         return;
       }
 
-      setIsLoading(true);
-      try {
-        const response = await authClient.admin.setUserPassword({
+      await authClient.admin.setUserPassword(
+        {
           userId: user.id,
           newPassword: value.newPassword,
-        });
-
-        if (response.error) {
-          toast.error(
-            response.error.message || "Failed to set password. Please try again.",
-            cancelToastEl,
-          );
-          return;
-        }
-
-        toast.success("Password set successfully", cancelToastEl);
-        setOpenDialog(false);
-        passwordForm.reset();
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.adminUsers(),
-        });
-      } catch {
-        toast.error(
-          "An error occurred while setting the password. Please try again.",
-          cancelToastEl,
-        );
-      } finally {
-        setIsLoading(false);
-        setPendingAction(null);
-      }
+        },
+        {
+          onRequest() {
+            setIsLoading(true);
+          },
+          onSuccess: async () => {
+            toast.success("Password set successfully", cancelToastEl);
+            setOpenDialog(false);
+            passwordForm.reset();
+            await queryClient.invalidateQueries({
+              queryKey: queryKeys.adminUsers(),
+            });
+          },
+          onError(ctx) {
+            setIsLoading(false);
+            toast.error(
+              ctx.error.message || "Failed to set password. Please try again.",
+              cancelToastEl,
+            );
+          },
+          onSettled() {
+            setIsLoading(false);
+            setPendingAction(null);
+          },
+        },
+      );
     },
   });
 
@@ -164,76 +171,122 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
     user.id !== currentUser.id;
 
   const handleRevokeSessions = async () => {
-    setIsLoading(true);
-    try {
-      const response = await authClient.admin.revokeUserSessions({ userId: user.id });
-
-      if (response.error) {
-        toast.error(response.error.message || "Failed to revoke sessions. Please try again.");
-        return;
-      }
-
-      setOpenDialog(false);
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.adminUsers(),
-      });
-    } catch {
-      toast.error("An error occurred while revoking sessions. Please try again.");
-    } finally {
-      setIsLoading(false);
-      setPendingAction(null);
-    }
+    await authClient.admin.revokeUserSessions(
+      { userId: user.id },
+      {
+        onRequest() {
+          setIsLoading(true);
+        },
+        onSuccess: async () => {
+          setOpenDialog(false);
+          await queryClient.invalidateQueries({
+            queryKey: queryKeys.adminUsers(),
+          });
+        },
+        onError(ctx) {
+          setIsLoading(false);
+          toast.error(
+            ctx.error.message || "Failed to revoke sessions. Please try again.",
+            cancelToastEl,
+          );
+        },
+        onSettled() {
+          setIsLoading(false);
+          setPendingAction(null);
+        },
+      },
+    );
   };
 
   const handleBanToggle = async () => {
-    setIsLoading(true);
-    try {
-      const response = user.banned
-        ? await authClient.admin.unbanUser({ userId: user.id })
-        : await authClient.admin.banUser({ userId: user.id });
-
-      if (response.error) {
-        toast.error(
-          response.error.message ||
-            `Failed to ${user.banned ? "unban" : "ban"} user. Please try again.`,
-        );
-        return;
-      }
-
-      setOpenDialog(false);
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.adminUsers(),
-      });
-    } catch {
-      toast.error(
-        `An error occurred while ${user.banned ? "unbanning" : "banning"} the user. Please try again.`,
+    const banUser = async () => {
+      await authClient.admin.banUser(
+        { userId: user.id },
+        {
+          onRequest() {
+            setIsLoading(true);
+          },
+          onSuccess: async () => {
+            setOpenDialog(false);
+            await queryClient.invalidateQueries({
+              queryKey: queryKeys.adminUsers(),
+            });
+          },
+          onError(ctx) {
+            setIsLoading(false);
+            toast.error(
+              ctx.error.message || "Failed to ban user. Please try again.",
+              cancelToastEl,
+            );
+          },
+          onSettled() {
+            setIsLoading(false);
+            setPendingAction(null);
+          },
+        },
       );
-    } finally {
-      setIsLoading(false);
-      setPendingAction(null);
+    };
+    const unbanUser = async () => {
+      await authClient.admin.unbanUser(
+        { userId: user.id },
+        {
+          onRequest() {
+            setIsLoading(true);
+          },
+          onSuccess: async () => {
+            setOpenDialog(false);
+            await queryClient.invalidateQueries({
+              queryKey: queryKeys.adminUsers(),
+            });
+          },
+          onError(ctx) {
+            setIsLoading(false);
+            toast.error(
+              ctx.error.message || "Failed to unban user. Please try again.",
+              cancelToastEl,
+            );
+          },
+          onSettled() {
+            setIsLoading(false);
+            setPendingAction(null);
+          },
+        },
+      );
+    };
+
+    if (user.banned) {
+      await unbanUser();
+    } else {
+      await banUser();
     }
   };
 
   const handleRemoveUser = async () => {
-    setIsLoading(true);
-    try {
-      const response = await authClient.admin.removeUser({ userId: user.id });
-
-      if (response.error) {
-        toast.error(response.error.message || "Failed to remove user. Please try again.");
-        return;
-      }
-
-      setOpenDialog(false);
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.adminUsers(),
-      });
-    } catch {
-      toast.error("An error occurred while removing the user. Please try again.");
-    } finally {
-      setIsLoading(false);
-      setPendingAction(null);
-    }
+    await authClient.admin.removeUser(
+      { userId: user.id },
+      {
+        onRequest() {
+          setIsLoading(true);
+        },
+        onSuccess: async () => {
+          setOpenDialog(false);
+          await queryClient.invalidateQueries({
+            queryKey: queryKeys.adminUsers(),
+          });
+        },
+        onError(ctx) {
+          setIsLoading(false);
+          toast.error(
+            ctx.error.message || "Failed to remove user. Please try again.",
+            cancelToastEl,
+          );
+        },
+        onSettled() {
+          setIsLoading(false);
+          setPendingAction(null);
+        },
+      },
+    );
   };
 
   const updateUserForm = useForm({
@@ -242,65 +295,71 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
       image: user.image ?? "",
     },
     onSubmit: async ({ value }) => {
-      setIsLoading(true);
-      try {
-        const response = await authClient.admin.updateUser({
+      await authClient.admin.updateUser(
+        {
           userId: user.id,
           data: {
             name: value.name,
             image: value.image === "" ? null : value.image,
           },
-        });
-
-        if (response.error) {
-          toast.error(
-            response.error.message || "Failed to update user. Please try again.",
-            cancelToastEl,
-          );
-          return;
-        }
-
-        setOpenDialog(false);
-        await queryClient.invalidateQueries({
-          queryKey: queryKeys.adminUsers(),
-        });
-      } catch {
-        toast.error("An error occurred while updating the user. Please try again.", cancelToastEl);
-      } finally {
-        setIsLoading(false);
-        setPendingAction(null);
-      }
+        },
+        {
+          onRequest() {
+            setIsLoading(true);
+          },
+          onSuccess: async () => {
+            setOpenDialog(false);
+            await queryClient.invalidateQueries({
+              queryKey: queryKeys.adminUsers(),
+            });
+          },
+          onError(ctx) {
+            setIsLoading(false);
+            toast.error(
+              ctx.error.message || "Failed to update user. Please try again.",
+              cancelToastEl,
+            );
+          },
+          onSettled() {
+            setIsLoading(false);
+            setPendingAction(null);
+          },
+        },
+      );
     },
   });
 
   const handleClearImage = async () => {
-    setIsClearing(true);
-    try {
-      const response = await authClient.admin.updateUser({
+    await authClient.admin.updateUser(
+      {
         userId: user.id,
         data: {
           name: updateUserForm.getFieldValue("name"),
           image: null,
         },
-      });
-
-      if (response.error) {
-        toast.error(
-          response.error.message || "Failed to clear image. Please try again.",
-          cancelToastEl,
-        );
-        return;
-      }
-
-      updateUserForm.setFieldValue("image", "");
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.adminUsers(),
-      });
-    } catch {
-      toast.error("An error occurred while clearing the image. Please try again.", cancelToastEl);
-    } finally {
-      setIsClearing(false);
-    }
+      },
+      {
+        onRequest() {
+          setIsClearing(true);
+        },
+        onSuccess: async () => {
+          updateUserForm.setFieldValue("image", "");
+          await queryClient.invalidateQueries({
+            queryKey: queryKeys.adminUsers(),
+          });
+        },
+        onError(ctx) {
+          setIsClearing(false);
+          toast.error(
+            ctx.error.message || "Failed to clear image. Please try again.",
+            cancelToastEl,
+          );
+        },
+        onSettled() {
+          setIsClearing(false);
+        },
+      },
+    );
   };
 
   return (

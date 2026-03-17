@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
 import { createCategory } from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";
+import { getApiError } from "@/lib/utils";
 
 interface CreateCategoryDialogProps {
   open: boolean;
@@ -35,8 +36,11 @@ export function CreateCategoryDialog({ open, onOpenChange }: CreateCategoryDialo
       form.reset();
       await queryClient.invalidateQueries({ queryKey: queryKeys.adminCategories() });
     },
-    onError: (err: Error) => {
-      toast.error(err.message || "Failed to create category. Please try again.", cancelToastEl);
+    onError: (err) => {
+      toast.error(
+        getApiError(err) || "Failed to create category. Please try again.",
+        cancelToastEl,
+      );
     },
   });
 

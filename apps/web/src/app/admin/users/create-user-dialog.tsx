@@ -27,7 +27,7 @@ import {
 import { cancelToastEl } from "@/components/ui/sonner";
 import { createAdminUser } from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";
-import { roles } from "@/lib/utils";
+import { getApiError, roles } from "@/lib/utils";
 import type { User } from "@repo/db/schemas/auth.schema";
 
 interface CreateUserDialogProps {
@@ -48,8 +48,8 @@ export function CreateUserDialog({ currentUser, open, onOpenChange }: CreateUser
       form.reset();
       await queryClient.invalidateQueries({ queryKey: queryKeys.adminUsers() });
     },
-    onError: (err: Error) => {
-      toast.error(err.message || "Failed to create user. Please try again.", cancelToastEl);
+    onError: (err) => {
+      toast.error(getApiError(err) || "Failed to create user. Please try again.", cancelToastEl);
     },
   });
 

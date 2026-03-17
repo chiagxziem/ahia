@@ -28,6 +28,7 @@ import {
 import { cancelToastEl } from "@/components/ui/sonner";
 import { deleteProduct, type AdminProductRow } from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";
+import { getApiError } from "@/lib/utils";
 
 import { UpdateProductDialog } from "./update-product-dialog";
 
@@ -59,8 +60,8 @@ export const ProductRowActions = ({ product }: ProductRowActionsProps) => {
       closeDialog();
       await queryClient.invalidateQueries({ queryKey: queryKeys.adminProducts() });
     },
-    onError: (err: Error) => {
-      toast.error(err.message || "Failed to delete product.", cancelToastEl);
+    onError: (err) => {
+      toast.error(getApiError(err) || "Failed to delete product.", cancelToastEl);
     },
   });
 
