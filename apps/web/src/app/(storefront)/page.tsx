@@ -13,6 +13,7 @@ import { cacheLife } from "next/cache";
 
 import { FeaturedCategories } from "@/components/storefront/featured-categories";
 import { FeaturedProducts } from "@/components/storefront/featured-products";
+import { HeroFeaturedProduct } from "@/components/storefront/hero-featured-product";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -57,16 +58,7 @@ export const Home = () => {
           </div>
         </div>
 
-        <div className="relative mt-4 w-full lg:mt-0 lg:w-1/2">
-          <div className="group relative aspect-square overflow-hidden rounded-3xl bg-muted/50 sm:aspect-video lg:aspect-4/3">
-            <div className="absolute inset-0 bg-linear-to-tr from-muted/60 via-transparent to-background/10 transition-transform duration-1000 ease-out group-hover:scale-105" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-xs font-semibold tracking-[0.2em] text-muted-foreground/30 uppercase">
-                Featured Product
-              </span>
-            </div>
-          </div>
-        </div>
+        <HeroFeaturedProduct />
       </section>
 
       <FeaturedCategories />

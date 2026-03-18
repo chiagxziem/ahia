@@ -17,7 +17,13 @@ import { errorResponse, parseJsonField, successResponse } from "@/lib/utils";
 import { authed } from "@/middleware/authed";
 import { permit } from "@/middleware/permit";
 import { validationHook } from "@/middleware/validation-hook";
-import { getProductById, getProducts } from "@/queries/product-queries";
+import {
+  getFeaturedProduct,
+  getLatestProducts,
+  getProductById,
+  getProducts,
+} from "@/queries/product-queries";
+import { getFeaturedProductDoc } from "@/routes/products/products.docs";
 import { db, eq } from "@repo/db";
 import { product, productCategory } from "@repo/db/schemas/product.schema";
 
@@ -57,6 +63,33 @@ products.get(
     );
   },
 );
+
+// Get featured product (changes daily)
+products.get("/featured", getFeaturedProductDoc, async (c) => {
+  const featured = await getFeaturedProduct();
+
+  if (!featured) {
+    return c.json(
+      errorResponse("NOT_FOUND", "No featured product available"),
+      HttpStatusCodes.NOT_FOUND,
+    );
+  }
+
+  return c.json(
+    successResponse(featured, "Featured product retrieved successfully"),
+    HttpStatusCodes.OK,
+  );
+});
+
+// Get latest products
+products.get("/latest", async (c) => {
+  const latest = await getLatestProducts(4);
+
+  return c.json(
+    successResponse(latest, "Latest products retrieved successfully"),
+    HttpStatusCodes.OK,
+  );
+});
 
 // Get product by ID
 products.get(

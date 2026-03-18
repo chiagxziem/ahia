@@ -46,3 +46,23 @@ export const getCategoryById = async (id: string) => {
 
   return { ...category, products };
 };
+
+/** Fetches the top N categories sorted by product count (descending) */
+export const getTopCategories = async (limit: number = 4) => {
+  const result = await db.query.category.findMany({
+    with: {
+      productCategories: {
+        columns: { id: true },
+      },
+    },
+  });
+
+  if (!result) return [];
+
+  return result
+    .map(({ productCategories, ...cat }) =>
+      Object.assign(cat, { productCount: productCategories.length }),
+    )
+    .toSorted((a, b) => b.productCount - a.productCount)
+    .slice(0, limit);
+};

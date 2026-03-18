@@ -7,13 +7,16 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   // output: "standalone",
   // transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"],
-  async rewrites() {
+  rewrites: async () => {
     return [
       {
         source: "/api/:path*",
         destination: `${process.env.API_URL}/api/:path*`,
       },
     ];
+  },
+  images: {
+    remotePatterns: [new URL("https://ahia-bucket.gozman.xyz/**")],
   },
 };
 

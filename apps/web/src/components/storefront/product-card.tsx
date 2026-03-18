@@ -1,18 +1,29 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 
 interface ProductCardProps {
+  id: string;
   name: string;
   price: string;
   category: string;
   slug: string;
+  imageUrl?: string;
   tag?: string;
 }
 
-export const ProductCard = ({ name, price, category, slug, tag }: ProductCardProps) => {
+export const ProductCard = ({
+  id,
+  name,
+  price,
+  category,
+  slug: _slug,
+  imageUrl,
+  tag,
+}: ProductCardProps) => {
   return (
-    <Link href={`/products/${slug}`} className="group block">
+    <Link href={`/products/${id}`} className="group block">
       {/* Image */}
       <div className="relative mb-3 aspect-3/4 overflow-hidden rounded-xl bg-muted/30 md:rounded-2xl">
         {tag && (
@@ -20,9 +31,19 @@ export const ProductCard = ({ name, price, category, slug, tag }: ProductCardPro
             {tag}
           </Badge>
         )}
-        <div className="flex h-full w-full items-center justify-center transition-all duration-500 ease-out group-hover:scale-[1.03] group-hover:bg-muted/20">
-          <div className="size-10 rounded-full bg-muted-foreground/4 md:size-14" />
-        </div>
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={name}
+            fill
+            className="object-cover transition-all duration-500 ease-out group-hover:scale-[1.03]"
+            sizes="(max-width: 768px) 50vw, 25vw"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center transition-all duration-500 ease-out group-hover:scale-[1.03] group-hover:bg-muted/20">
+            <div className="size-10 rounded-full bg-muted-foreground/4 md:size-14" />
+          </div>
+        )}
       </div>
 
       {/* Info */}
@@ -36,7 +57,7 @@ export const ProductCard = ({ name, price, category, slug, tag }: ProductCardPro
           </span>
         </div>
         <span className="shrink-0 pt-0.5 text-[13px] font-semibold tabular-nums md:text-sm">
-          {price}
+          ${price}
         </span>
       </div>
     </Link>

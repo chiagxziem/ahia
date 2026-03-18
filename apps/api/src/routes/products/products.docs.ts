@@ -33,6 +33,27 @@ export const getAllProductsDoc = describeRoute({
   },
 });
 
+export const getFeaturedProductDoc = describeRoute({
+  description: "Get the featured product",
+  tags,
+  responses: {
+    [HttpStatusCodes.OK]: createSuccessResponse(
+      "Featured product retrieved",
+      {
+        details: "Featured product retrieved successfully",
+        dataSchema: ProductExtendedSchema,
+      },
+      true,
+    ),
+    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse("Featured product not found", {
+      code: "NOT_FOUND",
+      details: "No featured product available",
+    }),
+    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
+  },
+});
+
 export const getProductDoc = describeRoute({
   description: "Get a product",
   tags,

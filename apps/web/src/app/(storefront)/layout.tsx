@@ -1,13 +1,47 @@
-import { ReactNode } from "react";
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import { headers } from "next/headers";
+import { ReactNode, Suspense } from "react";
 
 import { SiteFooter } from "@/components/storefront/site-footer";
 import { SiteHeader } from "@/components/storefront/site-header";
+import {
+  getFeaturedProduct,
+  getLatestProducts,
+  getTopCategories,
+} from "@/features/storefront/queries";
+import { queryKeys } from "@/lib/query-keys";
+
+const StorefrontDataProvider = async ({ children }: { children: ReactNode }) => {
+  const queryClient = new QueryClient();
+  const cookie = (await headers()).get("cookie") ?? undefined;
+
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.featuredProduct(),
+      queryFn: () => getFeaturedProduct(cookie),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.latestProducts(),
+      queryFn: () => getLatestProducts(cookie),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.topCategories(),
+      queryFn: () => getTopCategories(cookie),
+    }),
+  ]);
+
+  return <HydrationBoundary state={dehydrate(queryClient)}>{children}</HydrationBoundary>;
+};
 
 const StorefrontLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex min-h-screen flex-col bg-background font-sans">
       <SiteHeader />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1">
+        <Suspense fallback={null}>
+          <StorefrontDataProvider>{children}</StorefrontDataProvider>
+        </Suspense>
+      </main>
       <SiteFooter />
     </div>
   );

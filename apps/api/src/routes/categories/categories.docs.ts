@@ -36,6 +36,23 @@ export const getAllCategoriesDoc = describeRoute({
   },
 });
 
+export const getTopCategoriesDoc = describeRoute({
+  description: "Get top categories by product count",
+  tags,
+  responses: {
+    [HttpStatusCodes.OK]: createSuccessResponse(
+      "Top categories retrieved",
+      {
+        details: "Top categories retrieved successfully",
+        dataSchema: z.array(CategoryWithCountSchema),
+      },
+      true,
+    ),
+    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
+  },
+});
+
 export const getCategoryDoc = describeRoute({
   description: "Get a category with its products",
   tags,

@@ -9,7 +9,8 @@ import { errorResponse, successResponse } from "@/lib/utils";
 import { authed } from "@/middleware/authed";
 import { permit } from "@/middleware/permit";
 import { validationHook } from "@/middleware/validation-hook";
-import { getCategories, getCategoryById } from "@/queries/category-queries";
+import { getCategories, getCategoryById, getTopCategories } from "@/queries/category-queries";
+import { getTopCategoriesDoc } from "@/routes/categories/categories.docs";
 import { db, eq } from "@repo/db";
 import { category } from "@repo/db/schemas/product.schema";
 import { CreateCategorySchema, UpdateCategorySchema } from "@repo/db/validators/product.validator";
@@ -56,6 +57,22 @@ categories.get(
         HttpStatusCodes.INTERNAL_SERVER_ERROR,
       );
     }
+  },
+);
+
+// Get top categories by product count
+categories.get(
+  "/top",
+  getTopCategoriesDoc,
+  validator("query", z.object({ limit: z.number().optional() }), validationHook),
+  async (c) => {
+    const { limit } = c.req.valid("query");
+    const topCats = await getTopCategories(limit ?? 4);
+
+    return c.json(
+      successResponse(topCats, "Top categories retrieved successfully"),
+      HttpStatusCodes.OK,
+    );
   },
 );
 

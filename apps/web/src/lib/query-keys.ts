@@ -1,6 +1,9 @@
 export const queryKeys = {
   user: () => ["user"] as const,
   cart: () => ["cart"] as const,
+  featuredProduct: () => ["featured-product"] as const,
+  latestProducts: () => ["latest-products"] as const,
+  topCategories: () => ["top-categories"] as const,
   adminStats: () => ["admin", "stats"] as const,
   adminUsers: (params: Record<string, string | number | boolean | undefined> = {}) =>
     ["admin", "users", params] as const,
