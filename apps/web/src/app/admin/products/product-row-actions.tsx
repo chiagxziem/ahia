@@ -59,6 +59,7 @@ export const ProductRowActions = ({ product }: ProductRowActionsProps) => {
       toast.success("Product deleted successfully", cancelToastEl);
       closeDialog();
       await queryClient.invalidateQueries({ queryKey: queryKeys.adminProducts() });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.adminCategories() });
     },
     onError: (err) => {
       toast.error(getApiError(err) || "Failed to delete product.", cancelToastEl);

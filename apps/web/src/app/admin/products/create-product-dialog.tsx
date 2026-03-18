@@ -4,7 +4,7 @@ import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -66,6 +66,9 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
     return categories.filter((c) => categoryIds.includes(c.id));
   };
 
+  const sizeInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const colorInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
   const createMutation = useMutation({
     mutationFn: createAdminProduct,
     onSuccess: async () => {
@@ -73,6 +76,7 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
       onOpenChange(false);
       form.reset();
       await queryClient.invalidateQueries({ queryKey: queryKeys.adminProducts() });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.adminCategories() });
     },
     onError: (err) => {
       toast.error(getApiError(err) || "Failed to create product.", cancelToastEl);
@@ -261,7 +265,19 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
               </div>
 
               {/* Sizes */}
-              <form.Field name="sizes">
+              <form.Field
+                name="sizes"
+                validators={{
+                  onChange: ({ value, fieldApi }) => {
+                    if (value.length === 0) return undefined;
+                    const stock = Number(fieldApi.form.getFieldValue("stockQuantity") ?? 0);
+                    if (stock > 0 && !value.some((s) => s.inStock)) {
+                      return "At least one size must be in stock when stock quantity is greater than 0";
+                    }
+                    return undefined;
+                  },
+                }}
+              >
                 {(field) => (
                   <Field>
                     <FieldLabel>
@@ -271,6 +287,9 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                       {field.state.value.map((size, index) => (
                         <ButtonGroup key={index} className="w-full">
                           <Input
+                            ref={(el) => {
+                              sizeInputRefs.current[index] = el;
+                            }}
                             value={size.name}
                             onChange={(e) => {
                               const next = [...field.state.value];
@@ -318,19 +337,35 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                           (field.state.value.length > 0 &&
                             !field.state.value[field.state.value.length - 1].name.trim())
                         }
-                        onClick={() =>
-                          field.handleChange([...field.state.value, { name: "", inStock: true }])
-                        }
+                        onClick={() => {
+                          field.handleChange([...field.state.value, { name: "", inStock: true }]);
+                          requestAnimationFrame(() => {
+                            sizeInputRefs.current[field.state.value.length]?.focus();
+                          });
+                        }}
                       >
                         Add size
                       </Button>
                     </div>
+                    <FieldError />
                   </Field>
                 )}
               </form.Field>
 
               {/* Colors */}
-              <form.Field name="colors">
+              <form.Field
+                name="colors"
+                validators={{
+                  onChange: ({ value, fieldApi }) => {
+                    if (value.length === 0) return undefined;
+                    const stock = Number(fieldApi.form.getFieldValue("stockQuantity") ?? 0);
+                    if (stock > 0 && !value.some((c) => c.inStock)) {
+                      return "At least one color must be in stock when stock quantity is greater than 0";
+                    }
+                    return undefined;
+                  },
+                }}
+              >
                 {(field) => (
                   <Field>
                     <FieldLabel>
@@ -340,6 +375,9 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                       {field.state.value.map((color, index) => (
                         <ButtonGroup key={index} className="w-full">
                           <Input
+                            ref={(el) => {
+                              colorInputRefs.current[index] = el;
+                            }}
                             value={color.name}
                             onChange={(e) => {
                               const next = [...field.state.value];
@@ -387,13 +425,17 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                           (field.state.value.length > 0 &&
                             !field.state.value[field.state.value.length - 1].name.trim())
                         }
-                        onClick={() =>
-                          field.handleChange([...field.state.value, { name: "", inStock: true }])
-                        }
+                        onClick={() => {
+                          field.handleChange([...field.state.value, { name: "", inStock: true }]);
+                          requestAnimationFrame(() => {
+                            colorInputRefs.current[field.state.value.length]?.focus();
+                          });
+                        }}
                       >
                         Add color
                       </Button>
                     </div>
+                    <FieldError />
                   </Field>
                 )}
               </form.Field>

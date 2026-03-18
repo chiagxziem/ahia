@@ -93,6 +93,8 @@ const columns: ColumnDef<AdminProductRow>[] = [
   {
     accessorKey: "price",
     header: "Price",
+    enableSorting: true,
+    sortingFn: (a, b) => Number(a.original.price) - Number(b.original.price),
     cell: ({ row }) => (
       <div className="font-medium">{formatCurrency(Number(row.original.price))}</div>
     ),
@@ -100,6 +102,7 @@ const columns: ColumnDef<AdminProductRow>[] = [
   {
     accessorKey: "stockQuantity",
     header: "Stock",
+    enableSorting: true,
     cell: ({ row }) => row.original.stockQuantity ?? 0,
   },
   {

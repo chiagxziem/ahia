@@ -131,6 +131,9 @@ products.post(
       const uniqueSizeNames = new Set(sizeNames);
       if (sizeNames.length !== uniqueSizeNames.size) {
         validationErrors.sizes = "Size names must be unique (case-insensitive)";
+      } else if (stockQuantity > 0 && !sizes.some((s) => s.inStock)) {
+        validationErrors.sizes =
+          "At least one size must be in stock when stock quantity is greater than 0";
       }
     }
 
@@ -148,6 +151,9 @@ products.post(
       const uniqueColorNames = new Set(colorNames);
       if (colorNames.length !== uniqueColorNames.size) {
         validationErrors.colors = "Color names must be unique (case-insensitive)";
+      } else if (stockQuantity > 0 && !colors.some((c) => c.inStock)) {
+        validationErrors.colors =
+          "At least one color must be in stock when stock quantity is greater than 0";
       }
     }
 
@@ -343,6 +349,12 @@ products.put(
       const uniqueSizeNames = new Set(sizeNames);
       if (sizeNames.length !== uniqueSizeNames.size) {
         validationErrors.sizes = "Size names must be unique (case-insensitive)";
+      } else {
+        const effectiveStock = stockQuantity ?? existingProduct.stockQuantity ?? 0;
+        if (effectiveStock > 0 && !sizes.some((s) => s.inStock)) {
+          validationErrors.sizes =
+            "At least one size must be in stock when stock quantity is greater than 0";
+        }
       }
     }
 
@@ -362,6 +374,12 @@ products.put(
       const uniqueColorNames = new Set(colorNames);
       if (colorNames.length !== uniqueColorNames.size) {
         validationErrors.colors = "Color names must be unique (case-insensitive)";
+      } else {
+        const effectiveStock = stockQuantity ?? existingProduct.stockQuantity ?? 0;
+        if (effectiveStock > 0 && !colors.some((c) => c.inStock)) {
+          validationErrors.colors =
+            "At least one color must be in stock when stock quantity is greater than 0";
+        }
       }
     }
 
