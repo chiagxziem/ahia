@@ -18,7 +18,7 @@ export const HeroFeaturedProduct = () => {
   return (
     <div className="relative mt-4 w-full lg:mt-0 lg:w-1/2">
       <Link
-        href={product ? `/products/${product.id}` : "/categories"}
+        href={product ? `/products/${product.id}` : "/shop"}
         className="group relative block aspect-square overflow-hidden rounded-3xl bg-muted/50 sm:aspect-video lg:aspect-4/3"
       >
         {image ? (

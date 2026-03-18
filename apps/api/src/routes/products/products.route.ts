@@ -11,6 +11,7 @@ import {
   CreateProductSchema,
   InStockSchema,
   PaginationQuerySchema,
+  ShopQuerySchema,
   UpdateProductSchema,
 } from "@/lib/schemas";
 import { errorResponse, parseJsonField, successResponse } from "@/lib/utils";
@@ -22,8 +23,15 @@ import {
   getLatestProducts,
   getProductById,
   getProducts,
+  getShopProducts,
+  getTrendingProducts,
 } from "@/queries/product-queries";
-import { getFeaturedProductDoc } from "@/routes/products/products.docs";
+import {
+  getFeaturedProductDoc,
+  getLatestProductsDoc,
+  getShopProductsDoc,
+  getTrendingProductsDoc,
+} from "@/routes/products/products.docs";
 import { db, eq } from "@repo/db";
 import { product, productCategory } from "@repo/db/schemas/product.schema";
 
@@ -82,14 +90,68 @@ products.get("/featured", getFeaturedProductDoc, async (c) => {
 });
 
 // Get latest products
-products.get("/latest", async (c) => {
-  const latest = await getLatestProducts(4);
+products.get(
+  "/latest",
+  getLatestProductsDoc,
+  validator("query", z.object({ limit: z.number().optional() }), validationHook),
+  async (c) => {
+    const { limit } = c.req.valid("query");
+    const latest = await getLatestProducts(limit ?? 4);
 
-  return c.json(
-    successResponse(latest, "Latest products retrieved successfully"),
-    HttpStatusCodes.OK,
-  );
-});
+    return c.json(
+      successResponse(latest, "Latest products retrieved successfully"),
+      HttpStatusCodes.OK,
+    );
+  },
+);
+
+// Get trending products (most sold in the last 30 days)
+products.get(
+  "/trending",
+  getTrendingProductsDoc,
+  validator("query", z.object({ limit: z.number().optional() }), validationHook),
+  async (c) => {
+    const { limit } = c.req.valid("query");
+    const trending = await getTrendingProducts(limit ?? 4);
+
+    return c.json(
+      successResponse(trending, "Trending products retrieved successfully"),
+      HttpStatusCodes.OK,
+    );
+  },
+);
+
+// Get shop products (filtered, sorted, paginated)
+products.get(
+  "/shop",
+  getShopProductsDoc,
+  validator("query", ShopQuerySchema, validationHook),
+  async (c) => {
+    const params = c.req.valid("query");
+
+    const { products: shopProducts, total } = await getShopProducts({
+      page: params.page,
+      limit: params.limit,
+      cat: params.cat,
+      minPrice: params.minPrice,
+      maxPrice: params.maxPrice,
+      sort: params.sort,
+      new: params.new,
+    });
+
+    const pagination = {
+      page: params.page,
+      limit: params.limit,
+      total,
+      totalPages: Math.ceil(total / params.limit),
+    };
+
+    return c.json(
+      successResponse(shopProducts, "Shop products retrieved successfully", pagination),
+      HttpStatusCodes.OK,
+    );
+  },
+);
 
 // Get product by ID
 products.get(

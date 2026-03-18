@@ -41,8 +41,8 @@ import { cancelToastEl } from "../ui/sonner";
 
 const NAV_LINKS = [
   { href: "/", label: "Home", icon: Home01Icon },
-  { href: "/categories", label: "Shop", icon: ShoppingBag01Icon },
-  { href: "/categories?c=new", label: "New Arrivals", icon: StarIcon },
+  { href: "/shop", label: "Shop", icon: ShoppingBag01Icon },
+  { href: "/shop?c=new", label: "New Arrivals", icon: StarIcon },
 ];
 
 export const MobileNav = ({ children }: { children?: ReactNode }) => {

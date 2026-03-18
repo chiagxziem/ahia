@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface ProductCardProps {
   id: string;
@@ -27,8 +28,15 @@ export const ProductCard = ({
       {/* Image */}
       <div className="relative mb-3 aspect-3/4 overflow-hidden rounded-xl bg-muted/30 md:rounded-2xl">
         {tag && (
-          <Badge className="pointer-events-none absolute top-3 left-3 z-10 rounded-full border border-border/20 bg-background/80 px-2.5 py-0.5 text-[11px] font-medium text-foreground shadow-xs backdrop-blur-sm hover:bg-background/80">
-            {tag}
+          <Badge
+            className={cn(
+              "pointer-events-none absolute top-3 left-3 z-10 rounded-full px-2.5 py-0.5 text-[11px] font-medium shadow-xs backdrop-blur-sm",
+              tag === "Trending"
+                ? "border border-orange-500/20 bg-orange-500/10 font-semibold text-orange-700 hover:bg-orange-500/20 dark:text-orange-400"
+                : "border border-border/20 bg-background/80 text-foreground hover:bg-background/80",
+            )}
+          >
+            {tag === "Trending" ? `🔥 ${tag}` : tag}
           </Badge>
         )}
         {imageUrl ? (

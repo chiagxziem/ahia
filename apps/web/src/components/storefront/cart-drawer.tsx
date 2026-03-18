@@ -141,7 +141,7 @@ export const CartDrawer = () => {
                     variant="outline"
                     className="rounded-full"
                     nativeButton={false}
-                    render={<Link href="/categories" />}
+                    render={<Link href="/shop" />}
                   >
                     Continue Shopping
                   </Button>

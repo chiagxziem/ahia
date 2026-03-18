@@ -6,26 +6,26 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
 import { ProductCard } from "@/components/storefront/product-card";
-import { getLatestProducts } from "@/features/storefront/queries";
+import { getTrendingProducts } from "@/features/storefront/queries";
 import { queryKeys } from "@/lib/query-keys";
 
-export const FeaturedProducts = () => {
+export const TrendingProducts = () => {
   const { data: products } = useQuery({
-    queryKey: queryKeys.latestProducts(),
-    queryFn: () => getLatestProducts(),
+    queryKey: queryKeys.trendingProducts(),
+    queryFn: () => getTrendingProducts(),
   });
 
   if (!products || products.length === 0) return null;
 
   return (
-    <section className="mx-auto mb-24 w-full max-w-300 px-4 py-16">
+    <section className="mx-auto w-full max-w-300 px-4 py-16">
       <div className="flex flex-col gap-10">
         <div className="flex items-end justify-between">
           <div className="flex flex-col gap-2">
             <h2 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">
-              Just Added
+              Trending Now
             </h2>
-            <p className="text-muted-foreground">The latest additions to our collection.</p>
+            <p className="text-muted-foreground">Our most popular picks right now.</p>
           </div>
           <Link
             href="/shop"

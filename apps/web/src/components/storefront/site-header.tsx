@@ -15,8 +15,8 @@ import { UserMenu } from "./user-menu";
 
 const NAV_LINKS: { href: Route; label: string }[] = [
   { href: "/", label: "Home" },
-  { href: "/categories", label: "Shop" },
-  { href: "/categories?c=new" as Route, label: "New Arrivals" },
+  { href: "/shop", label: "Shop" },
+  { href: "/shop?c=new" as Route, label: "New Arrivals" },
 ];
 
 export const SiteHeader = () => {

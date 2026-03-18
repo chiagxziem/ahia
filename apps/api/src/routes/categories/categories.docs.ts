@@ -48,6 +48,7 @@ export const getTopCategoriesDoc = describeRoute({
       },
       true,
     ),
+    //! Still need to add doc for the limit query param and its validation error
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },

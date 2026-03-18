@@ -1,9 +1,15 @@
 export const queryKeys = {
   user: () => ["user"] as const,
   cart: () => ["cart"] as const,
+  product: (id: string) => ["product", id] as const,
+  relatedProducts: (id: string) => ["related-products", id] as const,
   featuredProduct: () => ["featured-product"] as const,
   latestProducts: () => ["latest-products"] as const,
   topCategories: () => ["top-categories"] as const,
+  trendingProducts: () => ["trending-products"] as const,
+  shopProducts: (params: Record<string, string | number | boolean | undefined> = {}) =>
+    ["shop-products", params] as const,
+  allCategories: () => ["all-categories"] as const,
   adminStats: () => ["admin", "stats"] as const,
   adminUsers: (params: Record<string, string | number | boolean | undefined> = {}) =>
     ["admin", "users", params] as const,

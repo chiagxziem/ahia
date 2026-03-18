@@ -5,9 +5,11 @@ import { ReactNode, Suspense } from "react";
 import { SiteFooter } from "@/components/storefront/site-footer";
 import { SiteHeader } from "@/components/storefront/site-header";
 import {
+  getAllCategories,
   getFeaturedProduct,
   getLatestProducts,
   getTopCategories,
+  getTrendingProducts,
 } from "@/features/storefront/queries";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -27,6 +29,14 @@ const StorefrontDataProvider = async ({ children }: { children: ReactNode }) => 
     queryClient.prefetchQuery({
       queryKey: queryKeys.topCategories(),
       queryFn: () => getTopCategories(cookie),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.trendingProducts(),
+      queryFn: () => getTrendingProducts(cookie),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.allCategories(),
+      queryFn: () => getAllCategories(cookie),
     }),
   ]);
 

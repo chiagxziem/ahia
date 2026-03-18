@@ -5,10 +5,10 @@ const FOOTER_LINKS = {
   shop: {
     title: "Shop",
     links: [
-      { href: "/categories", label: "All Products" },
-      { href: "/categories?c=new", label: "New Arrivals" },
-      { href: "/categories?c=accessories", label: "Accessories" },
-      { href: "/categories?c=apparel", label: "Apparel" },
+      { href: "/shop", label: "All Products" },
+      { href: "/shop?c=new", label: "New Arrivals" },
+      { href: "/shop?c=accessories", label: "Accessories" },
+      { href: "/shop?c=apparel", label: "Apparel" },
     ],
   },
   legal: {

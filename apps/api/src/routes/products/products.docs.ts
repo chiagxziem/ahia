@@ -54,6 +54,59 @@ export const getFeaturedProductDoc = describeRoute({
   },
 });
 
+export const getLatestProductsDoc = describeRoute({
+  description: "Get the latest products",
+  tags,
+  responses: {
+    [HttpStatusCodes.OK]: createSuccessResponse(
+      "Latest products retrieved",
+      {
+        details: "Latest products retrieved successfully",
+        dataSchema: z.array(ProductExtendedSchema),
+      },
+      true,
+    ),
+    //! Still need to add doc for the limit query param and its validation error
+    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
+  },
+});
+
+export const getTrendingProductsDoc = describeRoute({
+  description: "Get trending products ranked by units sold in the last 30 days",
+  tags,
+  responses: {
+    [HttpStatusCodes.OK]: createSuccessResponse(
+      "Trending products retrieved",
+      {
+        details: "Trending products retrieved successfully",
+        dataSchema: z.array(ProductExtendedSchema),
+      },
+      true,
+    ),
+    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
+  },
+});
+
+export const getShopProductsDoc = describeRoute({
+  description: "Get products for the shop page with filtering, sorting, and pagination",
+  tags,
+  responses: {
+    [HttpStatusCodes.OK]: createSuccessResponse(
+      "Shop products retrieved",
+      {
+        details: "Shop products retrieved successfully",
+        dataSchema: z.array(ProductExtendedSchema),
+      },
+      true,
+    ),
+    //! Still need to add doc for the limit query param and its validation error
+    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
+  },
+});
+
 export const getProductDoc = describeRoute({
   description: "Get a product",
   tags,

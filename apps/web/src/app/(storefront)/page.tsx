@@ -14,6 +14,7 @@ import { cacheLife } from "next/cache";
 import { FeaturedCategories } from "@/components/storefront/featured-categories";
 import { FeaturedProducts } from "@/components/storefront/featured-products";
 import { HeroFeaturedProduct } from "@/components/storefront/hero-featured-product";
+import { TrendingProducts } from "@/components/storefront/trending-products";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -38,7 +39,7 @@ export const Home = () => {
               size="lg"
               nativeButton={false}
               className="h-12 rounded-full px-8 text-sm font-semibold shadow-lg shadow-primary/10"
-              render={<Link href="/categories" />}
+              render={<Link href="/shop" />}
             >
               Shop Collection
             </Button>
@@ -47,7 +48,7 @@ export const Home = () => {
               variant="ghost"
               nativeButton={false}
               className="group h-12 rounded-full px-6 text-sm font-medium text-muted-foreground hover:text-foreground"
-              render={<Link href="/categories?c=new" />}
+              render={<Link href="/shop?new=true" />}
             >
               What&apos;s New
               <HugeiconsIcon
@@ -62,6 +63,7 @@ export const Home = () => {
       </section>
 
       <FeaturedCategories />
+      <TrendingProducts />
       <FeaturedProducts />
     </div>
   );
