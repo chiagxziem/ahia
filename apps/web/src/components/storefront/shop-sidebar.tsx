@@ -146,9 +146,7 @@ const FilterContent = ({ filters }: { filters: ShopFilters }) => {
                 className="size-4 rounded"
                 checked={filters.sort === option.value}
                 onCheckedChange={(checked) => {
-                  void filters.setSort(
-                    checked ? (option.value as "newest" | "price-asc" | "price-desc") : null,
-                  );
+                  void filters.setSort(checked ? option.value : null);
                 }}
               />
               <label

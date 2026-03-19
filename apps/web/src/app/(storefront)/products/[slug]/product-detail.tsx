@@ -55,8 +55,8 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
 
   const addToCartMutation = useMutation({
     mutationFn: addToCart,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.cart() });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.cart() });
       toast.success("Added to cart!", cancelToastEl);
     },
     onError: (err) => {
@@ -150,7 +150,7 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 priority
-                onError={() => setFailedImages((prev) => new Set(prev).add(selectedImage.url!))}
+                onError={() => setFailedImages((prev) => new Set(prev).add(selectedImage.url))}
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
@@ -181,7 +181,7 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
                       fill
                       className="object-cover"
                       sizes="80px"
-                      onError={() => setFailedImages((prev) => new Set(prev).add(image.url!))}
+                      onError={() => setFailedImages((prev) => new Set(prev).add(image.url))}
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center">

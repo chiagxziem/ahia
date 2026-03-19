@@ -26,8 +26,8 @@ export const CheckoutSuccess = ({ sessionId }: { sessionId: string }) => {
 
   const { mutate, isPending, isSuccess, isError } = useMutation({
     mutationFn: verifySession,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.cart() });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.cart() });
     },
   });
 

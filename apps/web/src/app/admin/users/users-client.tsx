@@ -52,7 +52,7 @@ const columns = (currentUser: User): ColumnDef<UserRow>[] => [
     accessorKey: "role",
     header: "Role",
     filterFn: (row, columnId, filterValue) => {
-      const role = (row.getValue(columnId) as string | null) ?? roles.USER;
+      const role = row.getValue(columnId) ?? roles.USER;
 
       if (!Array.isArray(filterValue)) {
         return role === filterValue;
@@ -91,7 +91,7 @@ const columns = (currentUser: User): ColumnDef<UserRow>[] => [
     accessorFn: (row) => (row.banned ? "banned" : "active"),
     header: "Status",
     filterFn: (row, columnId, filterValue) => {
-      const status = row.getValue(columnId) as string;
+      const status = row.getValue(columnId);
 
       if (!Array.isArray(filterValue)) {
         return status === filterValue;

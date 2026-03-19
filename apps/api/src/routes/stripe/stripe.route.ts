@@ -102,7 +102,7 @@ stripeWebhook.post("/", async (c) => {
   try {
     switch (event.type) {
       case "checkout.session.completed": {
-        const session = event.data.object as Stripe.Checkout.Session;
+        const session = event.data.object;
         const orderId = getOrderIdFromSession(session);
 
         if (!orderId) {
@@ -144,7 +144,7 @@ stripeWebhook.post("/", async (c) => {
       }
 
       case "checkout.session.expired": {
-        const session = event.data.object as Stripe.Checkout.Session;
+        const session = event.data.object;
         const orderId = getOrderIdFromSession(session);
         if (!orderId) break;
 
@@ -164,7 +164,7 @@ stripeWebhook.post("/", async (c) => {
       }
 
       case "checkout.session.async_payment_failed": {
-        const session = event.data.object as Stripe.Checkout.Session;
+        const session = event.data.object;
         const orderId = getOrderIdFromSession(session);
         if (!orderId) break;
 
