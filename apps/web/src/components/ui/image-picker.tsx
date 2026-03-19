@@ -2,6 +2,7 @@
 
 import { Cancel01Icon, Image02Icon, Upload04Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import imageCompression from "browser-image-compression";
 import Image from "next/image";
 import { useCallback, useRef, useState } from "react";
 
@@ -9,7 +10,18 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif"];
-const MAX_FILE_SIZE = 1024 * 1024;
+const MAX_SOURCE_SIZE = 5 * 1024 * 1024; // 5MB — compressed before upload
+const MAX_OPTIMIZED_SIZE = 0.5 * 1024 * 1024; // 512KB
+const COMPRESSION_OPTIONS = {
+  maxSizeMB: 0.5,
+  maxWidthOrHeight: 1920,
+  useWebWorker: true,
+};
+
+// Skip compression if already within limit — avoids format re-encoding issues
+// (e.g. AVIF → canvas → PNG blowup since browsers lack native AVIF encoding)
+const compressFile = (f: File) =>
+  f.size <= MAX_OPTIMIZED_SIZE ? Promise.resolve(f) : imageCompression(f, COMPRESSION_OPTIONS);
 
 interface ImagePickerProps {
   value: File[];
@@ -28,15 +40,23 @@ export const ImagePicker = ({
 }: ImagePickerProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [compressing, setCompressing] = useState(false);
 
   const addFiles = useCallback(
-    (incoming: FileList | File[]) => {
-      const newFiles = Array.from(incoming).filter(
-        (f) => ALLOWED_TYPES.includes(f.type) && f.size <= MAX_FILE_SIZE,
+    async (incoming: FileList | File[]) => {
+      const filtered = Array.from(incoming).filter(
+        (f) => ALLOWED_TYPES.includes(f.type) && f.size <= MAX_SOURCE_SIZE,
       );
+      if (filtered.length === 0) return;
 
-      const combined = [...value, ...newFiles].slice(0, maxFiles);
-      onChange(combined);
+      setCompressing(true);
+      try {
+        const compressed = await Promise.all(filtered.map(compressFile));
+        const combined = [...value, ...compressed].slice(0, maxFiles);
+        onChange(combined);
+      } finally {
+        setCompressing(false);
+      }
     },
     [value, onChange, maxFiles],
   );
@@ -67,18 +87,18 @@ export const ImagePicker = ({
       e.preventDefault();
       e.stopPropagation();
       setDragActive(false);
-      if (disabled) return;
+      if (disabled || compressing) return;
       if (e.dataTransfer.files?.length) {
-        addFiles(e.dataTransfer.files);
+        void addFiles(e.dataTransfer.files);
       }
     },
-    [addFiles, disabled],
+    [addFiles, disabled, compressing],
   );
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files?.length) {
-        addFiles(e.target.files);
+        void addFiles(e.target.files);
         // Reset so the same file can be re-selected
         e.target.value = "";
       }
@@ -96,9 +116,9 @@ export const ImagePicker = ({
           // oxlint-disable-next-line jsx_a11y/prefer-tag-over-role
           role="button"
           tabIndex={0}
-          aria-disabled={disabled}
-          onClick={() => inputRef.current?.click()}
-          onKeyUp={() => inputRef.current?.click()}
+          aria-disabled={disabled || compressing}
+          onClick={() => !compressing && inputRef.current?.click()}
+          onKeyUp={() => !compressing && inputRef.current?.click()}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
@@ -109,21 +129,29 @@ export const ImagePicker = ({
               ? "border-ring bg-accent/50"
               : "border-input hover:border-ring hover:bg-accent/30",
             error && "border-destructive",
-            disabled && "pointer-events-none opacity-50",
+            (disabled || compressing) && "pointer-events-none opacity-50",
           )}
         >
           <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
             <HugeiconsIcon icon={Image02Icon} className="size-5 text-muted-foreground" />
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="text-sm font-medium">Drop your images here</span>
+            <span className="text-sm font-medium">
+              {compressing ? "Optimizing..." : "Drop your images here"}
+            </span>
             <span className="text-xs text-muted-foreground">
-              JPEG, PNG, WebP, AVIF or GIF (max. 1MB)
+              JPEG, PNG, WebP, AVIF or GIF (up to 5MB, auto-optimized)
             </span>
           </div>
-          <Button type="button" variant="outline" size="sm" disabled={disabled} tabIndex={-1}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={disabled || compressing}
+            tabIndex={-1}
+          >
             <HugeiconsIcon icon={Upload04Icon} className="mr-1.5 size-3.5" />
-            Select images
+            {compressing ? "Optimizing..." : "Select images"}
           </Button>
         </div>
       )}
@@ -135,7 +163,7 @@ export const ImagePicker = ({
         multiple
         className="hidden"
         onChange={handleInputChange}
-        disabled={disabled}
+        disabled={disabled || compressing}
       />
 
       {/* Image previews */}
@@ -254,18 +282,27 @@ export function UpdateImagePicker({
 }: UpdateImagePickerProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [compressing, setCompressing] = useState(false);
 
   const totalCount = existingImages.length + newFiles.length;
   const canAddMore = totalCount < maxFiles;
 
   const addFiles = useCallback(
-    (incoming: FileList | File[]) => {
+    async (incoming: FileList | File[]) => {
       const filtered = Array.from(incoming).filter(
-        (f) => ALLOWED_TYPES.includes(f.type) && f.size <= MAX_FILE_SIZE,
+        (f) => ALLOWED_TYPES.includes(f.type) && f.size <= MAX_SOURCE_SIZE,
       );
       const slotsLeft = maxFiles - existingImages.length - newFiles.length;
-      const toAdd = filtered.slice(0, Math.max(0, slotsLeft));
-      onNewFilesChange([...newFiles, ...toAdd]);
+      const toCompress = filtered.slice(0, Math.max(0, slotsLeft));
+      if (toCompress.length === 0) return;
+
+      setCompressing(true);
+      try {
+        const compressed = await Promise.all(toCompress.map(compressFile));
+        onNewFilesChange([...newFiles, ...compressed]);
+      } finally {
+        setCompressing(false);
+      }
     },
     [existingImages.length, newFiles, onNewFilesChange, maxFiles],
   );
@@ -296,18 +333,18 @@ export function UpdateImagePicker({
       e.preventDefault();
       e.stopPropagation();
       setDragActive(false);
-      if (disabled) return;
+      if (disabled || compressing) return;
       if (e.dataTransfer.files?.length) {
-        addFiles(e.dataTransfer.files);
+        void addFiles(e.dataTransfer.files);
       }
     },
-    [addFiles, disabled],
+    [addFiles, disabled, compressing],
   );
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files?.length) {
-        addFiles(e.target.files);
+        void addFiles(e.target.files);
         e.target.value = "";
       }
     },
@@ -321,9 +358,9 @@ export function UpdateImagePicker({
           // oxlint-disable-next-line jsx_a11y/prefer-tag-over-role
           role="button"
           tabIndex={0}
-          aria-disabled={disabled}
-          onClick={() => inputRef.current?.click()}
-          onKeyUp={() => inputRef.current?.click()}
+          aria-disabled={disabled || compressing}
+          onClick={() => !compressing && inputRef.current?.click()}
+          onKeyUp={() => !compressing && inputRef.current?.click()}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
@@ -334,21 +371,29 @@ export function UpdateImagePicker({
               ? "border-ring bg-accent/50"
               : "border-input hover:border-ring hover:bg-accent/30",
             error && "border-destructive",
-            disabled && "pointer-events-none opacity-50",
+            (disabled || compressing) && "pointer-events-none opacity-50",
           )}
         >
           <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
             <HugeiconsIcon icon={Image02Icon} className="size-5 text-muted-foreground" />
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="text-sm font-medium">Drop your images here</span>
+            <span className="text-sm font-medium">
+              {compressing ? "Optimizing..." : "Drop your images here"}
+            </span>
             <span className="text-xs text-muted-foreground">
-              JPEG, PNG, WebP, AVIF or GIF (max. 1MB)
+              JPEG, PNG, WebP, AVIF or GIF (up to 5MB, auto-optimized)
             </span>
           </div>
-          <Button type="button" variant="outline" size="sm" disabled={disabled} tabIndex={-1}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={disabled || compressing}
+            tabIndex={-1}
+          >
             <HugeiconsIcon icon={Upload04Icon} className="mr-1.5 size-3.5" />
-            Select images
+            {compressing ? "Optimizing..." : "Select images"}
           </Button>
         </div>
       )}
@@ -360,7 +405,7 @@ export function UpdateImagePicker({
         multiple
         className="hidden"
         onChange={handleInputChange}
-        disabled={disabled}
+        disabled={disabled || compressing}
       />
 
       {/* Image previews */}

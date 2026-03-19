@@ -6,9 +6,7 @@ const FOOTER_LINKS = {
     title: "Shop",
     links: [
       { href: "/shop", label: "All Products" },
-      { href: "/shop?c=new", label: "New Arrivals" },
-      { href: "/shop?c=accessories", label: "Accessories" },
-      { href: "/shop?c=apparel", label: "Apparel" },
+      { href: "/shop?new=true", label: "New Arrivals" },
     ],
   },
   legal: {
@@ -64,7 +62,7 @@ export const SiteFooter = () => {
           <FooterCopyright />
           <div className="flex items-center gap-5">
             <Link
-              href="https://x.com"
+              href="https://x.com/chiagxziem"
               className="text-xs text-muted-foreground transition-colors hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"
@@ -72,7 +70,7 @@ export const SiteFooter = () => {
               X / Twitter
             </Link>
             <Link
-              href="https://github.com"
+              href="https://github.com/chiagxziem/ahia"
               className="text-xs text-muted-foreground transition-colors hover:text-foreground"
               target="_blank"
               rel="noopener noreferrer"

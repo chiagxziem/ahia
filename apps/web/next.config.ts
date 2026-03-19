@@ -16,6 +16,7 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    unoptimized: true,
     remotePatterns: [new URL("https://ahia-bucket.gozman.xyz/**")],
   },
 };

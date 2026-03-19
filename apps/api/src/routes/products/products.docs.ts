@@ -190,7 +190,7 @@ export const createProductDoc = describeRoute({
       fileSizeError: {
         summary: "File size too large",
         code: "INVALID_FILE",
-        details: "Image 1: File size must be less than 1MB",
+        details: "Image 1: File size must be less than 512KB",
       },
       fileTypeError: {
         summary: "Invalid file type",
@@ -269,7 +269,7 @@ export const updateProductDoc = describeRoute({
       fileSizeError: {
         summary: "File size too large",
         code: "INVALID_FILE",
-        details: "Image 1: File size must be less than 1MB",
+        details: "Image 1: File size must be less than 512KB",
       },
       fileTypeError: {
         summary: "Invalid file type",

@@ -263,7 +263,6 @@ orders.post("/create-checkout", createCheckoutDoc, async (c) => {
           quantity: cartItem.quantity,
         })),
         mode: "payment",
-        // Will still configure the URLs once we have frontend up and running.
         success_url: `${env.WEB_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${env.WEB_URL}/checkout/cancel`,
         customer_email: user.email,

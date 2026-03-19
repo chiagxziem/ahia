@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import { $fetch, $fetchAndThrow } from "@/lib/fetch";
 import { successResSchema } from "@/lib/schemas";
 import { CartSelectSchema } from "@repo/db/validators/cart.validator";
@@ -42,5 +44,17 @@ export const clearCart = async () => {
   return await $fetchAndThrow("/cart", {
     method: "DELETE",
     output: cartOutputSchema,
+  });
+};
+
+export const createCheckout = async () => {
+  return await $fetchAndThrow("/orders/create-checkout", {
+    method: "POST",
+    output: successResSchema(
+      z.object({
+        checkoutUrl: z.url(),
+        checkoutSessionId: z.string(),
+      }),
+    ),
   });
 };

@@ -21,6 +21,7 @@ import {
 import { cancelToastEl } from "@/components/ui/sonner";
 import {
   clearCart,
+  createCheckout,
   getCart,
   removeCartItem,
   updateCartItemQuantity,
@@ -75,6 +76,18 @@ export const CartDrawer = () => {
     },
     onError: (err) => {
       toast.error(getApiError(err) || "Failed to clear cart.", cancelToastEl);
+    },
+  });
+
+  const checkoutMutation = useMutation({
+    mutationFn: createCheckout,
+    onSuccess: ({ data }) => {
+      if (data?.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      }
+    },
+    onError: (err) => {
+      toast.error(getApiError(err) || "Failed to create checkout.", cancelToastEl);
     },
   });
 
@@ -236,8 +249,13 @@ export const CartDrawer = () => {
                   Shipping and taxes calculated at checkout.
                 </p>
                 <div className="flex flex-col gap-2">
-                  <Button size="lg" className="h-12 w-full rounded-full text-sm font-semibold">
-                    Continue to Checkout
+                  <Button
+                    size="lg"
+                    className="h-12 w-full rounded-full text-sm font-semibold"
+                    onClick={() => checkoutMutation.mutate()}
+                    disabled={checkoutMutation.isPending}
+                  >
+                    {checkoutMutation.isPending ? "Redirecting..." : "Continue to Checkout"}
                   </Button>
                   <Button
                     variant="destructive"
