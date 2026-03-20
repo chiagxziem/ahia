@@ -56,26 +56,42 @@ export const CheckoutSuccess = ({ sessionId }: { sessionId: string }) => {
             <div className="flex size-16 items-center justify-center rounded-full bg-destructive/10">
               <span className="text-3xl">!</span>
             </div>
-            <h1 className="font-heading text-2xl font-bold tracking-tight">Verification failed</h1>
+            <h1 className="font-heading text-2xl font-bold tracking-tight">
+              Verification failed
+            </h1>
             <p className="text-sm text-muted-foreground">
-              We couldn&apos;t verify your payment. If you were charged, your order will still be
-              processed — please check your email for confirmation.
+              We couldn&apos;t verify your payment. If you were charged, your
+              order will still be processed — please check your email for
+              confirmation.
             </p>
-            <Button className="rounded-full" nativeButton={false} render={<Link href="/" />}>
+            <Button
+              className="rounded-full"
+              nativeButton={false}
+              render={<Link href="/" />}
+            >
               Back to Home
             </Button>
           </>
         ) : isSuccess ? (
           <>
             <div className="flex size-16 items-center justify-center rounded-full bg-green-500/10">
-              <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-8 text-green-600" />
+              <HugeiconsIcon
+                icon={CheckmarkCircle02Icon}
+                className="size-8 text-green-600"
+              />
             </div>
-            <h1 className="font-heading text-2xl font-bold tracking-tight">Payment successful!</h1>
+            <h1 className="font-heading text-2xl font-bold tracking-tight">
+              Payment successful!
+            </h1>
             <p className="text-sm text-muted-foreground">
-              Thank you for your purchase. You&apos;ll receive a confirmation email shortly with
-              your order details.
+              Thank you for your purchase. You&apos;ll receive a confirmation
+              email shortly with your order details.
             </p>
-            <Button className="rounded-full" nativeButton={false} render={<Link href="/" />}>
+            <Button
+              className="rounded-full"
+              nativeButton={false}
+              render={<Link href="/" />}
+            >
               Back to Home
             </Button>
           </>

@@ -10,15 +10,24 @@ const AlertDialog = ({ ...props }: AlertDialogPrimitive.Root.Props) => {
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />;
 };
 
-const AlertDialogTrigger = ({ ...props }: AlertDialogPrimitive.Trigger.Props) => {
-  return <AlertDialogPrimitive.Trigger data-slot="alert-dialog-trigger" {...props} />;
+const AlertDialogTrigger = ({
+  ...props
+}: AlertDialogPrimitive.Trigger.Props) => {
+  return (
+    <AlertDialogPrimitive.Trigger data-slot="alert-dialog-trigger" {...props} />
+  );
 };
 
 const AlertDialogPortal = ({ ...props }: AlertDialogPrimitive.Portal.Props) => {
-  return <AlertDialogPrimitive.Portal data-slot="alert-dialog-portal" {...props} />;
+  return (
+    <AlertDialogPrimitive.Portal data-slot="alert-dialog-portal" {...props} />
+  );
 };
 
-const AlertDialogOverlay = ({ className, ...props }: AlertDialogPrimitive.Backdrop.Props) => {
+const AlertDialogOverlay = ({
+  className,
+  ...props
+}: AlertDialogPrimitive.Backdrop.Props) => {
   return (
     <AlertDialogPrimitive.Backdrop
       data-slot="alert-dialog-overlay"
@@ -54,7 +63,10 @@ const AlertDialogContent = ({
   );
 };
 
-const AlertDialogHeader = ({ className, ...props }: React.ComponentProps<"div">) => {
+const AlertDialogHeader = ({
+  className,
+  ...props
+}: React.ComponentProps<"div">) => {
   return (
     <div
       data-slot="alert-dialog-header"
@@ -67,7 +79,10 @@ const AlertDialogHeader = ({ className, ...props }: React.ComponentProps<"div">)
   );
 };
 
-const AlertDialogFooter = ({ className, ...props }: React.ComponentProps<"div">) => {
+const AlertDialogFooter = ({
+  className,
+  ...props
+}: React.ComponentProps<"div">) => {
   return (
     <div
       data-slot="alert-dialog-footer"
@@ -80,7 +95,10 @@ const AlertDialogFooter = ({ className, ...props }: React.ComponentProps<"div">)
   );
 };
 
-const AlertDialogMedia = ({ className, ...props }: React.ComponentProps<"div">) => {
+const AlertDialogMedia = ({
+  className,
+  ...props
+}: React.ComponentProps<"div">) => {
   return (
     <div
       data-slot="alert-dialog-media"
@@ -125,8 +143,17 @@ const AlertDialogDescription = ({
   );
 };
 
-const AlertDialogAction = ({ className, ...props }: React.ComponentProps<typeof Button>) => {
-  return <Button data-slot="alert-dialog-action" className={cn(className)} {...props} />;
+const AlertDialogAction = ({
+  className,
+  ...props
+}: React.ComponentProps<typeof Button>) => {
+  return (
+    <Button
+      data-slot="alert-dialog-action"
+      className={cn(className)}
+      {...props}
+    />
+  );
 };
 
 const AlertDialogCancel = ({

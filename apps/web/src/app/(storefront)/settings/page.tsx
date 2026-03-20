@@ -1,4 +1,8 @@
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -20,8 +24,12 @@ const SettingsPage = () => {
       <div className="flex flex-col gap-10">
         {/* Page header */}
         <div className="flex flex-col gap-1">
-          <h1 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">Settings</h1>
-          <p className="text-sm text-muted-foreground">Manage your account and preferences.</p>
+          <h1 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">
+            Settings
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Manage your account and preferences.
+          </p>
         </div>
 
         <Suspense fallback={<SettingsContentFallback />}>

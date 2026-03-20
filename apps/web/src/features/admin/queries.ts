@@ -1,8 +1,9 @@
 import { z } from "zod";
 
-import { $fetch, $fetchAndThrow } from "@/lib/fetch";
-import { successResSchema } from "@/lib/schemas";
-import { ListUsersQuerySchema, WindowNumberSchema } from "@repo/db/validators/admin.validator";
+import {
+  ListUsersQuerySchema,
+  WindowNumberSchema,
+} from "@repo/db/validators/admin.validator";
 import { OrderWithCustomerSelectSchema } from "@repo/db/validators/order.validator";
 import {
   CategorySelectSchema,
@@ -10,6 +11,9 @@ import {
   ProductExtendedSchema,
 } from "@repo/db/validators/product.validator";
 import { UserSelectSchema } from "@repo/db/validators/user.validator";
+
+import { $fetch, $fetchAndThrow } from "@/lib/fetch";
+import { successResSchema } from "@/lib/schemas";
 
 // ── Users ──────────────────────────────────────────────────
 
@@ -70,7 +74,10 @@ export const getAdminStats = async (cookie?: string) => {
   return data?.data ?? null;
 };
 
-export const getAdminUsers = async (queryParams: AdminUsersListParams = {}, cookie?: string) => {
+export const getAdminUsers = async (
+  queryParams: AdminUsersListParams = {},
+  cookie?: string,
+) => {
   const validatedQueryParams = ListUsersQuerySchema.parse(queryParams);
 
   const { data, error } = await $fetch("/admin/users", {
@@ -148,7 +155,13 @@ export const createCategory = async (body: { name: string }) => {
   return data ?? null;
 };
 
-export const updateCategory = async ({ id, body }: { id: string; body: { name: string } }) => {
+export const updateCategory = async ({
+  id,
+  body,
+}: {
+  id: string;
+  body: { name: string };
+}) => {
   const { data } = await $fetchAndThrow(`/categories/${id}`, {
     method: "PUT",
     output: successResSchema(CategorySelectSchema),
@@ -264,9 +277,11 @@ export const updateAdminProduct = async ({
 }) => {
   const formData = new FormData();
   if (input.name !== undefined) formData.append("name", input.name);
-  if (input.description !== undefined) formData.append("description", input.description);
+  if (input.description !== undefined)
+    formData.append("description", input.description);
   if (input.price !== undefined) formData.append("price", input.price);
-  if (input.stockQuantity !== undefined) formData.append("stockQuantity", input.stockQuantity);
+  if (input.stockQuantity !== undefined)
+    formData.append("stockQuantity", input.stockQuantity);
   if (input.categoryIds !== undefined) {
     formData.append("categoryIds", JSON.stringify(input.categoryIds));
   }
@@ -319,7 +334,10 @@ export const defaultAdminsOrdersListParams: AdminOrdersListParams = {
   limit: 50,
 };
 
-export const getAdminOrders = async (queryParams: AdminOrdersListParams = {}, cookie?: string) => {
+export const getAdminOrders = async (
+  queryParams: AdminOrdersListParams = {},
+  cookie?: string,
+) => {
   const { data, error } = await $fetch("/admin/orders", {
     output: successResSchema(AdminOrdersListSchema),
     headers: cookie ? { cookie } : undefined,

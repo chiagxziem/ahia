@@ -1,6 +1,12 @@
 import { validator } from "hono-openapi";
 import { z } from "zod";
 
+import { db } from "@repo/db";
+import {
+  AddToCartSchema,
+  UpdateCartItemSchema,
+} from "@repo/db/validators/cart.validator";
+
 import { createRouter } from "@/app";
 import HttpStatusCodes from "@/lib/http-status-codes";
 import { errorResponse, successResponse } from "@/lib/utils";
@@ -17,8 +23,6 @@ import {
   updateCartItemQuantity,
 } from "@/queries/cart-queries";
 import { getProductById } from "@/queries/product-queries";
-import { db } from "@repo/db";
-import { AddToCartSchema, UpdateCartItemSchema } from "@repo/db/validators/cart.validator";
 
 import {
   addToCartDoc,
@@ -48,7 +52,9 @@ cart.get("/", getUserCartDoc, async (c) => {
     let totalAmount = 0;
 
     const cartItemsWithSubtotals = userCart.cartItems.map((item) => {
-      const subAmount = (parseFloat(item.product.price) * item.quantity).toFixed(2);
+      const subAmount = (
+        parseFloat(item.product.price) * item.quantity
+      ).toFixed(2);
       totalItems += item.quantity;
       totalAmount += parseFloat(subAmount);
 
@@ -74,7 +80,10 @@ cart.get("/", getUserCartDoc, async (c) => {
       updatedAt: userCart.updatedAt,
     };
 
-    return c.json(successResponse(cartResponse, "Cart retrieved successfully"), HttpStatusCodes.OK);
+    return c.json(
+      successResponse(cartResponse, "Cart retrieved successfully"),
+      HttpStatusCodes.OK,
+    );
   } catch (error) {
     console.error("Error retrieving user cart:", error);
     return c.json(
@@ -85,117 +94,133 @@ cart.get("/", getUserCartDoc, async (c) => {
 });
 
 // Add to cart
-cart.post("/items", addToCartDoc, validator("json", AddToCartSchema, validationHook), async (c) => {
-  const user = c.get("user");
-  const { productId, quantity } = c.req.valid("json");
+cart.post(
+  "/items",
+  addToCartDoc,
+  validator("json", AddToCartSchema, validationHook),
+  async (c) => {
+    const user = c.get("user");
+    const { productId, quantity } = c.req.valid("json");
 
-  try {
-    // Validate product exists and get current stock
-    const product = await getProductById(productId);
+    try {
+      // Validate product exists and get current stock
+      const product = await getProductById(productId);
 
-    if (!product) {
-      return c.json(errorResponse("NOT_FOUND", "Product not found"), HttpStatusCodes.NOT_FOUND);
-    }
-
-    // Get or create user cart
-    const userCart = await getOrCreateUserCart(user.id);
-    if (!userCart) {
-      return c.json(
-        errorResponse("INTERNAL_SERVER_ERROR", "Failed to retrieve cart"),
-        HttpStatusCodes.INTERNAL_SERVER_ERROR,
-      );
-    }
-
-    // Check if product already in cart
-    const existingCartItem = await getCartItem(userCart.id, productId);
-
-    let totalRequestedQuantity = quantity;
-    if (existingCartItem) {
-      totalRequestedQuantity = existingCartItem.quantity + quantity;
-    }
-
-    const productStockQty = product.stockQuantity || 0;
-
-    // Validate stock availability
-    if (totalRequestedQuantity > productStockQty) {
-      let errorMessage: string;
-
-      if (productStockQty === 0) {
-        errorMessage = "Product is currently out of stock. Available: 0";
-      } else if (existingCartItem) {
-        const maxCanAdd = productStockQty - existingCartItem.quantity;
-        errorMessage = `Not enough stock available. You have ${existingCartItem.quantity} in cart, requested ${quantity} more, but only ${productStockQty} available total. Maximum you can add: ${maxCanAdd}`;
-      } else {
-        errorMessage = `Not enough stock available. Requested: ${quantity}, Available: ${productStockQty}. Maximum you can add: ${productStockQty}`;
+      if (!product) {
+        return c.json(
+          errorResponse("NOT_FOUND", "Product not found"),
+          HttpStatusCodes.NOT_FOUND,
+        );
       }
 
-      return c.json(
-        errorResponse("INSUFFICIENT_STOCK", errorMessage),
-        HttpStatusCodes.UNPROCESSABLE_ENTITY,
-      );
-    }
+      // Get or create user cart
+      const userCart = await getOrCreateUserCart(user.id);
+      if (!userCart) {
+        return c.json(
+          errorResponse("INTERNAL_SERVER_ERROR", "Failed to retrieve cart"),
+          HttpStatusCodes.INTERNAL_SERVER_ERROR,
+        );
+      }
 
-    // Add/update cart item in transaction
-    await db.transaction(async () => {
+      // Check if product already in cart
+      const existingCartItem = await getCartItem(userCart.id, productId);
+
+      let totalRequestedQuantity = quantity;
       if (existingCartItem) {
-        await updateCartItemQuantity(existingCartItem.id, totalRequestedQuantity);
-      } else {
-        await addCartItem(userCart.id, productId, quantity);
+        totalRequestedQuantity = existingCartItem.quantity + quantity;
       }
-    });
 
-    const updatedCart = await getUserCartWithItems(user.id);
+      const productStockQty = product.stockQuantity || 0;
 
-    if (!updatedCart) {
+      // Validate stock availability
+      if (totalRequestedQuantity > productStockQty) {
+        let errorMessage: string;
+
+        if (productStockQty === 0) {
+          errorMessage = "Product is currently out of stock. Available: 0";
+        } else if (existingCartItem) {
+          const maxCanAdd = productStockQty - existingCartItem.quantity;
+          errorMessage = `Not enough stock available. You have ${existingCartItem.quantity} in cart, requested ${quantity} more, but only ${productStockQty} available total. Maximum you can add: ${maxCanAdd}`;
+        } else {
+          errorMessage = `Not enough stock available. Requested: ${quantity}, Available: ${productStockQty}. Maximum you can add: ${productStockQty}`;
+        }
+
+        return c.json(
+          errorResponse("INSUFFICIENT_STOCK", errorMessage),
+          HttpStatusCodes.UNPROCESSABLE_ENTITY,
+        );
+      }
+
+      // Add/update cart item in transaction
+      await db.transaction(async () => {
+        if (existingCartItem) {
+          await updateCartItemQuantity(
+            existingCartItem.id,
+            totalRequestedQuantity,
+          );
+        } else {
+          await addCartItem(userCart.id, productId, quantity);
+        }
+      });
+
+      const updatedCart = await getUserCartWithItems(user.id);
+
+      if (!updatedCart) {
+        return c.json(
+          errorResponse(
+            "INTERNAL_SERVER_ERROR",
+            "Failed to retrieve updated cart",
+          ),
+          HttpStatusCodes.INTERNAL_SERVER_ERROR,
+        );
+      }
+
+      // Calculate totals
+      let totalItems = 0;
+      let totalAmount = 0;
+
+      const cartItemsWithSubtotals = updatedCart.cartItems.map((item) => {
+        const subAmount = (
+          parseFloat(item.product.price) * item.quantity
+        ).toFixed(2);
+        totalItems += item.quantity;
+        totalAmount += parseFloat(subAmount);
+
+        return {
+          id: item.id,
+          cartId: item.cartId,
+          productId: item.productId,
+          quantity: item.quantity,
+          subAmount,
+          product: item.product,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+        };
+      });
+
+      const cartResponse = {
+        id: updatedCart.id,
+        userId: updatedCart.userId,
+        cartItems: cartItemsWithSubtotals,
+        totalItems,
+        totalAmount: totalAmount.toFixed(2),
+        createdAt: updatedCart.createdAt,
+        updatedAt: updatedCart.updatedAt,
+      };
+
       return c.json(
-        errorResponse("INTERNAL_SERVER_ERROR", "Failed to retrieve updated cart"),
+        successResponse(cartResponse, "Product added to cart successfully"),
+        HttpStatusCodes.OK,
+      );
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
+      return c.json(
+        errorResponse("INTERNAL_SERVER_ERROR", "Failed to add product to cart"),
         HttpStatusCodes.INTERNAL_SERVER_ERROR,
       );
     }
-
-    // Calculate totals
-    let totalItems = 0;
-    let totalAmount = 0;
-
-    const cartItemsWithSubtotals = updatedCart.cartItems.map((item) => {
-      const subAmount = (parseFloat(item.product.price) * item.quantity).toFixed(2);
-      totalItems += item.quantity;
-      totalAmount += parseFloat(subAmount);
-
-      return {
-        id: item.id,
-        cartId: item.cartId,
-        productId: item.productId,
-        quantity: item.quantity,
-        subAmount,
-        product: item.product,
-        createdAt: item.createdAt,
-        updatedAt: item.updatedAt,
-      };
-    });
-
-    const cartResponse = {
-      id: updatedCart.id,
-      userId: updatedCart.userId,
-      cartItems: cartItemsWithSubtotals,
-      totalItems,
-      totalAmount: totalAmount.toFixed(2),
-      createdAt: updatedCart.createdAt,
-      updatedAt: updatedCart.updatedAt,
-    };
-
-    return c.json(
-      successResponse(cartResponse, "Product added to cart successfully"),
-      HttpStatusCodes.OK,
-    );
-  } catch (error) {
-    console.error("Error adding product to cart:", error);
-    return c.json(
-      errorResponse("INTERNAL_SERVER_ERROR", "Failed to add product to cart"),
-      HttpStatusCodes.INTERNAL_SERVER_ERROR,
-    );
-  }
-});
+  },
+);
 
 // Update cart item quantity
 cart.put(
@@ -213,13 +238,19 @@ cart.put(
       const cartItemWithDetails = await getCartItemWithDetails(id);
 
       if (!cartItemWithDetails) {
-        return c.json(errorResponse("NOT_FOUND", "Cart item not found"), HttpStatusCodes.NOT_FOUND);
+        return c.json(
+          errorResponse("NOT_FOUND", "Cart item not found"),
+          HttpStatusCodes.NOT_FOUND,
+        );
       }
 
       // Verify ownership - cart item belongs to user's cart
       if (cartItemWithDetails.cart.userId !== user.id) {
         return c.json(
-          errorResponse("FORBIDDEN", "You can only update items in your own cart"),
+          errorResponse(
+            "FORBIDDEN",
+            "You can only update items in your own cart",
+          ),
           HttpStatusCodes.FORBIDDEN,
         );
       }
@@ -253,7 +284,10 @@ cart.put(
       const updatedCart = await getUserCartWithItems(user.id);
       if (!updatedCart) {
         return c.json(
-          errorResponse("INTERNAL_SERVER_ERROR", "Failed to retrieve updated cart"),
+          errorResponse(
+            "INTERNAL_SERVER_ERROR",
+            "Failed to retrieve updated cart",
+          ),
           HttpStatusCodes.INTERNAL_SERVER_ERROR,
         );
       }
@@ -263,7 +297,9 @@ cart.put(
       let totalAmount = 0;
 
       const cartItemsWithSubtotals = updatedCart.cartItems.map((item) => {
-        const subAmount = (parseFloat(item.product.price) * item.quantity).toFixed(2);
+        const subAmount = (
+          parseFloat(item.product.price) * item.quantity
+        ).toFixed(2);
         totalItems += item.quantity;
         totalAmount += parseFloat(subAmount);
 
@@ -317,13 +353,19 @@ cart.delete(
       const cartItemWithDetails = await getCartItemWithDetails(id);
 
       if (!cartItemWithDetails) {
-        return c.json(errorResponse("NOT_FOUND", "Cart item not found"), HttpStatusCodes.NOT_FOUND);
+        return c.json(
+          errorResponse("NOT_FOUND", "Cart item not found"),
+          HttpStatusCodes.NOT_FOUND,
+        );
       }
 
       // Verify ownership - cart item belongs to user's cart
       if (cartItemWithDetails.cart.userId !== user.id) {
         return c.json(
-          errorResponse("FORBIDDEN", "You can only remove items from your own cart"),
+          errorResponse(
+            "FORBIDDEN",
+            "You can only remove items from your own cart",
+          ),
           HttpStatusCodes.FORBIDDEN,
         );
       }
@@ -337,7 +379,10 @@ cart.delete(
       const updatedCart = await getUserCartWithItems(user.id);
       if (!updatedCart) {
         return c.json(
-          errorResponse("INTERNAL_SERVER_ERROR", "Failed to retrieve updated cart"),
+          errorResponse(
+            "INTERNAL_SERVER_ERROR",
+            "Failed to retrieve updated cart",
+          ),
           HttpStatusCodes.INTERNAL_SERVER_ERROR,
         );
       }
@@ -347,7 +392,9 @@ cart.delete(
       let totalAmount = 0;
 
       const cartItemsWithSubtotals = updatedCart.cartItems.map((item) => {
-        const subAmount = (parseFloat(item.product.price) * item.quantity).toFixed(2);
+        const subAmount = (
+          parseFloat(item.product.price) * item.quantity
+        ).toFixed(2);
         totalItems += item.quantity;
         totalAmount += parseFloat(subAmount);
 

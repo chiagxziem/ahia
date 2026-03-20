@@ -3,6 +3,9 @@ import { validator } from "hono-openapi";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { z } from "zod";
 
+import { auth } from "@repo/auth/server";
+import { ListUsersQuerySchema } from "@repo/db/validators/admin.validator";
+
 import { createRouter } from "@/app";
 import HttpStatusCodes from "@/lib/http-status-codes";
 import { PaginationQuerySchema } from "@/lib/schemas";
@@ -14,8 +17,6 @@ import { createUser } from "@/queries/admin-queries";
 import { getAdminOrderById, getAllOrders } from "@/queries/order-queries";
 import { getAdminOverviewStats } from "@/queries/stats-queries";
 import { getUserById } from "@/queries/user-queries";
-import { auth } from "@repo/auth/server";
-import { ListUsersQuerySchema } from "@repo/db/validators/admin.validator";
 
 import {
   createUserDoc,
@@ -33,7 +34,10 @@ const admin = createRouter()
 admin.get("/stats", getAdminStatsDoc, async (c) => {
   const stats = await getAdminOverviewStats();
 
-  return c.json(successResponse(stats, "Admin stats retrieved successfully"), HttpStatusCodes.OK);
+  return c.json(
+    successResponse(stats, "Admin stats retrieved successfully"),
+    HttpStatusCodes.OK,
+  );
 });
 
 // Get all users (admin)
@@ -50,11 +54,17 @@ admin.get(
         headers: c.req.raw.headers,
       });
 
-      return c.json(successResponse(users, "Users retrieved successfully"), HttpStatusCodes.OK);
+      return c.json(
+        successResponse(users, "Users retrieved successfully"),
+        HttpStatusCodes.OK,
+      );
     } catch (error) {
       if (error instanceof APIError) {
         return c.json(
-          errorResponse(error.body?.code ?? "AUTH_ERROR", error.body?.message ?? error.message),
+          errorResponse(
+            error.body?.code ?? "AUTH_ERROR",
+            error.body?.message ?? error.message,
+          ),
           error.statusCode as ContentfulStatusCode,
         );
       }
@@ -75,14 +85,23 @@ admin.get(
       const user = await getUserById(id);
 
       if (!user) {
-        return c.json(errorResponse("NOT_FOUND", "User not found"), HttpStatusCodes.NOT_FOUND);
+        return c.json(
+          errorResponse("NOT_FOUND", "User not found"),
+          HttpStatusCodes.NOT_FOUND,
+        );
       }
 
-      return c.json(successResponse(user, "User retrieved successfully"), HttpStatusCodes.OK);
+      return c.json(
+        successResponse(user, "User retrieved successfully"),
+        HttpStatusCodes.OK,
+      );
     } catch (error) {
       if (error instanceof APIError) {
         return c.json(
-          errorResponse(error.body?.code ?? "AUTH_ERROR", error.body?.message ?? error.message),
+          errorResponse(
+            error.body?.code ?? "AUTH_ERROR",
+            error.body?.message ?? error.message,
+          ),
           error.statusCode as ContentfulStatusCode,
         );
       }
@@ -136,7 +155,10 @@ admin.get(
       const orderWithItems = await getAdminOrderById(id);
 
       if (!orderWithItems) {
-        return c.json(errorResponse("NOT_FOUND", "Order not found"), HttpStatusCodes.NOT_FOUND);
+        return c.json(
+          errorResponse("NOT_FOUND", "Order not found"),
+          HttpStatusCodes.NOT_FOUND,
+        );
       }
 
       return c.json(
@@ -170,11 +192,17 @@ admin
       try {
         const body = c.req.valid("json");
         const user = await createUser(body);
-        return c.json(successResponse(user, "User created successfully"), HttpStatusCodes.CREATED);
+        return c.json(
+          successResponse(user, "User created successfully"),
+          HttpStatusCodes.CREATED,
+        );
       } catch (error) {
         if (error instanceof APIError) {
           return c.json(
-            errorResponse(error.body?.code ?? "AUTH_ERROR", error.body?.message ?? error.message),
+            errorResponse(
+              error.body?.code ?? "AUTH_ERROR",
+              error.body?.message ?? error.message,
+            ),
             error.statusCode as ContentfulStatusCode,
           );
         }

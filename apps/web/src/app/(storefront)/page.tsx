@@ -28,11 +28,13 @@ export const Home = () => {
           <h1 className="font-heading text-4xl leading-[1.08]! font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
             Curated essentials,
             <br />
-            <span className="text-muted-foreground/60">beautifully minimal.</span>
+            <span className="text-muted-foreground/60">
+              beautifully minimal.
+            </span>
           </h1>
           <p className="max-w-md text-base leading-relaxed text-muted-foreground md:text-lg">
-            Discover premium quality and exceptional design built to last. A shopping experience
-            that feels as good as what you buy.
+            Discover premium quality and exceptional design built to last. A
+            shopping experience that feels as good as what you buy.
           </p>
           <div className="mt-1 flex flex-wrap items-center gap-3">
             <Button

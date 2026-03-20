@@ -30,12 +30,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { ImagePicker } from "@/components/ui/image-picker";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
 import { Textarea } from "@/components/ui/textarea";
-import { createAdminProduct, getAdminCategories } from "@/features/admin/queries";
+import {
+  createAdminProduct,
+  getAdminCategories,
+} from "@/features/admin/queries";
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { getApiError } from "@/lib/utils";
@@ -45,7 +53,10 @@ interface CreateProductDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogProps) {
+export function CreateProductDialog({
+  open,
+  onOpenChange,
+}: CreateProductDialogProps) {
   const queryClient = useQueryClient();
   const anchorRef = useComboboxAnchor();
 
@@ -60,7 +71,10 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
     enabled: open,
   });
 
-  const categories = useMemo(() => categoriesData?.categories ?? [], [categoriesData?.categories]);
+  const categories = useMemo(
+    () => categoriesData?.categories ?? [],
+    [categoriesData?.categories],
+  );
 
   const getSelectedCategories = (categoryIds: string[]) => {
     return categories.filter((c) => categoryIds.includes(c.id));
@@ -75,11 +89,18 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
       toast.success("Product created successfully", cancelToastEl);
       onOpenChange(false);
       form.reset();
-      await queryClient.invalidateQueries({ queryKey: queryKeys.adminProducts() });
-      await queryClient.invalidateQueries({ queryKey: queryKeys.adminCategories() });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.adminProducts(),
+      });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.adminCategories(),
+      });
     },
     onError: (err) => {
-      toast.error(getApiError(err) || "Failed to create product.", cancelToastEl);
+      toast.error(
+        getApiError(err) || "Failed to create product.",
+        cancelToastEl,
+      );
     },
   });
 
@@ -122,8 +143,8 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
         <DialogHeader>
           <DialogTitle>Create new product</DialogTitle>
           <DialogDescription>
-            Fill in the product details. Images, name, price, stock and at least one category are
-            required.
+            Fill in the product details. Images, name, price, stock and at least
+            one category are required.
           </DialogDescription>
         </DialogHeader>
 
@@ -143,13 +164,18 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                 validators={{
                   onChange: ({ value }) => {
                     if (!value) return "Name is required";
-                    if (value.length < 1) return "Name must be at least 1 character";
+                    if (value.length < 1)
+                      return "Name must be at least 1 character";
                     return undefined;
                   },
                 }}
               >
                 {(field) => (
-                  <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
+                  <Field
+                    data-invalid={
+                      field.state.meta.errors.length > 0 ? true : undefined
+                    }
+                  >
                     <FieldLabel htmlFor={field.name}>Name</FieldLabel>
                     <Input
                       id={field.name}
@@ -162,7 +188,9 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                       disabled={createMutation.isPending}
                     />
                     {field.state.meta.errors.length > 0 && (
-                      <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                      <FieldError>
+                        {field.state.meta.errors.join(", ")}
+                      </FieldError>
                     )}
                   </Field>
                 )}
@@ -174,7 +202,9 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                   <Field>
                     <FieldLabel htmlFor={field.name}>
                       Description{" "}
-                      <span className="font-normal text-muted-foreground">(optional)</span>
+                      <span className="font-normal text-muted-foreground">
+                        (optional)
+                      </span>
                     </FieldLabel>
                     <Textarea
                       id={field.name}
@@ -198,13 +228,18 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                     onChange: ({ value }) => {
                       if (!value) return "Price is required";
                       const num = Number(value);
-                      if (Number.isNaN(num) || num <= 0) return "Price must be a positive number";
+                      if (Number.isNaN(num) || num <= 0)
+                        return "Price must be a positive number";
                       return undefined;
                     },
                   }}
                 >
                   {(field) => (
-                    <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
+                    <Field
+                      data-invalid={
+                        field.state.meta.errors.length > 0 ? true : undefined
+                      }
+                    >
                       <FieldLabel htmlFor={field.name}>Price ($)</FieldLabel>
                       <Input
                         id={field.name}
@@ -221,7 +256,9 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                         className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       />
                       {field.state.meta.errors.length > 0 && (
-                        <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                        <FieldError>
+                          {field.state.meta.errors.join(", ")}
+                        </FieldError>
                       )}
                     </Field>
                   )}
@@ -233,15 +270,25 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                     onChange: ({ value }) => {
                       if (!value && value !== "0") return "Stock is required";
                       const num = Number(value);
-                      if (Number.isNaN(num) || num < 0 || !Number.isInteger(num))
+                      if (
+                        Number.isNaN(num) ||
+                        num < 0 ||
+                        !Number.isInteger(num)
+                      )
                         return "Must be a non-negative integer";
                       return undefined;
                     },
                   }}
                 >
                   {(field) => (
-                    <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
-                      <FieldLabel htmlFor={field.name}>Stock quantity</FieldLabel>
+                    <Field
+                      data-invalid={
+                        field.state.meta.errors.length > 0 ? true : undefined
+                      }
+                    >
+                      <FieldLabel htmlFor={field.name}>
+                        Stock quantity
+                      </FieldLabel>
                       <Input
                         id={field.name}
                         name={field.name}
@@ -257,7 +304,9 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                         className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       />
                       {field.state.meta.errors.length > 0 && (
-                        <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                        <FieldError>
+                          {field.state.meta.errors.join(", ")}
+                        </FieldError>
                       )}
                     </Field>
                   )}
@@ -270,7 +319,9 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                 validators={{
                   onChange: ({ value, fieldApi }) => {
                     if (value.length === 0) return undefined;
-                    const stock = Number(fieldApi.form.getFieldValue("stockQuantity") ?? 0);
+                    const stock = Number(
+                      fieldApi.form.getFieldValue("stockQuantity") ?? 0,
+                    );
                     if (stock > 0 && !value.some((s) => s.inStock)) {
                       return "At least one size must be in stock when stock quantity is greater than 0";
                     }
@@ -281,7 +332,10 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                 {(field) => (
                   <Field>
                     <FieldLabel>
-                      Sizes <span className="font-normal text-muted-foreground">(optional)</span>
+                      Sizes{" "}
+                      <span className="font-normal text-muted-foreground">
+                        (optional)
+                      </span>
                     </FieldLabel>
                     <div className="flex flex-col gap-2">
                       {field.state.value.map((size, index) => (
@@ -293,7 +347,10 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                             value={size.name}
                             onChange={(e) => {
                               const next = [...field.state.value];
-                              next[index] = { ...next[index], name: e.target.value };
+                              next[index] = {
+                                ...next[index],
+                                name: e.target.value,
+                              };
                               field.handleChange(next);
                             }}
                             placeholder="e.g. S, M, L"
@@ -306,11 +363,17 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                             disabled={createMutation.isPending}
                             onClick={() => {
                               const next = [...field.state.value];
-                              next[index] = { ...next[index], inStock: !next[index].inStock };
+                              next[index] = {
+                                ...next[index],
+                                inStock: !next[index].inStock,
+                              };
                               field.handleChange(next);
                             }}
                           >
-                            <Checkbox checked={size.inStock} className="pointer-events-none" />
+                            <Checkbox
+                              checked={size.inStock}
+                              className="pointer-events-none"
+                            />
                             In stock
                           </Button>
                           <Button
@@ -320,10 +383,15 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                             className="shrink-0"
                             disabled={createMutation.isPending}
                             onClick={() =>
-                              field.handleChange(field.state.value.filter((_, i) => i !== index))
+                              field.handleChange(
+                                field.state.value.filter((_, i) => i !== index),
+                              )
                             }
                           >
-                            <HugeiconsIcon icon={Cancel01Icon} className="size-3.5" />
+                            <HugeiconsIcon
+                              icon={Cancel01Icon}
+                              className="size-3.5"
+                            />
                           </Button>
                         </ButtonGroup>
                       ))}
@@ -335,12 +403,19 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                         disabled={
                           createMutation.isPending ||
                           (field.state.value.length > 0 &&
-                            !field.state.value[field.state.value.length - 1].name.trim())
+                            !field.state.value[
+                              field.state.value.length - 1
+                            ].name.trim())
                         }
                         onClick={() => {
-                          field.handleChange([...field.state.value, { name: "", inStock: true }]);
+                          field.handleChange([
+                            ...field.state.value,
+                            { name: "", inStock: true },
+                          ]);
                           requestAnimationFrame(() => {
-                            sizeInputRefs.current[field.state.value.length]?.focus();
+                            sizeInputRefs.current[
+                              field.state.value.length
+                            ]?.focus();
                           });
                         }}
                       >
@@ -358,7 +433,9 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                 validators={{
                   onChange: ({ value, fieldApi }) => {
                     if (value.length === 0) return undefined;
-                    const stock = Number(fieldApi.form.getFieldValue("stockQuantity") ?? 0);
+                    const stock = Number(
+                      fieldApi.form.getFieldValue("stockQuantity") ?? 0,
+                    );
                     if (stock > 0 && !value.some((c) => c.inStock)) {
                       return "At least one color must be in stock when stock quantity is greater than 0";
                     }
@@ -369,7 +446,10 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                 {(field) => (
                   <Field>
                     <FieldLabel>
-                      Colors <span className="font-normal text-muted-foreground">(optional)</span>
+                      Colors{" "}
+                      <span className="font-normal text-muted-foreground">
+                        (optional)
+                      </span>
                     </FieldLabel>
                     <div className="flex flex-col gap-2">
                       {field.state.value.map((color, index) => (
@@ -381,7 +461,10 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                             value={color.name}
                             onChange={(e) => {
                               const next = [...field.state.value];
-                              next[index] = { ...next[index], name: e.target.value };
+                              next[index] = {
+                                ...next[index],
+                                name: e.target.value,
+                              };
                               field.handleChange(next);
                             }}
                             placeholder="e.g. Red, Blue"
@@ -394,11 +477,17 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                             disabled={createMutation.isPending}
                             onClick={() => {
                               const next = [...field.state.value];
-                              next[index] = { ...next[index], inStock: !next[index].inStock };
+                              next[index] = {
+                                ...next[index],
+                                inStock: !next[index].inStock,
+                              };
                               field.handleChange(next);
                             }}
                           >
-                            <Checkbox checked={color.inStock} className="pointer-events-none" />
+                            <Checkbox
+                              checked={color.inStock}
+                              className="pointer-events-none"
+                            />
                             In stock
                           </Button>
                           <Button
@@ -408,10 +497,15 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                             className="shrink-0"
                             disabled={createMutation.isPending}
                             onClick={() =>
-                              field.handleChange(field.state.value.filter((_, i) => i !== index))
+                              field.handleChange(
+                                field.state.value.filter((_, i) => i !== index),
+                              )
                             }
                           >
-                            <HugeiconsIcon icon={Cancel01Icon} className="size-3.5" />
+                            <HugeiconsIcon
+                              icon={Cancel01Icon}
+                              className="size-3.5"
+                            />
                           </Button>
                         </ButtonGroup>
                       ))}
@@ -423,12 +517,19 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                         disabled={
                           createMutation.isPending ||
                           (field.state.value.length > 0 &&
-                            !field.state.value[field.state.value.length - 1].name.trim())
+                            !field.state.value[
+                              field.state.value.length - 1
+                            ].name.trim())
                         }
                         onClick={() => {
-                          field.handleChange([...field.state.value, { name: "", inStock: true }]);
+                          field.handleChange([
+                            ...field.state.value,
+                            { name: "", inStock: true },
+                          ]);
                           requestAnimationFrame(() => {
-                            colorInputRefs.current[field.state.value.length]?.focus();
+                            colorInputRefs.current[
+                              field.state.value.length
+                            ]?.focus();
                           });
                         }}
                       >
@@ -445,15 +546,22 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                 name="categoryIds"
                 validators={{
                   onChange: ({ value }) => {
-                    if (!value || value.length === 0) return "At least one category is required";
+                    if (!value || value.length === 0)
+                      return "At least one category is required";
                     return undefined;
                   },
                 }}
               >
                 {(field) => {
-                  const selectedCategories = getSelectedCategories(field.state.value);
+                  const selectedCategories = getSelectedCategories(
+                    field.state.value,
+                  );
                   return (
-                    <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
+                    <Field
+                      data-invalid={
+                        field.state.meta.errors.length > 0 ? true : undefined
+                      }
+                    >
                       <FieldLabel>Categories</FieldLabel>
                       <Combobox
                         items={categories}
@@ -468,12 +576,16 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                         <ComboboxChips ref={anchorRef}>
                           <ComboboxValue>
                             {selectedCategories.map((cat) => (
-                              <ComboboxChip key={cat.id}>{cat.name}</ComboboxChip>
+                              <ComboboxChip key={cat.id}>
+                                {cat.name}
+                              </ComboboxChip>
                             ))}
                           </ComboboxValue>
                           <ComboboxChipsInput
                             placeholder={
-                              field.state.value.length === 0 ? "Search categories..." : ""
+                              field.state.value.length === 0
+                                ? "Search categories..."
+                                : ""
                             }
                             disabled={createMutation.isPending}
                             aria-invalid={field.state.meta.errors.length > 0}
@@ -491,7 +603,9 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                         </ComboboxContent>
                       </Combobox>
                       {field.state.meta.errors.length > 0 && (
-                        <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                        <FieldError>
+                          {field.state.meta.errors.join(", ")}
+                        </FieldError>
                       )}
                     </Field>
                   );
@@ -503,14 +617,19 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
                 name="images"
                 validators={{
                   onChange: ({ value }) => {
-                    if (!value || value.length === 0) return "At least 1 image is required";
+                    if (!value || value.length === 0)
+                      return "At least 1 image is required";
                     if (value.length > 3) return "Maximum 3 images allowed";
                     return undefined;
                   },
                 }}
               >
                 {(field) => (
-                  <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
+                  <Field
+                    data-invalid={
+                      field.state.meta.errors.length > 0 ? true : undefined
+                    }
+                  >
                     <FieldLabel>Product images</FieldLabel>
                     <ImagePicker
                       value={field.state.value}
@@ -538,13 +657,19 @@ export function CreateProductDialog({ open, onOpenChange }: CreateProductDialogP
             >
               Cancel
             </Button>
-            <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+            <form.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
+            >
               {([canSubmit, isSubmitting]) => (
                 <Button
                   type="submit"
-                  disabled={!canSubmit || isSubmitting || createMutation.isPending}
+                  disabled={
+                    !canSubmit || isSubmitting || createMutation.isPending
+                  }
                 >
-                  {isSubmitting || createMutation.isPending ? "Creating..." : "Create product"}
+                  {isSubmitting || createMutation.isPending
+                    ? "Creating..."
+                    : "Create product"}
                 </Button>
               )}
             </form.Subscribe>

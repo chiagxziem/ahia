@@ -24,19 +24,26 @@ export const FeaturedCategories = () => {
             <h2 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">
               Shop by Category
             </h2>
-            <p className="text-muted-foreground">Find exactly what you&apos;re looking for.</p>
+            <p className="text-muted-foreground">
+              Find exactly what you&apos;re looking for.
+            </p>
           </div>
           <Link
             href="/shop"
             className="hidden items-center gap-1 text-sm font-medium transition-colors hover:text-primary sm:flex"
           >
-            View all <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
+            View all{" "}
+            <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
           </Link>
         </div>
 
         <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
           {categories.map((category) => (
-            <Link key={category.id} href={`/shop?cat=${category.slug}`} className="group relative">
+            <Link
+              key={category.id}
+              href={`/shop?cat=${category.slug}`}
+              className="group relative"
+            >
               <div className="flex h-full flex-col gap-3 rounded-2xl bg-muted/40 p-5 transition-all duration-300 hover:bg-muted/60 md:p-6">
                 <div className="size-10 rounded-xl bg-muted-foreground/6 transition-colors group-hover:bg-muted-foreground/10" />
 
@@ -48,7 +55,8 @@ export const FeaturedCategories = () => {
                   </div>
 
                   <span className="text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
-                    {category.productCount} {category.productCount === 1 ? "Item" : "Items"}
+                    {category.productCount}{" "}
+                    {category.productCount === 1 ? "Item" : "Items"}
                   </span>
                 </div>
               </div>

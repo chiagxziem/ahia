@@ -1,6 +1,10 @@
 "use client";
 
-import { Cancel01Icon, ShoppingBag01Icon, ShoppingCart01Icon } from "@hugeicons/core-free-icons";
+import {
+  Cancel01Icon,
+  ShoppingBag01Icon,
+  ShoppingCart01Icon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
@@ -55,7 +59,10 @@ export const CartDrawer = () => {
       queryClient.setQueryData(queryKeys.cart(), data ?? null);
     },
     onError: (err) => {
-      toast.error(getApiError(err) || "Failed to update cart item.", cancelToastEl);
+      toast.error(
+        getApiError(err) || "Failed to update cart item.",
+        cancelToastEl,
+      );
     },
   });
 
@@ -65,7 +72,10 @@ export const CartDrawer = () => {
       queryClient.setQueryData(queryKeys.cart(), data ?? null);
     },
     onError: (err) => {
-      toast.error(getApiError(err) || "Failed to remove cart item.", cancelToastEl);
+      toast.error(
+        getApiError(err) || "Failed to remove cart item.",
+        cancelToastEl,
+      );
     },
   });
 
@@ -87,7 +97,10 @@ export const CartDrawer = () => {
       }
     },
     onError: (err) => {
-      toast.error(getApiError(err) || "Failed to create checkout.", cancelToastEl);
+      toast.error(
+        getApiError(err) || "Failed to create checkout.",
+        cancelToastEl,
+      );
     },
   });
 
@@ -99,7 +112,11 @@ export const CartDrawer = () => {
     }
   };
 
-  const handleIncrement = (itemId: string, currentQty: number, stockQty: number) => {
+  const handleIncrement = (
+    itemId: string,
+    currentQty: number,
+    stockQty: number,
+  ) => {
     if (currentQty >= stockQty) return;
     updateQtyMutation.mutate({ itemId, quantity: currentQty + 1 });
   };
@@ -126,7 +143,9 @@ export const CartDrawer = () => {
             {/* Header — title left, item count + close right */}
             <DrawerHeader className="flex flex-row items-center justify-between gap-4 border-b border-border/30 px-6 py-5">
               <div className="flex items-center gap-3">
-                <DrawerTitle className="text-lg font-semibold tracking-tight">Cart</DrawerTitle>
+                <DrawerTitle className="text-lg font-semibold tracking-tight">
+                  Cart
+                </DrawerTitle>
                 <span className="text-sm font-medium text-muted-foreground">
                   {itemCount} {itemCount === 1 ? "item" : "items"}
                 </span>
@@ -147,7 +166,10 @@ export const CartDrawer = () => {
             <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-6 py-6">
               {cartItems.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center gap-4 text-muted-foreground">
-                  <HugeiconsIcon icon={ShoppingCart01Icon} className="size-12 opacity-20" />
+                  <HugeiconsIcon
+                    icon={ShoppingCart01Icon}
+                    className="size-12 opacity-20"
+                  />
                   <p className="text-sm">Your cart is empty.</p>
                   <Button
                     onClick={() => setOpen(false)}
@@ -166,7 +188,8 @@ export const CartDrawer = () => {
                     const isMutating =
                       (updateQtyMutation.isPending &&
                         updateQtyMutation.variables?.itemId === item.id) ||
-                      (removeMutation.isPending && removeMutation.variables === item.id);
+                      (removeMutation.isPending &&
+                        removeMutation.variables === item.id);
 
                     return (
                       <div
@@ -199,13 +222,17 @@ export const CartDrawer = () => {
                           <div className="mt-auto flex items-center justify-between">
                             <div className="flex items-center gap-3 rounded-full bg-muted/30 px-2.5 py-1 text-xs font-medium">
                               <button
-                                onClick={() => handleDecrement(item.id, item.quantity)}
+                                onClick={() =>
+                                  handleDecrement(item.id, item.quantity)
+                                }
                                 disabled={isMutating}
                                 className="px-0.5 text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed"
                               >
                                 −
                               </button>
-                              <span className="min-w-4 text-center">{item.quantity}</span>
+                              <span className="min-w-4 text-center">
+                                {item.quantity}
+                              </span>
                               <button
                                 onClick={() =>
                                   handleIncrement(
@@ -215,7 +242,9 @@ export const CartDrawer = () => {
                                   )
                                 }
                                 disabled={
-                                  isMutating || item.quantity >= (item.product.stockQuantity ?? 0)
+                                  isMutating ||
+                                  item.quantity >=
+                                    (item.product.stockQuantity ?? 0)
                                 }
                                 className="px-0.5 text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
                               >
@@ -242,8 +271,12 @@ export const CartDrawer = () => {
             {cartItems.length > 0 && (
               <DrawerFooter className="flex flex-col gap-4 border-t border-border/30 px-6 py-5">
                 <div className="flex w-full items-center justify-between">
-                  <span className="text-sm font-medium text-muted-foreground">Subtotal</span>
-                  <span className="text-base font-semibold">${totalAmount}</span>
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Subtotal
+                  </span>
+                  <span className="text-base font-semibold">
+                    ${totalAmount}
+                  </span>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Shipping and taxes calculated at checkout.
@@ -255,7 +288,9 @@ export const CartDrawer = () => {
                     onClick={() => checkoutMutation.mutate()}
                     disabled={checkoutMutation.isPending}
                   >
-                    {checkoutMutation.isPending ? "Redirecting..." : "Continue to Checkout"}
+                    {checkoutMutation.isPending
+                      ? "Redirecting..."
+                      : "Continue to Checkout"}
                   </Button>
                   <Button
                     variant="destructive"

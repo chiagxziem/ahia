@@ -8,7 +8,11 @@ import { format } from "date-fns";
 import { useCallback, useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
-import { type ActionButton, DataTable, type FilterConfig } from "@/components/ui/data-table";
+import {
+  type ActionButton,
+  DataTable,
+  type FilterConfig,
+} from "@/components/ui/data-table";
 import {
   type AdminOrderRow,
   defaultAdminsOrdersListParams,
@@ -29,13 +33,15 @@ const orderStatusLabel: Record<OrderStatus, string> = {
   completed: "Completed",
 };
 
-const orderStatusVariant: Record<OrderStatus, "default" | "secondary" | "destructive" | "outline"> =
-  {
-    pending: "secondary",
-    processing: "default",
-    cancelled: "destructive",
-    completed: "default",
-  };
+const orderStatusVariant: Record<
+  OrderStatus,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
+  pending: "secondary",
+  processing: "default",
+  cancelled: "destructive",
+  completed: "default",
+};
 
 const paymentStatusLabel: Record<PaymentStatus, string> = {
   pending: "Pending",
@@ -59,7 +65,9 @@ const columns: ColumnDef<AdminOrderRow>[] = [
     accessorKey: "orderNumber",
     header: "Order #",
     cell: ({ row }) => (
-      <span className="font-mono text-xs font-medium">{row.original.orderNumber}</span>
+      <span className="font-mono text-xs font-medium">
+        {row.original.orderNumber}
+      </span>
     ),
   },
   {
@@ -68,8 +76,12 @@ const columns: ColumnDef<AdminOrderRow>[] = [
     accessorFn: (row) => row.customer?.name ?? row.email,
     cell: ({ row }) => (
       <div className="flex flex-col">
-        <span className="font-medium">{row.original.customer?.name ?? "—"}</span>
-        <span className="text-xs text-muted-foreground">{row.original.email}</span>
+        <span className="font-medium">
+          {row.original.customer?.name ?? "—"}
+        </span>
+        <span className="text-xs text-muted-foreground">
+          {row.original.email}
+        </span>
       </div>
     ),
   },
@@ -77,7 +89,9 @@ const columns: ColumnDef<AdminOrderRow>[] = [
     accessorKey: "totalAmount",
     header: "Total",
     cell: ({ row }) => (
-      <div className="font-medium">{formatCurrency(Number(row.original.totalAmount))}</div>
+      <div className="font-medium">
+        {formatCurrency(Number(row.original.totalAmount))}
+      </div>
     ),
   },
   {
@@ -208,7 +222,9 @@ export const OrdersClient = () => {
 
     const csvContent = [
       csvHeaders.join(","),
-      ...csvRows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")),
+      ...csvRows.map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
+      ),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });

@@ -10,7 +10,9 @@ export const ListUsersQuerySchema = z.object({
   sortDirection: z.enum(["asc", "desc"]).optional(),
   filterField: z.string().optional(),
   filterValue: z.union([z.string(), z.number(), z.boolean()]).optional(),
-  filterOperator: z.enum(["eq", "ne", "lt", "lte", "gt", "gte", "contains"]).optional(),
+  filterOperator: z
+    .enum(["eq", "ne", "lt", "lte", "gt", "gte", "contains"])
+    .optional(),
 });
 
 export const WindowNumberSchema = z.object({

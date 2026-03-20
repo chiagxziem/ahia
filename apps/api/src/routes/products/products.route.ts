@@ -2,6 +2,9 @@ import { validator } from "hono-openapi";
 import slugify from "slugify";
 import { z } from "zod";
 
+import { db, eq } from "@repo/db";
+import { product, productCategory } from "@repo/db/schemas/product.schema";
+
 import { createRouter } from "@/app";
 import { validateFile, validateProductImages } from "@/lib/file";
 import HttpStatusCodes from "@/lib/http-status-codes";
@@ -32,8 +35,6 @@ import {
   getShopProductsDoc,
   getTrendingProductsDoc,
 } from "@/routes/products/products.docs";
-import { db, eq } from "@repo/db";
-import { product, productCategory } from "@repo/db/schemas/product.schema";
 
 import {
   createProductDoc,
@@ -66,7 +67,11 @@ products.get(
     }
 
     return c.json(
-      successResponse(allProducts, "All products retrieved successfully", pagination),
+      successResponse(
+        allProducts,
+        "All products retrieved successfully",
+        pagination,
+      ),
       HttpStatusCodes.OK,
     );
   },
@@ -93,7 +98,11 @@ products.get("/featured", getFeaturedProductDoc, async (c) => {
 products.get(
   "/latest",
   getLatestProductsDoc,
-  validator("query", z.object({ limit: z.number().optional() }), validationHook),
+  validator(
+    "query",
+    z.object({ limit: z.number().optional() }),
+    validationHook,
+  ),
   async (c) => {
     const { limit } = c.req.valid("query");
     const latest = await getLatestProducts(limit ?? 4);
@@ -109,7 +118,11 @@ products.get(
 products.get(
   "/trending",
   getTrendingProductsDoc,
-  validator("query", z.object({ limit: z.number().optional() }), validationHook),
+  validator(
+    "query",
+    z.object({ limit: z.number().optional() }),
+    validationHook,
+  ),
   async (c) => {
     const { limit } = c.req.valid("query");
     const trending = await getTrendingProducts(limit ?? 4);
@@ -147,7 +160,11 @@ products.get(
     };
 
     return c.json(
-      successResponse(shopProducts, "Shop products retrieved successfully", pagination),
+      successResponse(
+        shopProducts,
+        "Shop products retrieved successfully",
+        pagination,
+      ),
       HttpStatusCodes.OK,
     );
   },
@@ -164,7 +181,10 @@ products.get(
     const productExtended = await getProductById(id);
 
     if (!productExtended) {
-      return c.json(errorResponse("NOT_FOUND", "Product not found"), HttpStatusCodes.NOT_FOUND);
+      return c.json(
+        errorResponse("NOT_FOUND", "Product not found"),
+        HttpStatusCodes.NOT_FOUND,
+      );
     }
 
     return c.json(
@@ -204,7 +224,8 @@ products.post(
     if (rawFormData.stockQuantity) {
       const stockNum = Number.parseInt(rawFormData.stockQuantity, 10);
       if (Number.isNaN(stockNum) || stockNum < 0) {
-        validationErrors.stockQuantity = "Stock quantity must be a non-negative number";
+        validationErrors.stockQuantity =
+          "Stock quantity must be a non-negative number";
       } else {
         stockQuantity = stockNum;
       }
@@ -213,7 +234,11 @@ products.post(
     }
 
     // Validate and transform sizes using Zod
-    const sizesResult = parseJsonField(rawFormData.sizes, z.array(InStockSchema), "Sizes");
+    const sizesResult = parseJsonField(
+      rawFormData.sizes,
+      z.array(InStockSchema),
+      "Sizes",
+    );
     let sizes: { name: string; inStock: boolean }[] = [];
     if (!sizesResult.success) {
       validationErrors.sizes = sizesResult.error;
@@ -233,7 +258,11 @@ products.post(
     }
 
     // Validate and transform colors using Zod
-    const colorsResult = parseJsonField(rawFormData.colors, z.array(InStockSchema), "Colors");
+    const colorsResult = parseJsonField(
+      rawFormData.colors,
+      z.array(InStockSchema),
+      "Colors",
+    );
     let colors: { name: string; inStock: boolean }[] = [];
     if (!colorsResult.success) {
       validationErrors.colors = colorsResult.error;
@@ -245,7 +274,8 @@ products.post(
       const colorNames = colors.map((c) => c.name.toLowerCase());
       const uniqueColorNames = new Set(colorNames);
       if (colorNames.length !== uniqueColorNames.size) {
-        validationErrors.colors = "Color names must be unique (case-insensitive)";
+        validationErrors.colors =
+          "Color names must be unique (case-insensitive)";
       } else if (stockQuantity > 0 && !colors.some((c) => c.inStock)) {
         validationErrors.colors =
           "At least one color must be in stock when stock quantity is greater than 0";
@@ -305,7 +335,10 @@ products.post(
     }
 
     // Generate unique slug
-    const baseSlug = slugify(rawFormData.name.trim(), { lower: true, strict: true });
+    const baseSlug = slugify(rawFormData.name.trim(), {
+      lower: true,
+      strict: true,
+    });
     let slug = baseSlug;
 
     const existingSlugs = await db.query.product.findMany({
@@ -327,7 +360,9 @@ products.post(
     }
 
     // Upload images to R2
-    const uploadPromises = rawFormData.images.map((image) => uploadImageToR2(image, "products"));
+    const uploadPromises = rawFormData.images.map((image) =>
+      uploadImageToR2(image, "products"),
+    );
     const uploadedImages = await Promise.all(uploadPromises);
 
     try {
@@ -400,7 +435,10 @@ products.put(
     // Get existing product first
     const existingProduct = await getProductById(id);
     if (!existingProduct) {
-      return c.json(errorResponse("NOT_FOUND", "Product not found"), HttpStatusCodes.NOT_FOUND);
+      return c.json(
+        errorResponse("NOT_FOUND", "Product not found"),
+        HttpStatusCodes.NOT_FOUND,
+      );
     }
 
     // Validate and transform form data
@@ -422,7 +460,8 @@ products.put(
     if (rawFormData.stockQuantity !== undefined) {
       const stockNum = Number.parseInt(rawFormData.stockQuantity, 10);
       if (Number.isNaN(stockNum) || stockNum < 0) {
-        validationErrors.stockQuantity = "Stock quantity must be a non-negative number";
+        validationErrors.stockQuantity =
+          "Stock quantity must be a non-negative number";
       } else {
         stockQuantity = stockNum;
       }
@@ -431,7 +470,11 @@ products.put(
     // Validate and transform sizes using Zod (if provided)
     let sizes: { name: string; inStock: boolean }[] | undefined;
     if (rawFormData.sizes !== undefined) {
-      const sizesResult = parseJsonField(rawFormData.sizes, z.array(InStockSchema), "Sizes");
+      const sizesResult = parseJsonField(
+        rawFormData.sizes,
+        z.array(InStockSchema),
+        "Sizes",
+      );
       if (!sizesResult.success) {
         validationErrors.sizes = sizesResult.error;
       } else {
@@ -445,7 +488,8 @@ products.put(
       if (sizeNames.length !== uniqueSizeNames.size) {
         validationErrors.sizes = "Size names must be unique (case-insensitive)";
       } else {
-        const effectiveStock = stockQuantity ?? existingProduct.stockQuantity ?? 0;
+        const effectiveStock =
+          stockQuantity ?? existingProduct.stockQuantity ?? 0;
         if (effectiveStock > 0 && !sizes.some((s) => s.inStock)) {
           validationErrors.sizes =
             "At least one size must be in stock when stock quantity is greater than 0";
@@ -456,7 +500,11 @@ products.put(
     // Validate and transform colors using Zod (if provided)
     let colors: { name: string; inStock: boolean }[] | undefined;
     if (rawFormData.colors !== undefined) {
-      const colorsResult = parseJsonField(rawFormData.colors, z.array(InStockSchema), "Colors");
+      const colorsResult = parseJsonField(
+        rawFormData.colors,
+        z.array(InStockSchema),
+        "Colors",
+      );
       if (!colorsResult.success) {
         validationErrors.colors = colorsResult.error;
       } else {
@@ -468,9 +516,11 @@ products.put(
       const colorNames = colors.map((c) => c.name.toLowerCase());
       const uniqueColorNames = new Set(colorNames);
       if (colorNames.length !== uniqueColorNames.size) {
-        validationErrors.colors = "Color names must be unique (case-insensitive)";
+        validationErrors.colors =
+          "Color names must be unique (case-insensitive)";
       } else {
-        const effectiveStock = stockQuantity ?? existingProduct.stockQuantity ?? 0;
+        const effectiveStock =
+          stockQuantity ?? existingProduct.stockQuantity ?? 0;
         if (effectiveStock > 0 && !colors.some((c) => c.inStock)) {
           validationErrors.colors =
             "At least one color must be in stock when stock quantity is greater than 0";
@@ -508,8 +558,12 @@ products.put(
         keepImageKeys = Array.from(new Set(keepImageKeysResult.data));
 
         // Validate that all keepImageKeys exist in the current product
-        const currentImageKeys = new Set(existingProduct.images.map((img) => img.key));
-        const invalidKeys = keepImageKeys.filter((key) => !currentImageKeys.has(key));
+        const currentImageKeys = new Set(
+          existingProduct.images.map((img) => img.key),
+        );
+        const invalidKeys = keepImageKeys.filter(
+          (key) => !currentImageKeys.has(key),
+        );
 
         if (invalidKeys.length > 0) {
           if (invalidKeys.length === 1) {
@@ -574,7 +628,10 @@ products.put(
     // Generate unique slug if name is being updated
     let slug: string | undefined;
     if (rawFormData.name && rawFormData.name.trim() !== existingProduct.name) {
-      const baseSlug = slugify(rawFormData.name.trim(), { lower: true, strict: true });
+      const baseSlug = slugify(rawFormData.name.trim(), {
+        lower: true,
+        strict: true,
+      });
 
       const existingSlugs = await db.query.product.findMany({
         where: (product, { or, eq, like, and, ne }) =>
@@ -602,7 +659,9 @@ products.put(
     // Upload new images to R2
     let uploadedImages: { url: string; key: string }[] = [];
     if (newImages.length > 0) {
-      const uploadPromises = newImages.map((image) => uploadImageToR2(image, "products"));
+      const uploadPromises = newImages.map((image) =>
+        uploadImageToR2(image, "products"),
+      );
       uploadedImages = await Promise.all(uploadPromises);
     }
 
@@ -616,7 +675,8 @@ products.put(
         if (rawFormData.description !== undefined)
           updateData.description = rawFormData.description?.trim();
         if (price !== undefined) updateData.price = price;
-        if (stockQuantity !== undefined) updateData.stockQuantity = stockQuantity;
+        if (stockQuantity !== undefined)
+          updateData.stockQuantity = stockQuantity;
         if (sizes !== undefined) updateData.sizes = sizes;
         if (colors !== undefined) updateData.colors = colors;
         if (slug !== undefined) updateData.slug = slug;
@@ -644,7 +704,9 @@ products.put(
         // Update product-category relationships if categoryIds provided
         if (categoryIds !== undefined) {
           // Delete existing relationships
-          await tx.delete(productCategory).where(eq(productCategory.productId, id));
+          await tx
+            .delete(productCategory)
+            .where(eq(productCategory.productId, id));
 
           // Insert new relationships
           if (categoryIds.length > 0) {
@@ -710,7 +772,10 @@ products.delete(
     // Get existing product first
     const existingProduct = await getProductById(id);
     if (!existingProduct) {
-      return c.json(errorResponse("NOT_FOUND", "Product not found"), HttpStatusCodes.NOT_FOUND);
+      return c.json(
+        errorResponse("NOT_FOUND", "Product not found"),
+        HttpStatusCodes.NOT_FOUND,
+      );
     }
 
     // Check for dependencies - cart items
@@ -740,14 +805,20 @@ products.delete(
 
       conflictMessage += dependencies.join(" and ");
 
-      return c.json(errorResponse("CONFLICT", conflictMessage), HttpStatusCodes.CONFLICT);
+      return c.json(
+        errorResponse("CONFLICT", conflictMessage),
+        HttpStatusCodes.CONFLICT,
+      );
     }
 
     try {
       // Delete product in transaction (cascades to productCategory)
       await db.transaction(async (tx) => {
         // Delete product (productCategory will cascade automatically)
-        const [deletedProduct] = await tx.delete(product).where(eq(product.id, id)).returning();
+        const [deletedProduct] = await tx
+          .delete(product)
+          .where(eq(product.id, id))
+          .returning();
 
         return deletedProduct;
       });

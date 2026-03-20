@@ -1,9 +1,10 @@
 import { createMiddleware } from "hono/factory";
 
+import { auth } from "@repo/auth/server";
+
 import HttpStatusCodes from "@/lib/http-status-codes";
 import { errorResponse } from "@/lib/utils";
 import type { AppEnv } from "@/types";
-import { auth } from "@repo/auth/server";
 
 export const permit = (permissions: Record<string, string[]>) => {
   return createMiddleware<AppEnv>(async (c, next) => {
@@ -25,7 +26,10 @@ export const permit = (permissions: Record<string, string[]>) => {
 
     if (!result.success) {
       return c.json(
-        errorResponse("FORBIDDEN", "User does not have the required permission"),
+        errorResponse(
+          "FORBIDDEN",
+          "User does not have the required permission",
+        ),
         HttpStatusCodes.FORBIDDEN,
       );
     }

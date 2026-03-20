@@ -21,7 +21,11 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cancelToastEl } from "@/components/ui/sonner";
-import { addToCart, getProductById, getRelatedProducts } from "@/features/storefront/queries";
+import {
+  addToCart,
+  getProductById,
+  getRelatedProducts,
+} from "@/features/storefront/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { getApiError } from "@/lib/utils";
 
@@ -150,7 +154,11 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 priority
-                onError={() => setFailedImages((prev) => new Set(prev).add(selectedImage.url))}
+                onError={() =>
+                  setFailedImages((prev) =>
+                    new Set(prev).add(selectedImage.url),
+                  )
+                }
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
@@ -181,7 +189,9 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
                       fill
                       className="object-cover"
                       sizes="80px"
-                      onError={() => setFailedImages((prev) => new Set(prev).add(image.url))}
+                      onError={() =>
+                        setFailedImages((prev) => new Set(prev).add(image.url))
+                      }
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center">
@@ -220,7 +230,9 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
             <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
               {product.name}
             </h1>
-            <span className="text-2xl font-semibold text-foreground">${product.price}</span>
+            <span className="text-2xl font-semibold text-foreground">
+              ${product.price}
+            </span>
           </div>
 
           {/* Description */}
@@ -245,7 +257,9 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
                     key={color.name}
                     disabled={!color.inStock}
                     onClick={() =>
-                      void setSelectedColor(selectedColor === color.name ? null : color.name)
+                      void setSelectedColor(
+                        selectedColor === color.name ? null : color.name,
+                      )
                     }
                     className={`rounded-full border px-4 py-2.5 text-sm font-medium transition-all ${
                       selectedColor === color.name
@@ -274,7 +288,9 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
                     key={size.name}
                     disabled={!size.inStock}
                     onClick={() =>
-                      void setSelectedSize(selectedSize === size.name ? null : size.name)
+                      void setSelectedSize(
+                        selectedSize === size.name ? null : size.name,
+                      )
                     }
                     className={`rounded-full border px-4 py-2.5 text-sm font-medium transition-all ${
                       selectedSize === size.name
@@ -320,7 +336,9 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
                   variant="outline"
                   size="icon"
                   className="size-12 rounded-r-full!"
-                  onClick={() => setQuantity(Math.min(stockQty || 999, quantity + 1))}
+                  onClick={() =>
+                    setQuantity(Math.min(stockQty || 999, quantity + 1))
+                  }
                   disabled={stockQty > 0 && quantity >= stockQty}
                 >
                   <HugeiconsIcon icon={PlusSignIcon} className="size-4" />
@@ -372,7 +390,8 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
                 href="/shop"
                 className="hidden items-center gap-1 text-sm font-medium transition-colors hover:text-primary sm:flex"
               >
-                View all <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
+                View all{" "}
+                <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
               </Link>
             </div>
 
@@ -395,7 +414,8 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
               href="/shop"
               className="flex items-center justify-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-primary sm:hidden"
             >
-              View all products <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
+              View all products{" "}
+              <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
             </Link>
           </div>
         </section>
@@ -412,7 +432,10 @@ export const ProductSkeleton = () => (
         <Skeleton className="aspect-square w-full rounded-2xl md:rounded-[28px]" />
         <div className="flex gap-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="aspect-square w-20 shrink-0 rounded-xl" />
+            <Skeleton
+              key={i}
+              className="aspect-square w-20 shrink-0 rounded-xl"
+            />
           ))}
         </div>
       </div>

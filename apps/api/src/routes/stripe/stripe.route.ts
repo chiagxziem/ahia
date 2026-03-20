@@ -6,7 +6,11 @@ import type { Stripe } from "stripe";
 import { sendOrderReceiptEmail } from "@/lib/email";
 import env from "@/lib/env";
 import { clearCartItemsByUserId } from "@/queries/cart-queries";
-import { getOrderById, restoreStock, updateOrderStatus } from "@/queries/order-queries";
+import {
+  getOrderById,
+  restoreStock,
+  updateOrderStatus,
+} from "@/queries/order-queries";
 
 const stripeWebhook = new Hono();
 
@@ -15,7 +19,9 @@ const stripeWebhook = new Hono();
  * Uses client_reference_id (set during checkout creation) as primary,
  * with metadata.orderId as fallback.
  */
-const getOrderIdFromSession = (session: Stripe.Checkout.Session): string | null => {
+const getOrderIdFromSession = (
+  session: Stripe.Checkout.Session,
+): string | null => {
   return session.client_reference_id ?? session.metadata?.orderId ?? null;
 };
 
@@ -48,12 +54,16 @@ const verifyAndParseWebhook = (
   const ts = parseInt(timestamp, 10);
   const now = Math.floor(Date.now() / 1000);
   if (now - ts > toleranceSeconds) {
-    throw new Error(`Timestamp outside tolerance: event=${ts}, now=${now}, diff=${now - ts}s`);
+    throw new Error(
+      `Timestamp outside tolerance: event=${ts}, now=${now}, diff=${now - ts}s`,
+    );
   }
 
   // Compute expected signature: HMAC-SHA256(timestamp.body, secret)
   const payload = `${timestamp}.${body}`;
-  const expectedSignature = createHmac("sha256", secret).update(payload, "utf8").digest("hex");
+  const expectedSignature = createHmac("sha256", secret)
+    .update(payload, "utf8")
+    .digest("hex");
 
   // Compare with all provided v1 signatures
   const isValid = signatures.some((sig) => {
@@ -106,15 +116,21 @@ stripeWebhook.post("/", async (c) => {
         const orderId = getOrderIdFromSession(session);
 
         if (!orderId) {
-          console.error("[Stripe Webhook] checkout.session.completed: no order ID in session");
+          console.error(
+            "[Stripe Webhook] checkout.session.completed: no order ID in session",
+          );
           break;
         }
 
-        console.log(`[Stripe Webhook] Processing payment success for order: ${orderId}`);
+        console.log(
+          `[Stripe Webhook] Processing payment success for order: ${orderId}`,
+        );
 
         const order = await getOrderById(orderId);
         if (!order) {
-          console.error(`[Stripe Webhook] Order ${orderId} not found in database`);
+          console.error(
+            `[Stripe Webhook] Order ${orderId} not found in database`,
+          );
           break;
         }
 
@@ -132,14 +148,20 @@ stripeWebhook.post("/", async (c) => {
         // Send receipt email (fire and forget — don't block webhook response)
         const updatedOrder = await getOrderById(orderId);
         if (updatedOrder) {
-          sendOrderReceiptEmail(updatedOrder, session.customer_details?.name ?? undefined).catch(
-            (err) => {
-              console.error("[Stripe Webhook] Failed to send receipt email:", err);
-            },
-          );
+          sendOrderReceiptEmail(
+            updatedOrder,
+            session.customer_details?.name ?? undefined,
+          ).catch((err) => {
+            console.error(
+              "[Stripe Webhook] Failed to send receipt email:",
+              err,
+            );
+          });
         }
 
-        console.log(`[Stripe Webhook] Order ${order.orderNumber} marked as paid and completed`);
+        console.log(
+          `[Stripe Webhook] Order ${order.orderNumber} marked as paid and completed`,
+        );
         break;
       }
 
@@ -159,7 +181,9 @@ stripeWebhook.post("/", async (c) => {
           })),
         );
 
-        console.log(`[Stripe Webhook] Order ${order.orderNumber}: expired, stock restored`);
+        console.log(
+          `[Stripe Webhook] Order ${order.orderNumber}: expired, stock restored`,
+        );
         break;
       }
 
@@ -179,7 +203,9 @@ stripeWebhook.post("/", async (c) => {
           })),
         );
 
-        console.log(`[Stripe Webhook] Order ${order.orderNumber}: payment failed, stock restored`);
+        console.log(
+          `[Stripe Webhook] Order ${order.orderNumber}: payment failed, stock restored`,
+        );
         break;
       }
 

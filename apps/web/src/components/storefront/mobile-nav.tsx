@@ -20,6 +20,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { authClient } from "@repo/auth/client";
+
 import { ThemeInlineSwitcher } from "@/components/theme-inline-switcher";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,7 +36,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { getInitials, roles, truncateEmail } from "@/lib/utils";
-import { authClient } from "@repo/auth/client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { cancelToastEl } from "../ui/sonner";
@@ -65,7 +66,9 @@ export const MobileNav = ({ children }: { children?: ReactNode }) => {
       <DrawerContent className="h-full w-[80vw] border-r-0 sm:w-80">
         {/* Header */}
         <DrawerHeader className="flex flex-row items-center justify-between border-b border-border/30 px-5 py-4">
-          <DrawerTitle className="text-lg font-bold tracking-tight">Ahia</DrawerTitle>
+          <DrawerTitle className="text-lg font-bold tracking-tight">
+            Ahia
+          </DrawerTitle>
           <DrawerClose asChild>
             <Button
               variant="ghost"
@@ -86,7 +89,10 @@ export const MobileNav = ({ children }: { children?: ReactNode }) => {
               href={link.href}
               className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted/60 hover:text-foreground"
             >
-              <HugeiconsIcon icon={link.icon} className="size-4.5 text-muted-foreground" />
+              <HugeiconsIcon
+                icon={link.icon}
+                className="size-4.5 text-muted-foreground"
+              />
               {link.label}
             </Link>
           ))}
@@ -95,7 +101,9 @@ export const MobileNav = ({ children }: { children?: ReactNode }) => {
         {/* Theme Switcher */}
         <div className="border-t border-border/30 px-5 py-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">Theme</span>
+            <span className="text-xs font-medium text-muted-foreground">
+              Theme
+            </span>
             <ThemeInlineSwitcher />
           </div>
         </div>
@@ -148,9 +156,16 @@ export const MobileNavUserContent = () => {
               className="shrink-0 rounded-xl border bg-muted text-muted-foreground"
             />
           ) : (
-            <Avatar size="lg" className={"shrink-0 rounded-xl after:rounded-xl"}>
+            <Avatar
+              size="lg"
+              className={"shrink-0 rounded-xl after:rounded-xl"}
+            >
               {user.image && (
-                <AvatarImage src={user.image} alt={user.name} className={"rounded-xl"} />
+                <AvatarImage
+                  src={user.image}
+                  alt={user.name}
+                  className={"rounded-xl"}
+                />
               )}
               <AvatarFallback className="rounded-xl text-[10px] font-semibold">
                 {getInitials(user.name)}
@@ -158,7 +173,9 @@ export const MobileNavUserContent = () => {
             </Avatar>
           )}
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate text-sm font-medium text-foreground">{user.name}</span>
+            <span className="truncate text-sm font-medium text-foreground">
+              {user.name}
+            </span>
             <span className="truncate text-xs text-muted-foreground">
               {truncateEmail(user.email)}
             </span>
@@ -169,7 +186,10 @@ export const MobileNavUserContent = () => {
           href="/settings"
           className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted/60 hover:text-foreground"
         >
-          <HugeiconsIcon icon={AccountSetting01Icon} className="size-4.5 text-muted-foreground" />
+          <HugeiconsIcon
+            icon={AccountSetting01Icon}
+            className="size-4.5 text-muted-foreground"
+          />
           Settings
         </Link>
 
@@ -190,7 +210,10 @@ export const MobileNavUserContent = () => {
           onClick={signOutUser}
           className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-foreground/80 transition-colors hover:bg-muted/60 hover:text-foreground"
         >
-          <HugeiconsIcon icon={Logout01Icon} className="size-4.5 text-muted-foreground" />
+          <HugeiconsIcon
+            icon={Logout01Icon}
+            className="size-4.5 text-muted-foreground"
+          />
           Sign out
         </button>
       </div>
@@ -203,14 +226,20 @@ export const MobileNavUserContent = () => {
         href="/sign-in"
         className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted/60 hover:text-foreground"
       >
-        <HugeiconsIcon icon={Login01Icon} className="size-4.5 text-muted-foreground" />
+        <HugeiconsIcon
+          icon={Login01Icon}
+          className="size-4.5 text-muted-foreground"
+        />
         Sign In
       </Link>
       <Link
         href="/register"
         className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted/60 hover:text-foreground"
       >
-        <HugeiconsIcon icon={UserCircleIcon} className="size-4.5 text-primary/60" />
+        <HugeiconsIcon
+          icon={UserCircleIcon}
+          className="size-4.5 text-primary/60"
+        />
         Create account
       </Link>
     </div>

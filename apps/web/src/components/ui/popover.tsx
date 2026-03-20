@@ -21,7 +21,10 @@ const PopoverContent = ({
   sideOffset = 4,
   ...props
 }: PopoverPrimitive.Popup.Props &
-  Pick<PopoverPrimitive.Positioner.Props, "align" | "alignOffset" | "side" | "sideOffset">) => {
+  Pick<
+    PopoverPrimitive.Positioner.Props,
+    "align" | "alignOffset" | "side" | "sideOffset"
+  >) => {
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Positioner
@@ -44,7 +47,10 @@ const PopoverContent = ({
   );
 };
 
-const PopoverHeader = ({ className, ...props }: React.ComponentProps<"div">) => {
+const PopoverHeader = ({
+  className,
+  ...props
+}: React.ComponentProps<"div">) => {
   return (
     <div
       data-slot="popover-header"
@@ -54,7 +60,10 @@ const PopoverHeader = ({ className, ...props }: React.ComponentProps<"div">) => 
   );
 };
 
-const PopoverTitle = ({ className, ...props }: PopoverPrimitive.Title.Props) => {
+const PopoverTitle = ({
+  className,
+  ...props
+}: PopoverPrimitive.Title.Props) => {
   return (
     <PopoverPrimitive.Title
       data-slot="popover-title"
@@ -64,7 +73,10 @@ const PopoverTitle = ({ className, ...props }: PopoverPrimitive.Title.Props) => 
   );
 };
 
-const PopoverDescription = ({ className, ...props }: PopoverPrimitive.Description.Props) => {
+const PopoverDescription = ({
+  className,
+  ...props
+}: PopoverPrimitive.Description.Props) => {
   return (
     <PopoverPrimitive.Description
       data-slot="popover-description"
@@ -74,4 +86,11 @@ const PopoverDescription = ({ className, ...props }: PopoverPrimitive.Descriptio
   );
 };
 
-export { Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger };
+export {
+  Popover,
+  PopoverContent,
+  PopoverDescription,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger,
+};

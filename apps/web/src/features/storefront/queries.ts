@@ -1,11 +1,12 @@
 import { z } from "zod";
 
-import { $fetch, $fetchAndThrow } from "@/lib/fetch";
-import { successResSchema } from "@/lib/schemas";
 import {
   CategoryWithCountSchema,
   ProductExtendedSchema,
 } from "@repo/db/validators/product.validator";
+
+import { $fetch, $fetchAndThrow } from "@/lib/fetch";
+import { successResSchema } from "@/lib/schemas";
 
 // ── Single Product ───────────────────────────────────────────
 
@@ -164,9 +165,14 @@ export type ShopProductsParams = {
   new?: boolean;
 };
 
-const ShopProductsResponseSchema = successResSchema(z.array(ProductExtendedSchema));
+const ShopProductsResponseSchema = successResSchema(
+  z.array(ProductExtendedSchema),
+);
 
-export const getShopProducts = async (params: ShopProductsParams = {}, cookie?: string) => {
+export const getShopProducts = async (
+  params: ShopProductsParams = {},
+  cookie?: string,
+) => {
   const query: Record<string, string | number | boolean> = {};
   if (params.page) query.page = params.page;
   if (params.limit) query.limit = params.limit;

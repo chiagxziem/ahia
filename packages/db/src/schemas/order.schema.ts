@@ -1,5 +1,12 @@
 import { type InferSelectModel, relations } from "drizzle-orm";
-import { integer, numeric, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  integer,
+  numeric,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 import { timestamps } from "../lib/helpers";
 // oxlint-disable-next-line import/no-cycle

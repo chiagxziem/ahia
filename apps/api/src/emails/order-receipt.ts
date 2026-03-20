@@ -16,7 +16,14 @@ interface ReceiptData {
 }
 
 export const buildOrderReceiptHtml = (data: ReceiptData): string => {
-  const { customerName, orderNumber, orderDate, paymentMethod, items, totalAmount } = data;
+  const {
+    customerName,
+    orderNumber,
+    orderDate,
+    paymentMethod,
+    items,
+    totalAmount,
+  } = data;
 
   const itemRows = items
     .map(
@@ -41,7 +48,8 @@ export const buildOrderReceiptHtml = (data: ReceiptData): string => {
     )
     .join("");
 
-  const capitalizedPayment = paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1);
+  const capitalizedPayment =
+    paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1);
 
   return `<!DOCTYPE html>
 <html lang="en">

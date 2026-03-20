@@ -65,7 +65,11 @@ export const getAdminOrderById = async (orderId: string) => {
 /**
  * Get user's orders with order items and products
  */
-export const getUserOrders = async (userId: string, page: number = 1, limit?: number) => {
+export const getUserOrders = async (
+  userId: string,
+  page: number = 1,
+  limit?: number,
+) => {
   let userOrders;
   if (limit) {
     userOrders = await db.query.order.findMany({
@@ -165,7 +169,10 @@ export const createOrderItems = async (
     };
   });
 
-  const newOrderItems = await db.insert(orderItem).values(orderItemsData).returning();
+  const newOrderItems = await db
+    .insert(orderItem)
+    .values(orderItemsData)
+    .returning();
 
   return newOrderItems;
 };
@@ -280,7 +287,9 @@ export const restoreStock = async (
     orderItems.map((item) =>
       db
         .update(product)
-        .set({ stockQuantity: sql`${product.stockQuantity} + ${item.quantity}` })
+        .set({
+          stockQuantity: sql`${product.stockQuantity} + ${item.quantity}`,
+        })
         .where(eq(product.id, item.productId)),
     ),
   );

@@ -13,7 +13,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
 import { createCategory } from "@/features/admin/queries";
@@ -25,7 +30,10 @@ interface CreateCategoryDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function CreateCategoryDialog({ open, onOpenChange }: CreateCategoryDialogProps) {
+export function CreateCategoryDialog({
+  open,
+  onOpenChange,
+}: CreateCategoryDialogProps) {
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
@@ -34,7 +42,9 @@ export function CreateCategoryDialog({ open, onOpenChange }: CreateCategoryDialo
       toast.success("Category created successfully", cancelToastEl);
       onOpenChange(false);
       form.reset();
-      await queryClient.invalidateQueries({ queryKey: queryKeys.adminCategories() });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.adminCategories(),
+      });
     },
     onError: (err) => {
       toast.error(
@@ -65,7 +75,8 @@ export function CreateCategoryDialog({ open, onOpenChange }: CreateCategoryDialo
         <DialogHeader>
           <DialogTitle>Create new category</DialogTitle>
           <DialogDescription>
-            Add a new product category. A URL slug will be generated automatically from the name.
+            Add a new product category. A URL slug will be generated
+            automatically from the name.
           </DialogDescription>
         </DialogHeader>
 
@@ -83,13 +94,18 @@ export function CreateCategoryDialog({ open, onOpenChange }: CreateCategoryDialo
               validators={{
                 onChange: ({ value }) => {
                   if (!value) return "Name is required";
-                  if (value.length < 1) return "Name must be at least 1 character";
+                  if (value.length < 1)
+                    return "Name must be at least 1 character";
                   return undefined;
                 },
               }}
             >
               {(field) => (
-                <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
+                <Field
+                  data-invalid={
+                    field.state.meta.errors.length > 0 ? true : undefined
+                  }
+                >
                   <FieldLabel htmlFor={field.name}>Name</FieldLabel>
                   <Input
                     id={field.name}
@@ -102,7 +118,9 @@ export function CreateCategoryDialog({ open, onOpenChange }: CreateCategoryDialo
                     disabled={createMutation.isPending}
                   />
                   {field.state.meta.errors.length > 0 && (
-                    <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                    <FieldError>
+                      {field.state.meta.errors.join(", ")}
+                    </FieldError>
                   )}
                 </Field>
               )}
@@ -118,13 +136,19 @@ export function CreateCategoryDialog({ open, onOpenChange }: CreateCategoryDialo
             >
               Cancel
             </Button>
-            <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+            <form.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
+            >
               {([canSubmit, isSubmitting]) => (
                 <Button
                   type="submit"
-                  disabled={!canSubmit || isSubmitting || createMutation.isPending}
+                  disabled={
+                    !canSubmit || isSubmitting || createMutation.isPending
+                  }
                 >
-                  {isSubmitting || createMutation.isPending ? "Creating..." : "Create category"}
+                  {isSubmitting || createMutation.isPending
+                    ? "Creating..."
+                    : "Create category"}
                 </Button>
               )}
             </form.Subscribe>

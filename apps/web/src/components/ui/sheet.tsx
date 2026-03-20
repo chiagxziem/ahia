@@ -24,7 +24,10 @@ const SheetPortal = ({ ...props }: SheetPrimitive.Portal.Props) => {
   return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />;
 };
 
-const SheetOverlay = ({ className, ...props }: SheetPrimitive.Backdrop.Props) => {
+const SheetOverlay = ({
+  className,
+  ...props
+}: SheetPrimitive.Backdrop.Props) => {
   return (
     <SheetPrimitive.Backdrop
       data-slot="sheet-overlay"
@@ -63,7 +66,13 @@ const SheetContent = ({
         {showCloseButton && (
           <SheetPrimitive.Close
             data-slot="sheet-close"
-            render={<Button variant="ghost" className="absolute top-3 right-3" size="icon-sm" />}
+            render={
+              <Button
+                variant="ghost"
+                className="absolute top-3 right-3"
+                size="icon-sm"
+              />
+            }
           >
             <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
             <span className="sr-only">Close</span>
@@ -104,7 +113,10 @@ const SheetTitle = ({ className, ...props }: SheetPrimitive.Title.Props) => {
   );
 };
 
-const SheetDescription = ({ className, ...props }: SheetPrimitive.Description.Props) => {
+const SheetDescription = ({
+  className,
+  ...props
+}: SheetPrimitive.Description.Props) => {
   return (
     <SheetPrimitive.Description
       data-slot="sheet-description"

@@ -6,12 +6,13 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 
+import { auth } from "@repo/auth/server";
+
 import env from "@/lib/env";
 import emojiFavicon from "@/middleware/emoji-favicon";
 import errorHandler from "@/middleware/error-handler";
 import notFoundRoute from "@/middleware/not-found-route";
 import type { AppEnv } from "@/types";
-import { auth } from "@repo/auth/server";
 
 import { apiRateLimiter, authRateLimiter } from "./lib/rate-limit";
 
@@ -45,7 +46,9 @@ export const createApp = () => {
       xFrameOptions: "DENY",
       xXssProtection: "1",
       strictTransportSecurity:
-        env.NODE_ENV === "production" ? "max-age=31536000; includeSubDomains" : false,
+        env.NODE_ENV === "production"
+          ? "max-age=31536000; includeSubDomains"
+          : false,
       referrerPolicy: "strict-origin-when-cross-origin",
     }),
   );

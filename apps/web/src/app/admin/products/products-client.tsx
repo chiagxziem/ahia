@@ -8,8 +8,17 @@ import { format } from "date-fns";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
-import { DataTable, type ActionButton, type FilterConfig } from "@/components/ui/data-table";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  DataTable,
+  type ActionButton,
+  type FilterConfig,
+} from "@/components/ui/data-table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   defaultAdminProductsListParams,
   getAdminProducts,
@@ -38,13 +47,20 @@ const stockStatusLabel: Record<StockStatus, string> = {
   out_of_stock: "Out of Stock",
 };
 
-const stockStatusVariant: Record<StockStatus, "default" | "secondary" | "destructive"> = {
+const stockStatusVariant: Record<
+  StockStatus,
+  "default" | "secondary" | "destructive"
+> = {
   in_stock: "default",
   low_stock: "secondary",
   out_of_stock: "destructive",
 };
 
-const CategoryCell = ({ categories }: { categories: AdminProductRow["categories"] }) => {
+const CategoryCell = ({
+  categories,
+}: {
+  categories: AdminProductRow["categories"];
+}) => {
   if (categories.length === 0) {
     return <span className="text-muted-foreground">—</span>;
   }
@@ -96,7 +112,9 @@ const columns: ColumnDef<AdminProductRow>[] = [
     enableSorting: true,
     sortingFn: (a, b) => Number(a.original.price) - Number(b.original.price),
     cell: ({ row }) => (
-      <div className="font-medium">{formatCurrency(Number(row.original.price))}</div>
+      <div className="font-medium">
+        {formatCurrency(Number(row.original.price))}
+      </div>
     ),
   },
   {
@@ -116,7 +134,11 @@ const columns: ColumnDef<AdminProductRow>[] = [
     },
     cell: ({ row }) => {
       const status = getStockStatus(row.original.stockQuantity);
-      return <Badge variant={stockStatusVariant[status]}>{stockStatusLabel[status]}</Badge>;
+      return (
+        <Badge variant={stockStatusVariant[status]}>
+          {stockStatusLabel[status]}
+        </Badge>
+      );
     },
   },
   {
@@ -157,7 +179,9 @@ const filters: FilterConfig[] = [
 
 export const ProductsClient = () => {
   const [createOpen, setCreateOpen] = useState(false);
-  const [detailProduct, setDetailProduct] = useState<AdminProductRow | null>(null);
+  const [detailProduct, setDetailProduct] = useState<AdminProductRow | null>(
+    null,
+  );
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: defaultAdminProductsListParams.limit!,

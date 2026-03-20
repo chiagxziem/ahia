@@ -5,6 +5,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import type { User } from "@repo/db/schemas/auth.schema";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,7 +16,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -28,7 +35,6 @@ import { cancelToastEl } from "@/components/ui/sonner";
 import { createAdminUser } from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { getApiError, roles } from "@/lib/utils";
-import type { User } from "@repo/db/schemas/auth.schema";
 
 interface CreateUserDialogProps {
   currentUser: User;
@@ -36,7 +42,11 @@ interface CreateUserDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function CreateUserDialog({ currentUser, open, onOpenChange }: CreateUserDialogProps) {
+export function CreateUserDialog({
+  currentUser,
+  open,
+  onOpenChange,
+}: CreateUserDialogProps) {
   const queryClient = useQueryClient();
   const isSuperadmin = currentUser.role === roles.SUPERADMIN;
 
@@ -49,7 +59,10 @@ export function CreateUserDialog({ currentUser, open, onOpenChange }: CreateUser
       await queryClient.invalidateQueries({ queryKey: queryKeys.adminUsers() });
     },
     onError: (err) => {
-      toast.error(getApiError(err) || "Failed to create user. Please try again.", cancelToastEl);
+      toast.error(
+        getApiError(err) || "Failed to create user. Please try again.",
+        cancelToastEl,
+      );
     },
   });
 
@@ -76,7 +89,8 @@ export function CreateUserDialog({ currentUser, open, onOpenChange }: CreateUser
         <DialogHeader>
           <DialogTitle>Create new user</DialogTitle>
           <DialogDescription>
-            A password will be generated and emailed to the new user along with a verification link.
+            A password will be generated and emailed to the new user along with
+            a verification link.
           </DialogDescription>
         </DialogHeader>
 
@@ -95,13 +109,18 @@ export function CreateUserDialog({ currentUser, open, onOpenChange }: CreateUser
               validators={{
                 onChange: ({ value }) => {
                   if (!value) return "Name is required";
-                  if (value.length < 2) return "Name must be at least 2 characters";
+                  if (value.length < 2)
+                    return "Name must be at least 2 characters";
                   return undefined;
                 },
               }}
             >
               {(field) => (
-                <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
+                <Field
+                  data-invalid={
+                    field.state.meta.errors.length > 0 ? true : undefined
+                  }
+                >
                   <FieldLabel htmlFor={field.name}>Name</FieldLabel>
                   <Input
                     id={field.name}
@@ -114,7 +133,9 @@ export function CreateUserDialog({ currentUser, open, onOpenChange }: CreateUser
                     disabled={createMutation.isPending}
                   />
                   {field.state.meta.errors.length > 0 && (
-                    <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                    <FieldError>
+                      {field.state.meta.errors.join(", ")}
+                    </FieldError>
                   )}
                 </Field>
               )}
@@ -125,13 +146,19 @@ export function CreateUserDialog({ currentUser, open, onOpenChange }: CreateUser
               name="email"
               validators={{
                 onChange: ({ value }) => {
-                  const res = z.email("Please enter a valid email address").safeParse(value);
+                  const res = z
+                    .email("Please enter a valid email address")
+                    .safeParse(value);
                   return res.success ? undefined : res.error.issues[0]?.message;
                 },
               }}
             >
               {(field) => (
-                <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
+                <Field
+                  data-invalid={
+                    field.state.meta.errors.length > 0 ? true : undefined
+                  }
+                >
                   <FieldLabel htmlFor={field.name}>Email</FieldLabel>
                   <Input
                     id={field.name}
@@ -145,7 +172,9 @@ export function CreateUserDialog({ currentUser, open, onOpenChange }: CreateUser
                     disabled={createMutation.isPending}
                   />
                   {field.state.meta.errors.length > 0 && (
-                    <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                    <FieldError>
+                      {field.state.meta.errors.join(", ")}
+                    </FieldError>
                   )}
                 </Field>
               )}
@@ -158,7 +187,9 @@ export function CreateUserDialog({ currentUser, open, onOpenChange }: CreateUser
                   <FieldLabel htmlFor={field.name}>Role</FieldLabel>
                   <Select
                     value={field.state.value}
-                    onValueChange={(val) => field.handleChange(val as "user" | "admin")}
+                    onValueChange={(val) =>
+                      field.handleChange(val as "user" | "admin")
+                    }
                     disabled={!isSuperadmin || createMutation.isPending}
                   >
                     <SelectTrigger id={field.name}>
@@ -185,13 +216,19 @@ export function CreateUserDialog({ currentUser, open, onOpenChange }: CreateUser
             >
               Cancel
             </Button>
-            <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+            <form.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
+            >
               {([canSubmit, isSubmitting]) => (
                 <Button
                   type="submit"
-                  disabled={!canSubmit || isSubmitting || createMutation.isPending}
+                  disabled={
+                    !canSubmit || isSubmitting || createMutation.isPending
+                  }
                 >
-                  {isSubmitting || createMutation.isPending ? "Creating..." : "Create user"}
+                  {isSubmitting || createMutation.isPending
+                    ? "Creating..."
+                    : "Create user"}
                 </Button>
               )}
             </form.Subscribe>

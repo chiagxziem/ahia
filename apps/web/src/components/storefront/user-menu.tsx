@@ -13,6 +13,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
+import { authClient } from "@repo/auth/client";
+
 import { ThemeSubMenu } from "@/components/theme-sub-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -28,7 +30,6 @@ import {
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { getInitials, roles, truncateEmail } from "@/lib/utils";
-import { authClient } from "@repo/auth/client";
 
 import { cancelToastEl } from "../ui/sonner";
 
@@ -101,7 +102,11 @@ export const UserMenu = () => {
         ) : (
           <Avatar size="sm" className={"shrink-0 rounded-md after:rounded-md"}>
             {user.image && (
-              <AvatarImage src={user.image} alt={user.name} className={"rounded-md"} />
+              <AvatarImage
+                src={user.image}
+                alt={user.name}
+                className={"rounded-md"}
+              />
             )}
             <AvatarFallback className="rounded-md text-[10px] font-semibold">
               {getInitials(user.name)}
@@ -125,9 +130,16 @@ export const UserMenu = () => {
                 className="shrink-0 rounded-xl border bg-muted text-muted-foreground"
               />
             ) : (
-              <Avatar size="lg" className={"shrink-0 rounded-xl after:rounded-xl"}>
+              <Avatar
+                size="lg"
+                className={"shrink-0 rounded-xl after:rounded-xl"}
+              >
                 {user.image && (
-                  <AvatarImage src={user.image} alt={user.name} className={"rounded-xl"} />
+                  <AvatarImage
+                    src={user.image}
+                    alt={user.name}
+                    className={"rounded-xl"}
+                  />
                 )}
                 <AvatarFallback className="rounded-xl text-[10px] font-semibold">
                   {getInitials(user.name)}
@@ -135,7 +147,9 @@ export const UserMenu = () => {
               </Avatar>
             )}
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate text-sm font-medium text-foreground">{user.name}</span>
+              <span className="truncate text-sm font-medium text-foreground">
+                {user.name}
+              </span>
               <span className="truncate text-xs text-muted-foreground">
                 {truncateEmail(user.email)}
               </span>

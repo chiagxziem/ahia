@@ -27,7 +27,11 @@ interface ProductDetailDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function ProductDetailDialog({ product, open, onOpenChange }: ProductDetailDialogProps) {
+export function ProductDetailDialog({
+  product,
+  open,
+  onOpenChange,
+}: ProductDetailDialogProps) {
   const [isCopied, setIsCopied] = useState(false);
 
   if (!product) return null;
@@ -67,7 +71,13 @@ export function ProductDetailDialog({ product, open, onOpenChange }: ProductDeta
                 key={img.key}
                 className="relative aspect-square flex-1 overflow-hidden rounded-lg border bg-muted"
               >
-                <Image src={img.url} alt={product.name} fill className="object-cover" unoptimized />
+                <Image
+                  src={img.url}
+                  alt={product.name}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
               </div>
             ))}
           </div>
@@ -76,7 +86,9 @@ export function ProductDetailDialog({ product, open, onOpenChange }: ProductDeta
         {/* Header: Name + badges + Options */}
         <div className="flex items-start gap-4">
           <div className="flex min-w-0 flex-1 flex-col">
-            <h3 className="truncate text-lg leading-tight font-semibold">{product.name}</h3>
+            <h3 className="truncate text-lg leading-tight font-semibold">
+              {product.name}
+            </h3>
             <p className="text-sm font-medium text-muted-foreground">
               {formatCurrency(Number(product.price))}
             </p>
@@ -105,9 +117,13 @@ export function ProductDetailDialog({ product, open, onOpenChange }: ProductDeta
         <div className="grid gap-3 text-sm">
           {/* Product ID with copy button */}
           <div className="flex items-center justify-between gap-4">
-            <span className="shrink-0 text-sm text-muted-foreground">Product ID</span>
+            <span className="shrink-0 text-sm text-muted-foreground">
+              Product ID
+            </span>
             <div className="flex items-center gap-1">
-              <span className="font-mono text-xs">{truncateId(product.id)}</span>
+              <span className="font-mono text-xs">
+                {truncateId(product.id)}
+              </span>
               <Button
                 size="icon-sm"
                 variant="ghost"
@@ -116,17 +132,28 @@ export function ProductDetailDialog({ product, open, onOpenChange }: ProductDeta
                 disabled={isCopied}
                 aria-label={isCopied ? "Copied" : "Copy product ID"}
               >
-                <HugeiconsIcon icon={isCopied ? Tick01Icon : Copy01Icon} className="size-3.5" />
+                <HugeiconsIcon
+                  icon={isCopied ? Tick01Icon : Copy01Icon}
+                  className="size-3.5"
+                />
               </Button>
             </div>
           </div>
-          <DetailRow label="Stock quantity" value={String(product.stockQuantity ?? 0)} />
+          <DetailRow
+            label="Stock quantity"
+            value={String(product.stockQuantity ?? 0)}
+          />
           {product.sizes.length > 0 && (
             <div className="flex items-start justify-between gap-4">
-              <span className="shrink-0 text-sm text-muted-foreground">Sizes</span>
+              <span className="shrink-0 text-sm text-muted-foreground">
+                Sizes
+              </span>
               <div className="flex flex-wrap justify-end gap-1">
                 {product.sizes.map((s) => (
-                  <Badge key={s.name} variant={s.inStock ? "default" : "secondary"}>
+                  <Badge
+                    key={s.name}
+                    variant={s.inStock ? "default" : "secondary"}
+                  >
                     {s.name}
                   </Badge>
                 ))}
@@ -135,17 +162,25 @@ export function ProductDetailDialog({ product, open, onOpenChange }: ProductDeta
           )}
           {product.colors.length > 0 && (
             <div className="flex items-start justify-between gap-4">
-              <span className="shrink-0 text-sm text-muted-foreground">Colors</span>
+              <span className="shrink-0 text-sm text-muted-foreground">
+                Colors
+              </span>
               <div className="flex flex-wrap justify-end gap-1">
                 {product.colors.map((c) => (
-                  <Badge key={c.name} variant={c.inStock ? "default" : "secondary"}>
+                  <Badge
+                    key={c.name}
+                    variant={c.inStock ? "default" : "secondary"}
+                  >
                     {c.name}
                   </Badge>
                 ))}
               </div>
             </div>
           )}
-          <DetailRow label="Created" value={format(product.createdAt, "MMM d, yyyy 'at' h:mm a")} />
+          <DetailRow
+            label="Created"
+            value={format(product.createdAt, "MMM d, yyyy 'at' h:mm a")}
+          />
           <DetailRow
             label="Last updated"
             value={format(product.updatedAt, "MMM d, yyyy 'at' h:mm a")}

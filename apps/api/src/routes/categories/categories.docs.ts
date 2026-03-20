@@ -1,6 +1,12 @@
 import { describeRoute } from "hono-openapi";
 import { z } from "zod";
 
+import {
+  CategoryExtendedSchema,
+  CategorySelectSchema,
+  CategoryWithCountSchema,
+} from "@repo/db/validators/product.validator";
+
 import HttpStatusCodes from "@/lib/http-status-codes";
 import {
   createErrorResponse,
@@ -11,11 +17,6 @@ import {
   getErrDetailsFromErrFields,
 } from "@/lib/openapi";
 import { authExamples, categoriesExamples } from "@/lib/openapi-examples";
-import {
-  CategoryExtendedSchema,
-  CategorySelectSchema,
-  CategoryWithCountSchema,
-} from "@repo/db/validators/product.validator";
 
 const tags = ["Categories"];
 
@@ -70,10 +71,13 @@ export const getCategoryDoc = describeRoute({
         fields: authExamples.uuidValErr,
       },
     }),
-    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse("Category not found", {
-      code: "NOT_FOUND",
-      details: "Category not found",
-    }),
+    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse(
+      "Category not found",
+      {
+        code: "NOT_FOUND",
+        details: "Category not found",
+      },
+    ),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },
@@ -96,7 +100,9 @@ export const createCategoryDoc = describeRoute({
       validationError: {
         summary: "Invalid request data",
         code: "INVALID_DATA",
-        details: getErrDetailsFromErrFields(categoriesExamples.createCategoryValErrs),
+        details: getErrDetailsFromErrFields(
+          categoriesExamples.createCategoryValErrs,
+        ),
         fields: categoriesExamples.createCategoryValErrs,
       },
     }),
@@ -108,10 +114,13 @@ export const createCategoryDoc = describeRoute({
       code: "FORBIDDEN",
       details: "User does not have the required role",
     }),
-    [HttpStatusCodes.CONFLICT]: createGenericErrorResponse("Category name already exists", {
-      code: "CONFLICT",
-      details: "Category name already exists",
-    }),
+    [HttpStatusCodes.CONFLICT]: createGenericErrorResponse(
+      "Category name already exists",
+      {
+        code: "CONFLICT",
+        details: "Category name already exists",
+      },
+    ),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },
@@ -134,7 +143,9 @@ export const updateCategoryDoc = describeRoute({
       validationError: {
         summary: "Invalid request data",
         code: "INVALID_DATA",
-        details: getErrDetailsFromErrFields(categoriesExamples.createCategoryValErrs),
+        details: getErrDetailsFromErrFields(
+          categoriesExamples.createCategoryValErrs,
+        ),
         fields: categoriesExamples.createCategoryValErrs,
       },
       invalidUUID: {
@@ -152,14 +163,20 @@ export const updateCategoryDoc = describeRoute({
       code: "FORBIDDEN",
       details: "User does not have the required role",
     }),
-    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse("Category not found", {
-      code: "NOT_FOUND",
-      details: "Category not found",
-    }),
-    [HttpStatusCodes.CONFLICT]: createGenericErrorResponse("Category name already exists", {
-      code: "CONFLICT",
-      details: "Category name already exists",
-    }),
+    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse(
+      "Category not found",
+      {
+        code: "NOT_FOUND",
+        details: "Category not found",
+      },
+    ),
+    [HttpStatusCodes.CONFLICT]: createGenericErrorResponse(
+      "Category name already exists",
+      {
+        code: "CONFLICT",
+        details: "Category name already exists",
+      },
+    ),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },
@@ -194,14 +211,20 @@ export const deleteCategoryDoc = describeRoute({
       code: "FORBIDDEN",
       details: "User does not have the required role",
     }),
-    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse("Category not found", {
-      code: "NOT_FOUND",
-      details: "Category not found",
-    }),
-    [HttpStatusCodes.CONFLICT]: createGenericErrorResponse("Category has associated products", {
-      code: "CONFLICT",
-      details: "Category has associated products",
-    }),
+    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse(
+      "Category not found",
+      {
+        code: "NOT_FOUND",
+        details: "Category not found",
+      },
+    ),
+    [HttpStatusCodes.CONFLICT]: createGenericErrorResponse(
+      "Category has associated products",
+      {
+        code: "CONFLICT",
+        details: "Category has associated products",
+      },
+    ),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },

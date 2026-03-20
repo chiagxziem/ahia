@@ -41,7 +41,10 @@ export const usePagination = ({
 
   if (showLeftEllipsis && showRightEllipsis) {
     if (paginationItemsToDisplay > 4) {
-      startPage = Math.max(2, currentPage - Math.floor((paginationItemsToDisplay - 2) / 2));
+      startPage = Math.max(
+        2,
+        currentPage - Math.floor((paginationItemsToDisplay - 2) / 2),
+      );
       endPage = Math.min(
         totalPages - 1,
         currentPage + Math.floor((paginationItemsToDisplay - 2) / 2),
@@ -60,7 +63,10 @@ export const usePagination = ({
   }
 
   return {
-    pages: Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i),
+    pages: Array.from(
+      { length: endPage - startPage + 1 },
+      (_, i) => startPage + i,
+    ),
     showLeftEllipsis,
     showRightEllipsis,
   };

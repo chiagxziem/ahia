@@ -15,7 +15,10 @@ import {
 import { InputGroup, InputGroupAddon } from "@/components/ui/input-group";
 import { cn } from "@/lib/utils";
 
-const Command = ({ className, ...props }: React.ComponentProps<typeof CommandPrimitive>) => {
+const Command = ({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive>) => {
   return (
     <CommandPrimitive
       data-slot="command"
@@ -49,7 +52,10 @@ const CommandDialog = ({
         <DialogDescription>{description}</DialogDescription>
       </DialogHeader>
       <DialogContent
-        className={cn("top-1/3 translate-y-0 overflow-hidden rounded-xl! p-0", className)}
+        className={cn(
+          "top-1/3 translate-y-0 overflow-hidden rounded-xl! p-0",
+          className,
+        )}
         showCloseButton={showCloseButton}
       >
         {children}
@@ -74,7 +80,11 @@ const CommandInput = ({
           {...props}
         />
         <InputGroupAddon>
-          <HugeiconsIcon icon={SearchIcon} strokeWidth={2} className="size-4 shrink-0 opacity-50" />
+          <HugeiconsIcon
+            icon={SearchIcon}
+            strokeWidth={2}
+            className="size-4 shrink-0 opacity-50"
+          />
         </InputGroupAddon>
       </InputGroup>
     </div>
@@ -163,7 +173,10 @@ const CommandItem = ({
   );
 };
 
-const CommandShortcut = ({ className, ...props }: React.ComponentProps<"span">) => {
+const CommandShortcut = ({
+  className,
+  ...props
+}: React.ComponentProps<"span">) => {
   return (
     <span
       data-slot="command-shortcut"

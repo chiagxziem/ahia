@@ -9,8 +9,14 @@ type SendEmail = {
   url?: string;
 };
 
-export const sendVerificationEmail = async ({ to, token, name, url }: SendEmail) => {
-  const verificationUrl = url ?? `${process.env.WEB_URL}/verify-email?token=${token}`;
+export const sendVerificationEmail = async ({
+  to,
+  token,
+  name,
+  url,
+}: SendEmail) => {
+  const verificationUrl =
+    url ?? `${process.env.WEB_URL}/verify-email?token=${token}`;
 
   await resend.emails.send({
     from: `Ahia <ahia@${process.env.RESEND_DOMAIN}>`,
@@ -25,8 +31,14 @@ export const sendVerificationEmail = async ({ to, token, name, url }: SendEmail)
   });
 };
 
-export const sendResetPasswordEmail = async ({ to, token, name, url }: SendEmail) => {
-  const resetPasswordUrl = url ?? `${process.env.WEB_URL}/reset-password?token=${token}`;
+export const sendResetPasswordEmail = async ({
+  to,
+  token,
+  name,
+  url,
+}: SendEmail) => {
+  const resetPasswordUrl =
+    url ?? `${process.env.WEB_URL}/reset-password?token=${token}`;
 
   await resend.emails.send({
     from: `Ahia <ahia@${process.env.RESEND_DOMAIN}>`,

@@ -32,7 +32,10 @@ const statusLabel: Record<string, string> = {
   completed: "Completed",
 };
 
-const statusVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+const statusVariant: Record<
+  string,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
   pending: "secondary",
   processing: "default",
   cancelled: "destructive",
@@ -46,14 +49,21 @@ const paymentLabel: Record<string, string> = {
   refunded: "Refunded",
 };
 
-const paymentVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+const paymentVariant: Record<
+  string,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
   pending: "secondary",
   paid: "default",
   failed: "destructive",
   refunded: "outline",
 };
 
-export const OrderDetailDialog = ({ order, open, onOpenChange }: OrderDetailDialogProps) => {
+export const OrderDetailDialog = ({
+  order,
+  open,
+  onOpenChange,
+}: OrderDetailDialogProps) => {
   const [isCopied, setIsCopied] = useState(false);
 
   if (!order) return null;
@@ -74,7 +84,9 @@ export const OrderDetailDialog = ({ order, open, onOpenChange }: OrderDetailDial
         {/* Header: Order number + badges */}
         <div className="flex items-start gap-4">
           <div className="flex min-w-0 flex-1 flex-col">
-            <h3 className="text-lg leading-tight font-semibold">{order.orderNumber}</h3>
+            <h3 className="text-lg leading-tight font-semibold">
+              {order.orderNumber}
+            </h3>
             <p className="text-sm text-muted-foreground">
               {order.customer?.name ?? "Unknown"} &middot; {order.email}
             </p>
@@ -82,15 +94,20 @@ export const OrderDetailDialog = ({ order, open, onOpenChange }: OrderDetailDial
               <Badge variant={statusVariant[order.status] ?? "secondary"}>
                 {statusLabel[order.status] ?? order.status}
               </Badge>
-              <Badge variant={paymentVariant[order.paymentStatus] ?? "secondary"}>
+              <Badge
+                variant={paymentVariant[order.paymentStatus] ?? "secondary"}
+              >
                 {paymentLabel[order.paymentStatus] ?? order.paymentStatus}
               </Badge>
             </div>
           </div>
           <div className="text-right">
-            <p className="text-lg font-semibold">{formatCurrency(Number(order.totalAmount))}</p>
+            <p className="text-lg font-semibold">
+              {formatCurrency(Number(order.totalAmount))}
+            </p>
             <p className="text-xs text-muted-foreground">
-              {order.orderItems.length} {order.orderItems.length === 1 ? "item" : "items"}
+              {order.orderItems.length}{" "}
+              {order.orderItems.length === 1 ? "item" : "items"}
             </p>
           </div>
         </div>
@@ -120,9 +137,12 @@ export const OrderDetailDialog = ({ order, open, onOpenChange }: OrderDetailDial
                     </div>
                   )}
                   <div className="flex min-w-0 flex-1 flex-col">
-                    <span className="truncate text-sm font-medium">{item.product.name}</span>
+                    <span className="truncate text-sm font-medium">
+                      {item.product.name}
+                    </span>
                     <span className="text-xs text-muted-foreground">
-                      {formatCurrency(Number(item.unitPrice))} &times; {item.quantity}
+                      {formatCurrency(Number(item.unitPrice))} &times;{" "}
+                      {item.quantity}
                     </span>
                   </div>
                   <span className="shrink-0 text-sm font-medium">
@@ -147,7 +167,9 @@ export const OrderDetailDialog = ({ order, open, onOpenChange }: OrderDetailDial
         {/* Detail rows */}
         <div className="grid gap-3 text-sm">
           <div className="flex items-center justify-between gap-4">
-            <span className="shrink-0 text-sm text-muted-foreground">Order ID</span>
+            <span className="shrink-0 text-sm text-muted-foreground">
+              Order ID
+            </span>
             <div className="flex items-center gap-1">
               <span className="font-mono text-xs">{truncateId(order.id)}</span>
               <Button
@@ -158,12 +180,20 @@ export const OrderDetailDialog = ({ order, open, onOpenChange }: OrderDetailDial
                 disabled={isCopied}
                 aria-label={isCopied ? "Copied" : "Copy order ID"}
               >
-                <HugeiconsIcon icon={isCopied ? Tick01Icon : Copy01Icon} className="size-3.5" />
+                <HugeiconsIcon
+                  icon={isCopied ? Tick01Icon : Copy01Icon}
+                  className="size-3.5"
+                />
               </Button>
             </div>
           </div>
-          {order.paymentMethod && <DetailRow label="Payment method" value={order.paymentMethod} />}
-          <DetailRow label="Ordered" value={format(order.createdAt, "MMM d, yyyy 'at' h:mm a")} />
+          {order.paymentMethod && (
+            <DetailRow label="Payment method" value={order.paymentMethod} />
+          )}
+          <DetailRow
+            label="Ordered"
+            value={format(order.createdAt, "MMM d, yyyy 'at' h:mm a")}
+          />
           <DetailRow
             label="Last updated"
             value={format(order.updatedAt, "MMM d, yyyy 'at' h:mm a")}

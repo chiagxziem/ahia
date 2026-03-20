@@ -25,7 +25,10 @@ interface OrderForReceipt {
   orderItems: OrderItem[];
 }
 
-export const sendOrderReceiptEmail = async (order: OrderForReceipt, customerName?: string) => {
+export const sendOrderReceiptEmail = async (
+  order: OrderForReceipt,
+  customerName?: string,
+) => {
   const orderDate =
     order.createdAt instanceof Date
       ? order.createdAt.toLocaleDateString("en-US", {
@@ -70,9 +73,14 @@ export const sendOrderReceiptEmail = async (order: OrderForReceipt, customerName
   });
 
   if (error) {
-    console.error(`[Email] Failed to send receipt for ${order.orderNumber}:`, error);
+    console.error(
+      `[Email] Failed to send receipt for ${order.orderNumber}:`,
+      error,
+    );
     throw error;
   }
 
-  console.log(`[Email] Receipt sent for ${order.orderNumber} to ${order.email}`);
+  console.log(
+    `[Email] Receipt sent for ${order.orderNumber} to ${order.email}`,
+  );
 };

@@ -1,6 +1,10 @@
 "use client";
 
-import { Cancel01Icon, Image02Icon, Upload04Icon } from "@hugeicons/core-free-icons";
+import {
+  Cancel01Icon,
+  Image02Icon,
+  Upload04Icon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import imageCompression from "browser-image-compression";
 import Image from "next/image";
@@ -9,7 +13,13 @@ import { useCallback, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif"];
+const ALLOWED_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+  "image/gif",
+];
 const MAX_SOURCE_SIZE = 5 * 1024 * 1024; // 5MB — compressed before upload
 const MAX_OPTIMIZED_SIZE = 0.5 * 1024 * 1024; // 512KB
 const COMPRESSION_OPTIONS = {
@@ -21,7 +31,9 @@ const COMPRESSION_OPTIONS = {
 // Skip compression if already within limit — avoids format re-encoding issues
 // (e.g. AVIF → canvas → PNG blowup since browsers lack native AVIF encoding)
 const compressFile = (f: File) =>
-  f.size <= MAX_OPTIMIZED_SIZE ? Promise.resolve(f) : imageCompression(f, COMPRESSION_OPTIONS);
+  f.size <= MAX_OPTIMIZED_SIZE
+    ? Promise.resolve(f)
+    : imageCompression(f, COMPRESSION_OPTIONS);
 
 interface ImagePickerProps {
   value: File[];
@@ -133,7 +145,10 @@ export const ImagePicker = ({
           )}
         >
           <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
-            <HugeiconsIcon icon={Image02Icon} className="size-5 text-muted-foreground" />
+            <HugeiconsIcon
+              icon={Image02Icon}
+              className="size-5 text-muted-foreground"
+            />
           </div>
           <div className="flex flex-col gap-0.5">
             <span className="text-sm font-medium">
@@ -181,7 +196,10 @@ export const ImagePicker = ({
                 disabled={disabled}
                 onClick={() => inputRef.current?.click()}
               >
-                <HugeiconsIcon icon={Upload04Icon} className="mr-1.5 size-3.5" />
+                <HugeiconsIcon
+                  icon={Upload04Icon}
+                  className="mr-1.5 size-3.5"
+                />
                 Add more
               </Button>
             )}
@@ -375,7 +393,10 @@ export function UpdateImagePicker({
           )}
         >
           <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
-            <HugeiconsIcon icon={Image02Icon} className="size-5 text-muted-foreground" />
+            <HugeiconsIcon
+              icon={Image02Icon}
+              className="size-5 text-muted-foreground"
+            />
           </div>
           <div className="flex flex-col gap-0.5">
             <span className="text-sm font-medium">
@@ -423,7 +444,10 @@ export function UpdateImagePicker({
                 disabled={disabled}
                 onClick={() => inputRef.current?.click()}
               >
-                <HugeiconsIcon icon={Upload04Icon} className="mr-1.5 size-3.5" />
+                <HugeiconsIcon
+                  icon={Upload04Icon}
+                  className="mr-1.5 size-3.5"
+                />
                 Add more
               </Button>
             )}
@@ -435,7 +459,13 @@ export function UpdateImagePicker({
                 key={img.key}
                 className="group relative aspect-square overflow-hidden rounded-lg border bg-muted"
               >
-                <Image src={img.url} alt="" fill className="object-cover" unoptimized />
+                <Image
+                  src={img.url}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
                 <button
                   type="button"
                   disabled={disabled}
@@ -443,7 +473,11 @@ export function UpdateImagePicker({
                   className="absolute top-1 right-1 flex size-5 items-center justify-center rounded-full bg-black/70 text-white hover:bg-black/90 disabled:pointer-events-none"
                   aria-label="Remove image"
                 >
-                  <HugeiconsIcon icon={Cancel01Icon} className="size-3" strokeWidth={2} />
+                  <HugeiconsIcon
+                    icon={Cancel01Icon}
+                    className="size-3"
+                    strokeWidth={2}
+                  />
                 </button>
               </div>
             ))}

@@ -1,6 +1,10 @@
 "use client";
 
-import { ComputerIcon, Moon02Icon, Sun02Icon } from "@hugeicons/core-free-icons";
+import {
+  ComputerIcon,
+  Moon02Icon,
+  Sun02Icon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useTheme } from "better-themes";
 import { useEffect, useState } from "react";

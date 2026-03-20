@@ -7,8 +7,14 @@ import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { useState } from "react";
 
+import { User } from "@repo/db/schemas/auth.schema";
+
 import { Badge } from "@/components/ui/badge";
-import { DataTable, type ActionButton, type FilterConfig } from "@/components/ui/data-table";
+import {
+  DataTable,
+  type ActionButton,
+  type FilterConfig,
+} from "@/components/ui/data-table";
 import {
   defaultAdminUsersListParams,
   getAdminUsers,
@@ -17,7 +23,6 @@ import {
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { roles } from "@/lib/utils";
-import { User } from "@repo/db/schemas/auth.schema";
 
 import { CreateUserDialog } from "./create-user-dialog";
 import { UserDetailDialog } from "./user-detail-dialog";
@@ -36,7 +41,8 @@ const statusSortRank: Record<string, number> = {
   banned: 1,
 };
 
-const byName = (a: string, b: string) => a.localeCompare(b, undefined, { sensitivity: "base" });
+const byName = (a: string, b: string) =>
+  a.localeCompare(b, undefined, { sensitivity: "base" });
 
 const columns = (currentUser: User): ColumnDef<UserRow>[] => [
   {
@@ -65,8 +71,12 @@ const columns = (currentUser: User): ColumnDef<UserRow>[] => [
       return filterValue.includes(role);
     },
     sortingFn: (rowA, rowB) => {
-      const leftRank = roleSortRank[rowA.original.role ?? roles.USER] ?? Number.MAX_SAFE_INTEGER;
-      const rightRank = roleSortRank[rowB.original.role ?? roles.USER] ?? Number.MAX_SAFE_INTEGER;
+      const leftRank =
+        roleSortRank[rowA.original.role ?? roles.USER] ??
+        Number.MAX_SAFE_INTEGER;
+      const rightRank =
+        roleSortRank[rowB.original.role ?? roles.USER] ??
+        Number.MAX_SAFE_INTEGER;
 
       if (leftRank !== rightRank) {
         return leftRank - rightRank;
@@ -77,7 +87,8 @@ const columns = (currentUser: User): ColumnDef<UserRow>[] => [
     cell: ({ row }) => (
       <Badge
         variant={
-          row.original.role === roles.ADMIN || row.original.role === roles.SUPERADMIN
+          row.original.role === roles.ADMIN ||
+          row.original.role === roles.SUPERADMIN
             ? "default"
             : "secondary"
         }
@@ -121,7 +132,11 @@ const columns = (currentUser: User): ColumnDef<UserRow>[] => [
       return (
         <Badge
           variant={
-            status === "active" ? "default" : status === "banned" ? "destructive" : "secondary"
+            status === "active"
+              ? "default"
+              : status === "banned"
+                ? "destructive"
+                : "secondary"
           }
         >
           {status}
@@ -141,7 +156,9 @@ const columns = (currentUser: User): ColumnDef<UserRow>[] => [
     cell: ({ row }) => {
       const user = row.original;
 
-      return user && currentUser ? <UserRowActions user={user} currentUser={currentUser} /> : null;
+      return user && currentUser ? (
+        <UserRowActions user={user} currentUser={currentUser} />
+      ) : null;
     },
   },
 ];
@@ -240,7 +257,11 @@ export const UsersClient = () => {
           if (!open) setSelectedUser(null);
         }}
       />
-      <CreateUserDialog currentUser={user} open={createOpen} onOpenChange={setCreateOpen} />
+      <CreateUserDialog
+        currentUser={user}
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+      />
     </>
   );
 };

@@ -7,7 +7,11 @@ import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { useState } from "react";
 
-import { type ActionButton, DataTable, type FilterConfig } from "@/components/ui/data-table";
+import {
+  type ActionButton,
+  DataTable,
+  type FilterConfig,
+} from "@/components/ui/data-table";
 import {
   type AdminCategoryRow,
   defaultAdminCategoriesListParams,
@@ -22,7 +26,9 @@ const columns: ColumnDef<AdminCategoryRow>[] = [
   {
     accessorKey: "name",
     header: "Name",
-    cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
+    cell: ({ row }) => (
+      <div className="font-medium">{row.getValue("name")}</div>
+    ),
   },
   {
     accessorKey: "slug",
@@ -87,7 +93,9 @@ export const CategoriesClient = () => {
       <DataTable
         columns={columns}
         data={tableData}
-        emptyMessage={isLoading ? "Loading categories..." : "No categories found."}
+        emptyMessage={
+          isLoading ? "Loading categories..." : "No categories found."
+        }
         filters={filters}
         actionButtons={actionButtons}
         rowCount={data?.total}

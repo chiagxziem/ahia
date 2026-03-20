@@ -1,6 +1,10 @@
 import { describeRoute } from "hono-openapi";
 import { z } from "zod";
 
+import { WindowNumberSchema } from "@repo/db/validators/admin.validator";
+import { OrderWithCustomerSelectSchema } from "@repo/db/validators/order.validator";
+import { UserSelectSchema } from "@repo/db/validators/user.validator";
+
 import HttpStatusCodes from "@/lib/http-status-codes";
 import {
   createErrorResponse,
@@ -11,9 +15,6 @@ import {
   getErrDetailsFromErrFields,
 } from "@/lib/openapi";
 import { authExamples } from "@/lib/openapi-examples";
-import { WindowNumberSchema } from "@repo/db/validators/admin.validator";
-import { OrderWithCustomerSelectSchema } from "@repo/db/validators/order.validator";
-import { UserSelectSchema } from "@repo/db/validators/user.validator";
 
 const tags = ["Admin"];
 
@@ -125,10 +126,13 @@ export const createUserDoc = describeRoute({
       code: "FORBIDDEN",
       details: "User does not have the required permission",
     }),
-    [HttpStatusCodes.CONFLICT]: createGenericErrorResponse("User already exists", {
-      code: "CONFLICT",
-      details: "A user with this email already exists",
-    }),
+    [HttpStatusCodes.CONFLICT]: createGenericErrorResponse(
+      "User already exists",
+      {
+        code: "CONFLICT",
+        details: "A user with this email already exists",
+      },
+    ),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },

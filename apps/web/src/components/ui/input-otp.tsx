@@ -28,7 +28,10 @@ const InputOTP = ({
   );
 };
 
-const InputOTPGroup = ({ className, ...props }: React.ComponentProps<"div">) => {
+const InputOTPGroup = ({
+  className,
+  ...props
+}: React.ComponentProps<"div">) => {
   return (
     <div
       data-slot="input-otp-group"

@@ -76,7 +76,10 @@ export const auth = betterAuth({
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
-          domain: process.env.NODE_ENV === "production" ? process.env.DOMAIN : undefined,
+          domain:
+            process.env.NODE_ENV === "production"
+              ? process.env.DOMAIN
+              : undefined,
           expires: new Date(Date.now() + 60 * 60 * 24 * 30 * 1000),
         },
       },

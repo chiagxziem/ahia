@@ -102,7 +102,9 @@ const FilterContent = ({ filters }: { filters: ShopFilters }) => {
           {PRICE_RANGES.map((range) => {
             const isActive =
               filters.minPrice === range.min &&
-              (range.max ? filters.maxPrice === range.max : filters.maxPrice === null);
+              (range.max
+                ? filters.maxPrice === range.max
+                : filters.maxPrice === null);
 
             return (
               <div key={range.label} className="flex items-center gap-2.5">
@@ -201,7 +203,9 @@ export const MobileFilterDrawer = ({ filters }: { filters: ShopFilters }) => {
       </DrawerTrigger>
       <DrawerContent className="h-full w-[85vw] rounded-none border-r-0 sm:w-80">
         <DrawerHeader className="flex flex-row items-center justify-between gap-4 border-b border-border/30 px-5 py-4">
-          <DrawerTitle className="text-base font-semibold tracking-tight">Filters</DrawerTitle>
+          <DrawerTitle className="text-base font-semibold tracking-tight">
+            Filters
+          </DrawerTitle>
           <DrawerClose asChild>
             <Button
               variant="ghost"
@@ -225,7 +229,9 @@ export const MobileFilterDrawer = ({ filters }: { filters: ShopFilters }) => {
             Clear all
           </Button>
           <DrawerClose asChild>
-            <Button className="flex-1 rounded-full text-xs font-medium">Apply</Button>
+            <Button className="flex-1 rounded-full text-xs font-medium">
+              Apply
+            </Button>
           </DrawerClose>
         </div>
       </DrawerContent>

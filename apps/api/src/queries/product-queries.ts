@@ -34,7 +34,9 @@ export const getProducts = async (page: number = 1, limit?: number) => {
   if (!result) return { products: [], total: 0 };
 
   const products = result.map(({ productCategories, ...p }) =>
-    Object.assign(p, { categories: productCategories?.map((pc) => pc.category) ?? [] }),
+    Object.assign(p, {
+      categories: productCategories?.map((pc) => pc.category) ?? [],
+    }),
   );
 
   const totalResult = await db.select({ count: count() }).from(product);
@@ -73,7 +75,10 @@ export const getFeaturedProduct = async () => {
 
   // Deterministic offset from today's date (changes daily)
   const today = new Date();
-  const daySeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+  const daySeed =
+    today.getFullYear() * 10000 +
+    (today.getMonth() + 1) * 100 +
+    today.getDate();
   const offset = daySeed % totalProducts;
 
   const result = await db.query.product.findMany({
@@ -113,12 +118,16 @@ export const getLatestProducts = async (limit: number = 4) => {
   if (!result) return [];
 
   return result.map(({ productCategories, ...p }) =>
-    Object.assign(p, { categories: productCategories?.map((pc) => pc.category) ?? [] }),
+    Object.assign(p, {
+      categories: productCategories?.map((pc) => pc.category) ?? [],
+    }),
   );
 };
 
 /** Fetches product IDs ranked by total quantity sold in the last 30 days */
-export const getTrendingProductIds = async (limit: number = 4): Promise<string[]> => {
+export const getTrendingProductIds = async (
+  limit: number = 4,
+): Promise<string[]> => {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -154,7 +163,9 @@ export const getTrendingProducts = async (limit: number = 4) => {
   if (!result) return [];
 
   const products = result.map(({ productCategories, ...p }) =>
-    Object.assign(p, { categories: productCategories?.map((pc) => pc.category) ?? [] }),
+    Object.assign(p, {
+      categories: productCategories?.map((pc) => pc.category) ?? [],
+    }),
   );
 
   // Preserve the trending sort order
@@ -188,7 +199,9 @@ export const getShopProducts = async (params: {
   if (!allProducts) return { products: [], total: 0 };
 
   let products = allProducts.map(({ productCategories, ...p }) =>
-    Object.assign(p, { categories: productCategories?.map((pc) => pc.category) ?? [] }),
+    Object.assign(p, {
+      categories: productCategories?.map((pc) => pc.category) ?? [],
+    }),
   );
 
   // Filter by category slug
@@ -220,11 +233,17 @@ export const getShopProducts = async (params: {
       products.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
       break;
     case "newest":
-      products.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      products.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
       break;
     default:
       // Default: newest first
-      products.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      products.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
       break;
   }
 

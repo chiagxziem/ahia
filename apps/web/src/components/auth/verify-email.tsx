@@ -59,7 +59,9 @@ export const VerifyEmailContent = () => {
     return (
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-2 text-center">
-          <h1 className="text-2xl font-bold tracking-tight">Verification successful</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Verification successful
+          </h1>
           <p className="text-sm text-muted-foreground">
             Your email has been verified successfully.
           </p>

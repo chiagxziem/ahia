@@ -1,5 +1,7 @@
 import { describeRoute } from "hono-openapi";
 
+import { CartSelectSchema } from "@repo/db/validators/cart.validator";
+
 import HttpStatusCodes from "@/lib/http-status-codes";
 import {
   createErrorResponse,
@@ -10,7 +12,6 @@ import {
   getErrDetailsFromErrFields,
 } from "@/lib/openapi";
 import { cartExamples } from "@/lib/openapi-examples";
-import { CartSelectSchema } from "@repo/db/validators/cart.validator";
 
 const tags = ["Cart"];
 
@@ -61,28 +62,35 @@ export const addToCartDoc = describeRoute({
       code: "UNAUTHORIZED",
       details: "No session found",
     }),
-    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse("Product not found", {
-      code: "NOT_FOUND",
-      details: "Product not found",
-    }),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: createErrorResponse("Insufficient stock", {
-      insufficientStock: {
-        summary: "Not enough stock",
-        code: "INSUFFICIENT_STOCK",
-        details: "Not enough stock available. Requested: 5, Available: 3. Maximum you can add: 3",
+    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse(
+      "Product not found",
+      {
+        code: "NOT_FOUND",
+        details: "Product not found",
       },
-      outOfStock: {
-        summary: "Product out of stock",
-        code: "INSUFFICIENT_STOCK",
-        details: "Product is currently out of stock. Available: 0",
+    ),
+    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: createErrorResponse(
+      "Insufficient stock",
+      {
+        insufficientStock: {
+          summary: "Not enough stock",
+          code: "INSUFFICIENT_STOCK",
+          details:
+            "Not enough stock available. Requested: 5, Available: 3. Maximum you can add: 3",
+        },
+        outOfStock: {
+          summary: "Product out of stock",
+          code: "INSUFFICIENT_STOCK",
+          details: "Product is currently out of stock. Available: 0",
+        },
+        existingCartItem: {
+          summary: "Insufficient stock with existing cart item",
+          code: "INSUFFICIENT_STOCK",
+          details:
+            "Not enough stock available. You have 2 in cart, requested 5 more, but only 4 available total. Maximum you can add: 2",
+        },
       },
-      existingCartItem: {
-        summary: "Insufficient stock with existing cart item",
-        code: "INSUFFICIENT_STOCK",
-        details:
-          "Not enough stock available. You have 2 in cart, requested 5 more, but only 4 available total. Maximum you can add: 2",
-      },
-    }),
+    ),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },
@@ -122,22 +130,29 @@ export const updateCartItemDoc = describeRoute({
       code: "FORBIDDEN",
       details: "You can only update items in your own cart",
     }),
-    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse("Cart item not found", {
-      code: "NOT_FOUND",
-      details: "Cart item not found",
-    }),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: createErrorResponse("Insufficient stock", {
-      insufficientStock: {
-        summary: "Not enough stock",
-        code: "INSUFFICIENT_STOCK",
-        details: "Not enough stock available. Requested: 10, Available: 7. Maximum quantity: 7",
+    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse(
+      "Cart item not found",
+      {
+        code: "NOT_FOUND",
+        details: "Cart item not found",
       },
-      outOfStock: {
-        summary: "Product out of stock",
-        code: "INSUFFICIENT_STOCK",
-        details: "Product is currently out of stock. Available: 0",
+    ),
+    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: createErrorResponse(
+      "Insufficient stock",
+      {
+        insufficientStock: {
+          summary: "Not enough stock",
+          code: "INSUFFICIENT_STOCK",
+          details:
+            "Not enough stock available. Requested: 10, Available: 7. Maximum quantity: 7",
+        },
+        outOfStock: {
+          summary: "Product out of stock",
+          code: "INSUFFICIENT_STOCK",
+          details: "Product is currently out of stock. Available: 0",
+        },
       },
-    }),
+    ),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },
@@ -171,10 +186,13 @@ export const deleteCartItemDoc = describeRoute({
       code: "FORBIDDEN",
       details: "You can only remove items from your own cart",
     }),
-    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse("Cart item not found", {
-      code: "NOT_FOUND",
-      details: "Cart item not found",
-    }),
+    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse(
+      "Cart item not found",
+      {
+        code: "NOT_FOUND",
+        details: "Cart item not found",
+      },
+    ),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },

@@ -16,7 +16,10 @@ const Accordion = ({ className, ...props }: AccordionPrimitive.Root.Props) => {
   );
 };
 
-const AccordionItem = ({ className, ...props }: AccordionPrimitive.Item.Props) => {
+const AccordionItem = ({
+  className,
+  ...props
+}: AccordionPrimitive.Item.Props) => {
   return (
     <AccordionPrimitive.Item
       data-slot="accordion-item"
@@ -26,7 +29,11 @@ const AccordionItem = ({ className, ...props }: AccordionPrimitive.Item.Props) =
   );
 };
 
-const AccordionTrigger = ({ className, children, ...props }: AccordionPrimitive.Trigger.Props) => {
+const AccordionTrigger = ({
+  className,
+  children,
+  ...props
+}: AccordionPrimitive.Trigger.Props) => {
   return (
     <AccordionPrimitive.Header className="flex">
       <AccordionPrimitive.Trigger
@@ -55,7 +62,11 @@ const AccordionTrigger = ({ className, children, ...props }: AccordionPrimitive.
   );
 };
 
-const AccordionContent = ({ className, children, ...props }: AccordionPrimitive.Panel.Props) => {
+const AccordionContent = ({
+  className,
+  children,
+  ...props
+}: AccordionPrimitive.Panel.Props) => {
   return (
     <AccordionPrimitive.Panel
       data-slot="accordion-content"

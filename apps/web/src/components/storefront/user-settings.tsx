@@ -10,18 +10,29 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { authClient } from "@repo/auth/client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
 import { updateUser } from "@/features/user/actions";
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { getApiError, getInitials } from "@/lib/utils";
-import { authClient } from "@repo/auth/client";
 
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "../ui/input-group";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "../ui/input-group";
 
 export const UserSettings = () => {
   const router = useRouter();
@@ -45,7 +56,10 @@ export const UserSettings = () => {
       router.refresh();
     },
     onError: (err) => {
-      toast.error(getApiError(err) || "Failed to update profile", cancelToastEl);
+      toast.error(
+        getApiError(err) || "Failed to update profile",
+        cancelToastEl,
+      );
     },
   });
 
@@ -103,7 +117,10 @@ export const UserSettings = () => {
             setIsPasswordPending(false);
           },
           onError: (ctx) => {
-            toast.error(ctx.error.message || "Failed to update password", cancelToastEl);
+            toast.error(
+              ctx.error.message || "Failed to update password",
+              cancelToastEl,
+            );
             setIsPasswordPending(false);
           },
           onSettled: () => {
@@ -136,7 +153,9 @@ export const UserSettings = () => {
       <section className="flex flex-col gap-6">
         <div className="flex flex-col gap-1">
           <h2 className="text-base font-semibold tracking-tight">Profile</h2>
-          <p className="text-sm text-muted-foreground">Update your personal information.</p>
+          <p className="text-sm text-muted-foreground">
+            Update your personal information.
+          </p>
         </div>
 
         <div className="h-px bg-border/30" />
@@ -163,7 +182,11 @@ export const UserSettings = () => {
             ) : (
               <Avatar size="xl" className={"rounded-xl after:rounded-xl"}>
                 {user.image && (
-                  <AvatarImage src={user.image} alt={user.name} className={"rounded-xl"} />
+                  <AvatarImage
+                    src={user.image}
+                    alt={user.name}
+                    className={"rounded-xl"}
+                  />
                 )}
                 <AvatarFallback className="rounded-xl text-[10px] font-semibold">
                   {getInitials(user.name)}
@@ -186,8 +209,15 @@ export const UserSettings = () => {
               }}
             >
               {(field) => (
-                <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
-                  <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+                <Field
+                  data-invalid={
+                    field.state.meta.errors.length > 0 ? true : undefined
+                  }
+                >
+                  <FieldLabel
+                    htmlFor={field.name}
+                    className="text-sm font-medium"
+                  >
                     Image URL
                   </FieldLabel>
                   <InputGroup className="h-10 max-w-sm rounded-xl">
@@ -214,7 +244,9 @@ export const UserSettings = () => {
                     </InputGroupAddon>
                   </InputGroup>
                   {field.state.meta.errors.length > 0 && (
-                    <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                    <FieldError>
+                      {field.state.meta.errors.join(", ")}
+                    </FieldError>
                   )}
                 </Field>
               )}
@@ -226,14 +258,22 @@ export const UserSettings = () => {
               validators={{
                 onChange: ({ value }) => {
                   if (!value) return "Name is required";
-                  if (value.length < 2) return "Name must be at least 2 characters";
+                  if (value.length < 2)
+                    return "Name must be at least 2 characters";
                   return undefined;
                 },
               }}
             >
               {(field) => (
-                <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
-                  <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+                <Field
+                  data-invalid={
+                    field.state.meta.errors.length > 0 ? true : undefined
+                  }
+                >
+                  <FieldLabel
+                    htmlFor={field.name}
+                    className="text-sm font-medium"
+                  >
                     Name
                   </FieldLabel>
                   <Input
@@ -248,7 +288,9 @@ export const UserSettings = () => {
                     disabled={updateProfileMutation.isPending || isClearing}
                   />
                   {field.state.meta.errors.length > 0 && (
-                    <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                    <FieldError>
+                      {field.state.meta.errors.join(", ")}
+                    </FieldError>
                   )}
                 </Field>
               )}
@@ -273,16 +315,23 @@ export const UserSettings = () => {
           </FieldGroup>
 
           <div>
-            <profileForm.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+            <profileForm.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
+            >
               {([canSubmit, isSubmitting]) => (
                 <Button
                   type="submit"
                   disabled={
-                    !canSubmit || isSubmitting || updateProfileMutation.isPending || isClearing
+                    !canSubmit ||
+                    isSubmitting ||
+                    updateProfileMutation.isPending ||
+                    isClearing
                   }
                   className="rounded-full px-6 text-xs font-semibold"
                 >
-                  {isSubmitting || updateProfileMutation.isPending ? "Saving..." : "Save changes"}
+                  {isSubmitting || updateProfileMutation.isPending
+                    ? "Saving..."
+                    : "Save changes"}
                 </Button>
               )}
             </profileForm.Subscribe>
@@ -294,7 +343,9 @@ export const UserSettings = () => {
       <section className="flex flex-col gap-6">
         <div className="flex flex-col gap-1">
           <h2 className="text-base font-semibold tracking-tight">Password</h2>
-          <p className="text-sm text-muted-foreground">Update your account password.</p>
+          <p className="text-sm text-muted-foreground">
+            Update your account password.
+          </p>
         </div>
 
         <div className="h-px bg-border/30" />
@@ -311,12 +362,20 @@ export const UserSettings = () => {
             <passwordForm.Field
               name="currentPassword"
               validators={{
-                onChange: ({ value }) => (!value ? "Current password is required" : undefined),
+                onChange: ({ value }) =>
+                  !value ? "Current password is required" : undefined,
               }}
             >
               {(field) => (
-                <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
-                  <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+                <Field
+                  data-invalid={
+                    field.state.meta.errors.length > 0 ? true : undefined
+                  }
+                >
+                  <FieldLabel
+                    htmlFor={field.name}
+                    className="text-sm font-medium"
+                  >
                     Current password
                   </FieldLabel>
                   <InputGroup className="h-10 max-w-sm rounded-xl">
@@ -344,7 +403,9 @@ export const UserSettings = () => {
                     </InputGroupAddon>
                   </InputGroup>
                   {field.state.meta.errors.length > 0 && (
-                    <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                    <FieldError>
+                      {field.state.meta.errors.join(", ")}
+                    </FieldError>
                   )}
                 </Field>
               )}
@@ -361,8 +422,15 @@ export const UserSettings = () => {
               }}
             >
               {(field) => (
-                <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
-                  <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+                <Field
+                  data-invalid={
+                    field.state.meta.errors.length > 0 ? true : undefined
+                  }
+                >
+                  <FieldLabel
+                    htmlFor={field.name}
+                    className="text-sm font-medium"
+                  >
                     New password
                   </FieldLabel>
                   <InputGroup className="h-10 max-w-sm rounded-xl">
@@ -390,7 +458,9 @@ export const UserSettings = () => {
                     </InputGroupAddon>
                   </InputGroup>
                   {field.state.meta.errors.length > 0 && (
-                    <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                    <FieldError>
+                      {field.state.meta.errors.join(", ")}
+                    </FieldError>
                   )}
                 </Field>
               )}
@@ -410,8 +480,15 @@ export const UserSettings = () => {
               }}
             >
               {(field) => (
-                <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
-                  <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+                <Field
+                  data-invalid={
+                    field.state.meta.errors.length > 0 ? true : undefined
+                  }
+                >
+                  <FieldLabel
+                    htmlFor={field.name}
+                    className="text-sm font-medium"
+                  >
                     Confirm new password
                   </FieldLabel>
                   <InputGroup className="h-10 max-w-sm rounded-xl">
@@ -429,7 +506,9 @@ export const UserSettings = () => {
                       <InputGroupButton
                         size={"icon-sm"}
                         className="h-7 rounded-md"
-                        onClick={() => setShowConfirmNewPassword((prev) => !prev)}
+                        onClick={() =>
+                          setShowConfirmNewPassword((prev) => !prev)
+                        }
                       >
                         <HugeiconsIcon
                           icon={showConfirmNewPassword ? ViewOffIcon : ViewIcon}
@@ -439,7 +518,9 @@ export const UserSettings = () => {
                     </InputGroupAddon>
                   </InputGroup>
                   {field.state.meta.errors.length > 0 && (
-                    <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                    <FieldError>
+                      {field.state.meta.errors.join(", ")}
+                    </FieldError>
                   )}
                 </Field>
               )}
@@ -447,14 +528,18 @@ export const UserSettings = () => {
           </FieldGroup>
 
           <div>
-            <passwordForm.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+            <passwordForm.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
+            >
               {([canSubmit, isSubmitting]) => (
                 <Button
                   type="submit"
                   disabled={!canSubmit || isSubmitting || isPasswordPending}
                   className="rounded-full px-6 text-xs font-semibold"
                 >
-                  {isSubmitting || isPasswordPending ? "Updating..." : "Update password"}
+                  {isSubmitting || isPasswordPending
+                    ? "Updating..."
+                    : "Update password"}
                 </Button>
               )}
             </passwordForm.Subscribe>

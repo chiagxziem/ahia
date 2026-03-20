@@ -32,10 +32,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
-import { deleteCategory, updateCategory, type AdminCategoryRow } from "@/features/admin/queries";
+import {
+  deleteCategory,
+  updateCategory,
+  type AdminCategoryRow,
+} from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { getApiError } from "@/lib/utils";
 
@@ -66,10 +75,15 @@ export const CategoryRowActions = ({ category }: CategoryRowActionsProps) => {
       toast.success("Category updated successfully", cancelToastEl);
       closeDialog();
       updateForm.reset();
-      await queryClient.invalidateQueries({ queryKey: queryKeys.adminCategories() });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.adminCategories(),
+      });
     },
     onError: (err) => {
-      toast.error(getApiError(err) || "Failed to update category.", cancelToastEl);
+      toast.error(
+        getApiError(err) || "Failed to update category.",
+        cancelToastEl,
+      );
     },
   });
 
@@ -78,10 +92,15 @@ export const CategoryRowActions = ({ category }: CategoryRowActionsProps) => {
     onSuccess: async () => {
       toast.success("Category deleted successfully", cancelToastEl);
       closeDialog();
-      await queryClient.invalidateQueries({ queryKey: queryKeys.adminCategories() });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.adminCategories(),
+      });
     },
     onError: (err) => {
-      toast.error(getApiError(err) || "Failed to delete category.", cancelToastEl);
+      toast.error(
+        getApiError(err) || "Failed to delete category.",
+        cancelToastEl,
+      );
     },
   });
 
@@ -105,13 +124,21 @@ export const CategoryRowActions = ({ category }: CategoryRowActionsProps) => {
               className="size-8"
               aria-label={`Options for ${category.name}`}
             >
-              <HugeiconsIcon icon={MoreVerticalCircle01Icon} className="size-4" />
+              <HugeiconsIcon
+                icon={MoreVerticalCircle01Icon}
+                className="size-4"
+              />
             </Button>
           }
         />
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => openAction("update")}>Edit</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => openAction("delete")} variant="destructive">
+          <DropdownMenuItem onClick={() => openAction("update")}>
+            Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => openAction("delete")}
+            variant="destructive"
+          >
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -131,7 +158,8 @@ export const CategoryRowActions = ({ category }: CategoryRowActionsProps) => {
           <DialogHeader>
             <DialogTitle>Update category</DialogTitle>
             <DialogDescription>
-              Edit the category name. The slug will be regenerated automatically.
+              Edit the category name. The slug will be regenerated
+              automatically.
             </DialogDescription>
           </DialogHeader>
 
@@ -149,13 +177,18 @@ export const CategoryRowActions = ({ category }: CategoryRowActionsProps) => {
                 validators={{
                   onChange: ({ value }) => {
                     if (!value) return "Name is required";
-                    if (value.length < 1) return "Name must be at least 1 character";
+                    if (value.length < 1)
+                      return "Name must be at least 1 character";
                     return undefined;
                   },
                 }}
               >
                 {(field) => (
-                  <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
+                  <Field
+                    data-invalid={
+                      field.state.meta.errors.length > 0 ? true : undefined
+                    }
+                  >
                     <FieldLabel htmlFor={field.name}>Name</FieldLabel>
                     <Input
                       id={field.name}
@@ -168,7 +201,9 @@ export const CategoryRowActions = ({ category }: CategoryRowActionsProps) => {
                       disabled={updateMutation.isPending}
                     />
                     {field.state.meta.errors.length > 0 && (
-                      <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                      <FieldError>
+                        {field.state.meta.errors.join(", ")}
+                      </FieldError>
                     )}
                   </Field>
                 )}
@@ -184,13 +219,19 @@ export const CategoryRowActions = ({ category }: CategoryRowActionsProps) => {
               >
                 Cancel
               </Button>
-              <updateForm.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+              <updateForm.Subscribe
+                selector={(state) => [state.canSubmit, state.isSubmitting]}
+              >
                 {([canSubmit, isSubmitting]) => (
                   <Button
                     type="submit"
-                    disabled={!canSubmit || isSubmitting || updateMutation.isPending}
+                    disabled={
+                      !canSubmit || isSubmitting || updateMutation.isPending
+                    }
                   >
-                    {isSubmitting || updateMutation.isPending ? "Saving..." : "Save changes"}
+                    {isSubmitting || updateMutation.isPending
+                      ? "Saving..."
+                      : "Save changes"}
                   </Button>
                 )}
               </updateForm.Subscribe>
@@ -211,12 +252,17 @@ export const CategoryRowActions = ({ category }: CategoryRowActionsProps) => {
             <AlertDialogTitle>Delete category</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete{" "}
-              <span className="font-semibold text-secondary-foreground">{category.name}</span>? This
-              action cannot be undone. Categories with associated products cannot be deleted.
+              <span className="font-semibold text-secondary-foreground">
+                {category.name}
+              </span>
+              ? This action cannot be undone. Categories with associated
+              products cannot be deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleteMutation.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleteMutation.isPending}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               disabled={deleteMutation.isPending}
               variant="destructive"

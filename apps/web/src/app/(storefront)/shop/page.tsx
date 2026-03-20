@@ -1,14 +1,25 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
+import {
+  parseAsInteger,
+  parseAsString,
+  parseAsStringLiteral,
+  useQueryState,
+} from "nuqs";
 import { useMemo } from "react";
 
 import { ProductCard } from "@/components/storefront/product-card";
-import { MobileFilterDrawer, ShopSidebar } from "@/components/storefront/shop-sidebar";
+import {
+  MobileFilterDrawer,
+  ShopSidebar,
+} from "@/components/storefront/shop-sidebar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getShopProducts, getTrendingProducts } from "@/features/storefront/queries";
+import {
+  getShopProducts,
+  getTrendingProducts,
+} from "@/features/storefront/queries";
 import { queryKeys } from "@/lib/query-keys";
 
 const sortOptions = ["newest", "price-asc", "price-desc"] as const;
@@ -16,7 +27,10 @@ const sortOptions = ["newest", "price-asc", "price-desc"] as const;
 export const useShopFilters = () => {
   const [cat, setCat] = useQueryState("cat", parseAsString);
   const [isNew, setIsNew] = useQueryState("new", parseAsString);
-  const [sort, setSort] = useQueryState("sort", parseAsStringLiteral(sortOptions));
+  const [sort, setSort] = useQueryState(
+    "sort",
+    parseAsStringLiteral(sortOptions),
+  );
   const [minPrice, setMinPrice] = useQueryState("minPrice", parseAsInteger);
   const [maxPrice, setMaxPrice] = useQueryState("maxPrice", parseAsInteger);
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
@@ -62,7 +76,14 @@ const ShopPage = () => {
       minPrice: filters.minPrice ?? undefined,
       maxPrice: filters.maxPrice ?? undefined,
     }),
-    [filters.page, filters.cat, filters.isNew, filters.sort, filters.minPrice, filters.maxPrice],
+    [
+      filters.page,
+      filters.cat,
+      filters.isNew,
+      filters.sort,
+      filters.minPrice,
+      filters.maxPrice,
+    ],
   );
 
   const { data, isLoading } = useQuery({
@@ -101,7 +122,9 @@ const ShopPage = () => {
                 <MobileFilterDrawer filters={filters} />
               </div>
               <span className="text-xs text-muted-foreground md:text-sm">
-                {isLoading ? "…" : `${pagination?.total ?? products.length} products`}
+                {isLoading
+                  ? "…"
+                  : `${pagination?.total ?? products.length} products`}
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
@@ -129,7 +152,8 @@ const ShopPage = () => {
             <div className="grid grid-cols-2 gap-4 md:gap-6 xl:grid-cols-3">
               {products.map((product) => {
                 const isNew =
-                  Date.now() - new Date(product.createdAt).getTime() < 14 * 24 * 60 * 60 * 1000;
+                  Date.now() - new Date(product.createdAt).getTime() <
+                  14 * 24 * 60 * 60 * 1000;
                 const isTrending = trendingIds.has(product.id);
                 const tag = isTrending ? "Trending" : isNew ? "New" : undefined;
 

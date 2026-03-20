@@ -4,7 +4,11 @@ import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area";
 
 import { cn } from "@/lib/utils";
 
-const ScrollArea = ({ className, children, ...props }: ScrollAreaPrimitive.Root.Props) => {
+const ScrollArea = ({
+  className,
+  children,
+  ...props
+}: ScrollAreaPrimitive.Root.Props) => {
   return (
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"

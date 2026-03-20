@@ -9,14 +9,26 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { authClient } from "@repo/auth/client";
+
 import { Button } from "@/components/ui/button";
-import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldContent,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
 import env from "@/lib/env";
-import { authClient } from "@repo/auth/client";
 
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "../ui/input-group";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "../ui/input-group";
 
 export const SignInForm = () => {
   const router = useRouter();
@@ -49,7 +61,10 @@ export const SignInForm = () => {
           },
           onError(ctx) {
             setIsPending(false);
-            toast.error(ctx.error.message || "An error occurred while signing in", cancelToastEl);
+            toast.error(
+              ctx.error.message || "An error occurred while signing in",
+              cancelToastEl,
+            );
           },
           onSettled() {
             setIsPending(false);
@@ -83,14 +98,23 @@ export const SignInForm = () => {
             name="email"
             validators={{
               onChange: ({ value }) => {
-                const res = z.email("Please enter a valid email address").safeParse(value);
+                const res = z
+                  .email("Please enter a valid email address")
+                  .safeParse(value);
                 return res.success ? undefined : res.error.issues[0]?.message;
               },
             }}
           >
             {(field) => (
-              <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
-                <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+              <Field
+                data-invalid={
+                  field.state.meta.errors.length > 0 ? true : undefined
+                }
+              >
+                <FieldLabel
+                  htmlFor={field.name}
+                  className="text-sm font-medium"
+                >
                   Email
                 </FieldLabel>
                 <Input
@@ -118,15 +142,23 @@ export const SignInForm = () => {
             validators={{
               onChange: ({ value }) => {
                 if (!value) return "Password is required";
-                if (value.length < 8) return "Password must be at least 8 characters";
+                if (value.length < 8)
+                  return "Password must be at least 8 characters";
                 return undefined;
               },
             }}
           >
             {(field) => (
-              <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
+              <Field
+                data-invalid={
+                  field.state.meta.errors.length > 0 ? true : undefined
+                }
+              >
                 <FieldContent className="flex-row items-center justify-between">
-                  <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+                  <FieldLabel
+                    htmlFor={field.name}
+                    className="text-sm font-medium"
+                  >
                     Password
                   </FieldLabel>
                   <Link
@@ -168,11 +200,15 @@ export const SignInForm = () => {
           </form.Field>
         </FieldGroup>
 
-        <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+        <form.Subscribe
+          selector={(state) => [state.canSubmit, state.isSubmitting]}
+        >
           {([canSubmit, isSubmitting]) => (
             <Button
               type="submit"
-              disabled={!canSubmit || isSubmitting || isPending || isGooglePending}
+              disabled={
+                !canSubmit || isSubmitting || isPending || isGooglePending
+              }
               className="mt-1 h-11 w-full rounded-xl text-sm font-semibold"
             >
               {isSubmitting || isPending ? "Signing in..." : "Sign in"}
@@ -183,7 +219,9 @@ export const SignInForm = () => {
 
       {/* Divider */}
       <div className="relative text-center text-xs after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border/60">
-        <span className="relative z-10 bg-background px-3 text-muted-foreground">or</span>
+        <span className="relative z-10 bg-background px-3 text-muted-foreground">
+          or
+        </span>
       </div>
 
       {/* Google */}
@@ -216,7 +254,11 @@ export const SignInForm = () => {
           "Signing in..."
         ) : (
           <span className="flex items-center justify-center gap-2.5">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="size-4.5">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              className="size-4.5"
+            >
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                 fill="#4285F4"

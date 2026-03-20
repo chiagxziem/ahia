@@ -25,7 +25,9 @@ const RootLayout = ({
 }>) => {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${jetbrains.variable} ${bricolage.variable} antialiased`}>
+      <body
+        className={`${inter.variable} ${jetbrains.variable} ${bricolage.variable} antialiased`}
+      >
         <ThemeProvider attribute="class" disableTransitionOnChange enableSystem>
           <NuqsAdapter>
             <QueryClientProviderWrapper>

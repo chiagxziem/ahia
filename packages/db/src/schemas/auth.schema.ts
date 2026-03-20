@@ -1,5 +1,12 @@
 import { type InferSelectModel, relations, sql } from "drizzle-orm";
-import { boolean, index, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  index,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 // oxlint-disable-next-line import/no-cycle
 import { cart } from "./cart.schema";

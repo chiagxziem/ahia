@@ -1,10 +1,18 @@
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { ReactNode, Suspense } from "react";
 
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import {
   defaultAdminCategoriesListParams,
   defaultAdminProductsListParams,
@@ -40,13 +48,15 @@ const AdminAuthWrapper = async ({ children }: { children: ReactNode }) => {
   // Categories
   await queryClient.prefetchQuery({
     queryKey: queryKeys.adminCategories(defaultAdminCategoriesListParams),
-    queryFn: async () => getAdminCategories(defaultAdminCategoriesListParams, cookie),
+    queryFn: async () =>
+      getAdminCategories(defaultAdminCategoriesListParams, cookie),
   });
 
   // Products
   await queryClient.prefetchQuery({
     queryKey: queryKeys.adminProducts(defaultAdminProductsListParams),
-    queryFn: async () => getAdminProducts(defaultAdminProductsListParams, cookie),
+    queryFn: async () =>
+      getAdminProducts(defaultAdminProductsListParams, cookie),
   });
 
   // Orders

@@ -65,7 +65,10 @@ const EmptyTitle = ({ className, ...props }: React.ComponentProps<"div">) => {
   );
 };
 
-const EmptyDescription = ({ className, ...props }: React.ComponentProps<"p">) => {
+const EmptyDescription = ({
+  className,
+  ...props
+}: React.ComponentProps<"p">) => {
   return (
     <div
       data-slot="empty-description"
@@ -91,4 +94,11 @@ const EmptyContent = ({ className, ...props }: React.ComponentProps<"div">) => {
   );
 };
 
-export { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle };
+export {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+};

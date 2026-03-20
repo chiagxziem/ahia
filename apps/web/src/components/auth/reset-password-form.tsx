@@ -7,11 +7,17 @@ import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { authClient } from "@repo/auth/client";
+
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
-import { authClient } from "@repo/auth/client";
 
 export const ResetPasswordForm = () => {
   const router = useRouter();
@@ -70,7 +76,9 @@ export const ResetPasswordForm = () => {
       {/* Header */}
       <div className="flex flex-col gap-2 text-center">
         <h1 className="text-2xl font-bold tracking-tight">Set new password</h1>
-        <p className="text-sm text-muted-foreground">Must be at least 8 characters</p>
+        <p className="text-sm text-muted-foreground">
+          Must be at least 8 characters
+        </p>
       </div>
 
       {/* Form */}
@@ -88,14 +96,22 @@ export const ResetPasswordForm = () => {
             validators={{
               onChange: ({ value }) => {
                 if (!value) return "Password is required";
-                if (value.length < 8) return "Password must be at least 8 characters";
+                if (value.length < 8)
+                  return "Password must be at least 8 characters";
                 return undefined;
               },
             }}
           >
             {(field) => (
-              <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
-                <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+              <Field
+                data-invalid={
+                  field.state.meta.errors.length > 0 ? true : undefined
+                }
+              >
+                <FieldLabel
+                  htmlFor={field.name}
+                  className="text-sm font-medium"
+                >
                   Password
                 </FieldLabel>
                 <Input
@@ -130,8 +146,15 @@ export const ResetPasswordForm = () => {
             }}
           >
             {(field) => (
-              <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
-                <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+              <Field
+                data-invalid={
+                  field.state.meta.errors.length > 0 ? true : undefined
+                }
+              >
+                <FieldLabel
+                  htmlFor={field.name}
+                  className="text-sm font-medium"
+                >
                   Confirm password
                 </FieldLabel>
                 <Input
@@ -153,7 +176,9 @@ export const ResetPasswordForm = () => {
           </form.Field>
         </FieldGroup>
 
-        <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+        <form.Subscribe
+          selector={(state) => [state.canSubmit, state.isSubmitting]}
+        >
           {([canSubmit, isSubmitting]) => (
             <Button
               type="submit"

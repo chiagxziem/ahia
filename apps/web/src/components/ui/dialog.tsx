@@ -24,7 +24,10 @@ const DialogClose = ({ ...props }: DialogPrimitive.Close.Props) => {
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 };
 
-const DialogOverlay = ({ className, ...props }: DialogPrimitive.Backdrop.Props) => {
+const DialogOverlay = ({
+  className,
+  ...props
+}: DialogPrimitive.Backdrop.Props) => {
   return (
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"
@@ -60,7 +63,13 @@ const DialogContent = ({
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            render={<Button variant="ghost" className="absolute top-2 right-2" size="icon-sm" />}
+            render={
+              <Button
+                variant="ghost"
+                className="absolute top-2 right-2"
+                size="icon-sm"
+              />
+            }
           >
             <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
             <span className="sr-only">Close</span>
@@ -73,7 +82,11 @@ const DialogContent = ({
 
 const DialogHeader = ({ className, ...props }: React.ComponentProps<"div">) => {
   return (
-    <div data-slot="dialog-header" className={cn("flex flex-col gap-2", className)} {...props} />
+    <div
+      data-slot="dialog-header"
+      className={cn("flex flex-col gap-2", className)}
+      {...props}
+    />
   );
 };
 
@@ -96,7 +109,9 @@ const DialogFooter = ({
     >
       {children}
       {showCloseButton && (
-        <DialogPrimitive.Close render={<Button variant="outline" />}>Close</DialogPrimitive.Close>
+        <DialogPrimitive.Close render={<Button variant="outline" />}>
+          Close
+        </DialogPrimitive.Close>
       )}
     </div>
   );
@@ -112,7 +127,10 @@ const DialogTitle = ({ className, ...props }: DialogPrimitive.Title.Props) => {
   );
 };
 
-const DialogDescription = ({ className, ...props }: DialogPrimitive.Description.Props) => {
+const DialogDescription = ({
+  className,
+  ...props
+}: DialogPrimitive.Description.Props) => {
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"

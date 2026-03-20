@@ -6,6 +6,8 @@ import { format } from "date-fns";
 import { Facehash } from "facehash";
 import { useState } from "react";
 
+import type { User } from "@repo/db/schemas/auth.schema";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,7 +21,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import type { AdminUserRow } from "@/features/admin/queries";
 import { getInitials, roles, truncateId } from "@/lib/utils";
-import type { User } from "@repo/db/schemas/auth.schema";
 
 import { UserRowActions } from "./user-row-actions";
 
@@ -30,7 +31,12 @@ interface UserDetailDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function UserDetailDialog({ user, currentUser, open, onOpenChange }: UserDetailDialogProps) {
+export function UserDetailDialog({
+  user,
+  currentUser,
+  open,
+  onOpenChange,
+}: UserDetailDialogProps) {
   const [isCopied, setIsCopied] = useState(false);
 
   if (!user) return null;
@@ -65,7 +71,11 @@ export function UserDetailDialog({ user, currentUser, open, onOpenChange }: User
               />
             ) : (
               <Avatar className="size-16 rounded-xl after:rounded-xl">
-                <AvatarImage src={user.image} alt={user.name} className="rounded-xl" />
+                <AvatarImage
+                  src={user.image}
+                  alt={user.name}
+                  className="rounded-xl"
+                />
                 <AvatarFallback className="rounded-xl text-lg font-semibold">
                   {getInitials(user.name)}
                 </AvatarFallback>
@@ -76,9 +86,13 @@ export function UserDetailDialog({ user, currentUser, open, onOpenChange }: User
           {/* Name + badges */}
           <div className="flex min-w-0 flex-1 flex-col">
             <div>
-              <h3 className="truncate text-lg leading-tight font-semibold">{user.name}</h3>
+              <h3 className="truncate text-lg leading-tight font-semibold">
+                {user.name}
+              </h3>
             </div>
-            <p className="truncate text-sm text-muted-foreground">{user.email}</p>
+            <p className="truncate text-sm text-muted-foreground">
+              {user.email}
+            </p>
             <div className="mt-1.5 flex items-center gap-1.5">
               <Badge
                 variant={
@@ -89,7 +103,9 @@ export function UserDetailDialog({ user, currentUser, open, onOpenChange }: User
               >
                 {user.role ?? "user"}
               </Badge>
-              <Badge variant={status === "active" ? "default" : "destructive"}>{status}</Badge>
+              <Badge variant={status === "active" ? "default" : "destructive"}>
+                {status}
+              </Badge>
             </div>
           </div>
 
@@ -105,7 +121,9 @@ export function UserDetailDialog({ user, currentUser, open, onOpenChange }: User
         <div className="grid gap-3 text-sm">
           {/* User ID with copy button */}
           <div className="flex items-center justify-between gap-4">
-            <span className="shrink-0 text-sm text-muted-foreground">User ID</span>
+            <span className="shrink-0 text-sm text-muted-foreground">
+              User ID
+            </span>
             <div className="flex items-center gap-1">
               <span className="font-mono text-xs">{truncateId(user.id)}</span>
               <Button
@@ -116,17 +134,28 @@ export function UserDetailDialog({ user, currentUser, open, onOpenChange }: User
                 disabled={isCopied}
                 aria-label={isCopied ? "Copied" : "Copy user ID"}
               >
-                <HugeiconsIcon icon={isCopied ? Tick01Icon : Copy01Icon} className="size-3.5" />
+                <HugeiconsIcon
+                  icon={isCopied ? Tick01Icon : Copy01Icon}
+                  className="size-3.5"
+                />
               </Button>
             </div>
           </div>
-          <DetailRow label="Email verified" value={user.emailVerified ? "Yes" : "No"} />
-          <DetailRow label="Joined" value={format(user.createdAt, "MMM d, yyyy 'at' h:mm a")} />
+          <DetailRow
+            label="Email verified"
+            value={user.emailVerified ? "Yes" : "No"}
+          />
+          <DetailRow
+            label="Joined"
+            value={format(user.createdAt, "MMM d, yyyy 'at' h:mm a")}
+          />
           <DetailRow
             label="Last updated"
             value={format(user.updatedAt, "MMM d, yyyy 'at' h:mm a")}
           />
-          {user.banned && user.banReason && <DetailRow label="Ban reason" value={user.banReason} />}
+          {user.banned && user.banReason && (
+            <DetailRow label="Ban reason" value={user.banReason} />
+          )}
           {user.banned && user.banExpires && (
             <DetailRow
               label="Ban expires"

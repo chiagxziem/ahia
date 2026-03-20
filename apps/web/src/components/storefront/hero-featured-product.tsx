@@ -38,8 +38,12 @@ export const HeroFeaturedProduct = () => {
             <span className="text-[11px] font-medium tracking-wider text-white/70 uppercase">
               Featured
             </span>
-            <p className="mt-1 text-base font-semibold text-white md:text-lg">{product.name}</p>
-            <p className="mt-0.5 text-sm font-medium text-white/80">${product.price}</p>
+            <p className="mt-1 text-base font-semibold text-white md:text-lg">
+              {product.name}
+            </p>
+            <p className="mt-0.5 text-sm font-medium text-white/80">
+              ${product.price}
+            </p>
           </div>
         )}
         {!product && (

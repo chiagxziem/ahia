@@ -20,7 +20,10 @@ const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => {
   );
 };
 
-const PaginationContent = ({ className, ...props }: React.ComponentProps<"ul">) => {
+const PaginationContent = ({
+  className,
+  ...props
+}: React.ComponentProps<"ul">) => {
   return (
     <ul
       data-slot="pagination-content"
@@ -78,7 +81,11 @@ const PaginationPrevious = ({
       className={cn("pl-1.5!", className)}
       {...props}
     >
-      <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} data-icon="inline-start" />
+      <HugeiconsIcon
+        icon={ArrowLeft01Icon}
+        strokeWidth={2}
+        data-icon="inline-start"
+      />
       <span className="hidden sm:block">{text}</span>
     </PaginationLink>
   );
@@ -97,12 +104,19 @@ const PaginationNext = ({
       {...props}
     >
       <span className="hidden sm:block">{text}</span>
-      <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} data-icon="inline-end" />
+      <HugeiconsIcon
+        icon={ArrowRight01Icon}
+        strokeWidth={2}
+        data-icon="inline-end"
+      />
     </PaginationLink>
   );
 };
 
-const PaginationEllipsis = ({ className, ...props }: React.ComponentProps<"span">) => {
+const PaginationEllipsis = ({
+  className,
+  ...props
+}: React.ComponentProps<"span">) => {
   return (
     <span
       aria-hidden

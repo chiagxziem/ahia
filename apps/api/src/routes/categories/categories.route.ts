@@ -2,6 +2,13 @@ import { validator } from "hono-openapi";
 import slugify from "slugify";
 import { z } from "zod";
 
+import { db, eq } from "@repo/db";
+import { category } from "@repo/db/schemas/product.schema";
+import {
+  CreateCategorySchema,
+  UpdateCategorySchema,
+} from "@repo/db/validators/product.validator";
+
 import { createRouter } from "@/app";
 import HttpStatusCodes from "@/lib/http-status-codes";
 import { PaginationQuerySchema } from "@/lib/schemas";
@@ -9,11 +16,12 @@ import { errorResponse, successResponse } from "@/lib/utils";
 import { authed } from "@/middleware/authed";
 import { permit } from "@/middleware/permit";
 import { validationHook } from "@/middleware/validation-hook";
-import { getCategories, getCategoryById, getTopCategories } from "@/queries/category-queries";
+import {
+  getCategories,
+  getCategoryById,
+  getTopCategories,
+} from "@/queries/category-queries";
 import { getTopCategoriesDoc } from "@/routes/categories/categories.docs";
-import { db, eq } from "@repo/db";
-import { category } from "@repo/db/schemas/product.schema";
-import { CreateCategorySchema, UpdateCategorySchema } from "@repo/db/validators/product.validator";
 
 import {
   createCategoryDoc,
@@ -34,7 +42,10 @@ categories.get(
     try {
       const { page, limit } = c.req.valid("query");
 
-      const { categories: allCategories, total } = await getCategories(page, limit);
+      const { categories: allCategories, total } = await getCategories(
+        page,
+        limit,
+      );
 
       let pagination;
       if (limit) {
@@ -47,7 +58,11 @@ categories.get(
       }
 
       return c.json(
-        successResponse(allCategories, "All categories retrieved successfully", pagination),
+        successResponse(
+          allCategories,
+          "All categories retrieved successfully",
+          pagination,
+        ),
         HttpStatusCodes.OK,
       );
     } catch (error) {
@@ -64,7 +79,11 @@ categories.get(
 categories.get(
   "/top",
   getTopCategoriesDoc,
-  validator("query", z.object({ limit: z.number().optional() }), validationHook),
+  validator(
+    "query",
+    z.object({ limit: z.number().optional() }),
+    validationHook,
+  ),
   async (c) => {
     const { limit } = c.req.valid("query");
     const topCats = await getTopCategories(limit ?? 4);
@@ -88,11 +107,17 @@ categories.get(
       const categoryWithProducts = await getCategoryById(id);
 
       if (!categoryWithProducts) {
-        return c.json(errorResponse("NOT_FOUND", "Category not found"), HttpStatusCodes.NOT_FOUND);
+        return c.json(
+          errorResponse("NOT_FOUND", "Category not found"),
+          HttpStatusCodes.NOT_FOUND,
+        );
       }
 
       return c.json(
-        successResponse(categoryWithProducts, "Category retrieved successfully"),
+        successResponse(
+          categoryWithProducts,
+          "Category retrieved successfully",
+        ),
         HttpStatusCodes.OK,
       );
     } catch (error) {
@@ -106,7 +131,9 @@ categories.get(
 );
 
 // Middleware for protected routes
-categories.use(authed).use(permit({ category: ["create", "update", "delete"] }));
+categories
+  .use(authed)
+  .use(permit({ category: ["create", "update", "delete"] }));
 
 // Create category
 categories.post(
@@ -122,7 +149,8 @@ categories.post(
       const result = await db.transaction(async (tx) => {
         // Check for existing name (case-insensitive)
         const existingCategory = await tx.query.category.findFirst({
-          where: (category, { sql }) => sql`LOWER(${category.name}) = LOWER(${trimmedName})`,
+          where: (category, { sql }) =>
+            sql`LOWER(${category.name}) = LOWER(${trimmedName})`,
         });
 
         if (existingCategory) {
@@ -139,7 +167,9 @@ categories.post(
 
         while (true) {
           const finalSlug = counter === 0 ? slug : `${slug}-${counter}`;
-          const existingSlug = allCategories.find((cat) => cat.slug === finalSlug);
+          const existingSlug = allCategories.find(
+            (cat) => cat.slug === finalSlug,
+          );
 
           if (!existingSlug) {
             slug = finalSlug;
@@ -193,10 +223,16 @@ categories.put(
       const categoryToUpdate = await getCategoryById(id);
 
       if (!categoryToUpdate) {
-        return c.json(errorResponse("NOT_FOUND", "Category not found"), HttpStatusCodes.NOT_FOUND);
+        return c.json(
+          errorResponse("NOT_FOUND", "Category not found"),
+          HttpStatusCodes.NOT_FOUND,
+        );
       }
 
-      if (!trimmedName || trimmedName.toLowerCase() === categoryToUpdate.name.toLowerCase()) {
+      if (
+        !trimmedName ||
+        trimmedName.toLowerCase() === categoryToUpdate.name.toLowerCase()
+      ) {
         return c.json(
           successResponse(categoryToUpdate, "Category updated successfully"),
           HttpStatusCodes.OK,
@@ -250,7 +286,10 @@ categories.put(
           return updatedCategory;
         });
 
-        return c.json(successResponse(result, "Category updated successfully"), HttpStatusCodes.OK);
+        return c.json(
+          successResponse(result, "Category updated successfully"),
+          HttpStatusCodes.OK,
+        );
       } catch (error) {
         if (error instanceof Error && error.message === "CATEGORY_EXISTS") {
           return c.json(
@@ -297,12 +336,18 @@ categories.delete(
           throw new Error("CATEGORY_HAS_PRODUCTS");
         }
 
-        const [deletedCategory] = await tx.delete(category).where(eq(category.id, id)).returning();
+        const [deletedCategory] = await tx
+          .delete(category)
+          .where(eq(category.id, id))
+          .returning();
 
         return deletedCategory;
       });
 
-      return c.json(successResponse(result, "Category deleted successfully"), HttpStatusCodes.OK);
+      return c.json(
+        successResponse(result, "Category deleted successfully"),
+        HttpStatusCodes.OK,
+      );
     } catch (error) {
       if (error instanceof Error) {
         if (error.message === "CATEGORY_NOT_FOUND") {

@@ -1,4 +1,8 @@
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 import type { Route } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -10,7 +14,11 @@ import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
 
 import { CartDrawer } from "./cart-drawer";
-import { MobileNav, MobileNavUserContent, MobileNavUserFallback } from "./mobile-nav";
+import {
+  MobileNav,
+  MobileNavUserContent,
+  MobileNavUserFallback,
+} from "./mobile-nav";
 import { UserMenu } from "./user-menu";
 
 const NAV_LINKS: { href: Route; label: string }[] = [
@@ -33,7 +41,9 @@ export const SiteHeader = () => {
             </MobileNav>
           </Suspense>
           <Link href="/" className="flex items-center">
-            <span className="font-heading text-lg font-bold tracking-tight">Ahia</span>
+            <span className="font-heading text-lg font-bold tracking-tight">
+              Ahia
+            </span>
           </Link>
         </div>
 

@@ -1,4 +1,8 @@
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 import { headers } from "next/headers";
 import { ReactNode, Suspense } from "react";
 
@@ -13,7 +17,11 @@ import {
 } from "@/features/storefront/queries";
 import { queryKeys } from "@/lib/query-keys";
 
-const StorefrontDataProvider = async ({ children }: { children: ReactNode }) => {
+const StorefrontDataProvider = async ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
   const queryClient = new QueryClient();
   const cookie = (await headers()).get("cookie") ?? undefined;
 
@@ -40,7 +48,11 @@ const StorefrontDataProvider = async ({ children }: { children: ReactNode }) => 
     }),
   ]);
 
-  return <HydrationBoundary state={dehydrate(queryClient)}>{children}</HydrationBoundary>;
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      {children}
+    </HydrationBoundary>
+  );
 };
 
 const StorefrontLayout = ({ children }: { children: ReactNode }) => {

@@ -1,8 +1,9 @@
 import { z } from "zod";
 
+import { CartSelectSchema } from "@repo/db/validators/cart.validator";
+
 import { $fetch, $fetchAndThrow } from "@/lib/fetch";
 import { successResSchema } from "@/lib/schemas";
-import { CartSelectSchema } from "@repo/db/validators/cart.validator";
 
 const cartOutputSchema = successResSchema(CartSelectSchema);
 

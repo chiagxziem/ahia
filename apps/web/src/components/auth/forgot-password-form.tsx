@@ -6,12 +6,18 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { authClient } from "@repo/auth/client";
+
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
 import env from "@/lib/env";
-import { authClient } from "@repo/auth/client";
 
 export const ForgotPasswordForm = () => {
   const [isPending, setIsPending] = useState(false);
@@ -34,12 +40,16 @@ export const ForgotPasswordForm = () => {
           onSuccess: () => {
             setIsPending(false);
             setIsSubmitted(true);
-            toast.success("Password reset link sent to your email", cancelToastEl);
+            toast.success(
+              "Password reset link sent to your email",
+              cancelToastEl,
+            );
           },
           onError(ctx) {
             setIsPending(false);
             toast.error(
-              ctx.error.message || "An error occurred while sending the reset link",
+              ctx.error.message ||
+                "An error occurred while sending the reset link",
               cancelToastEl,
             );
           },
@@ -55,7 +65,9 @@ export const ForgotPasswordForm = () => {
     return (
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-2 text-center">
-          <h1 className="text-2xl font-bold tracking-tight">Check your email</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Check your email
+          </h1>
           <p className="text-sm text-muted-foreground">
             We've sent a password reset link to your email address.
           </p>
@@ -96,14 +108,23 @@ export const ForgotPasswordForm = () => {
             name="email"
             validators={{
               onChange: ({ value }) => {
-                const res = z.email("Please enter a valid email address").safeParse(value);
+                const res = z
+                  .email("Please enter a valid email address")
+                  .safeParse(value);
                 return res.success ? undefined : res.error.issues[0]?.message;
               },
             }}
           >
             {(field) => (
-              <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
-                <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+              <Field
+                data-invalid={
+                  field.state.meta.errors.length > 0 ? true : undefined
+                }
+              >
+                <FieldLabel
+                  htmlFor={field.name}
+                  className="text-sm font-medium"
+                >
                   Email
                 </FieldLabel>
                 <Input
@@ -127,7 +148,9 @@ export const ForgotPasswordForm = () => {
           </form.Field>
         </FieldGroup>
 
-        <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+        <form.Subscribe
+          selector={(state) => [state.canSubmit, state.isSubmitting]}
+        >
           {([canSubmit, isSubmitting]) => (
             <Button
               type="submit"

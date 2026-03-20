@@ -38,7 +38,11 @@ const ButtonGroup = ({
   );
 };
 
-const ButtonGroupText = ({ className, render, ...props }: useRender.ComponentProps<"div">) => {
+const ButtonGroupText = ({
+  className,
+  render,
+  ...props
+}: useRender.ComponentProps<"div">) => {
   return useRender({
     defaultTagName: "div",
     props: mergeProps<"div">(
@@ -75,4 +79,9 @@ const ButtonGroupSeparator = ({
   );
 };
 
-export { ButtonGroup, ButtonGroupSeparator, ButtonGroupText, buttonGroupVariants };
+export {
+  ButtonGroup,
+  ButtonGroupSeparator,
+  ButtonGroupText,
+  buttonGroupVariants,
+};

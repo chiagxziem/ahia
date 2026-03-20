@@ -1,7 +1,11 @@
 "use client";
 
 import { Combobox as ComboboxPrimitive } from "@base-ui/react";
-import { ArrowDown01Icon, Cancel01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
+import {
+  ArrowDown01Icon,
+  Cancel01Icon,
+  Tick02Icon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import * as React from "react";
 
@@ -20,7 +24,11 @@ const ComboboxValue = ({ ...props }: ComboboxPrimitive.Value.Props) => {
   return <ComboboxPrimitive.Value data-slot="combobox-value" {...props} />;
 };
 
-const ComboboxTrigger = ({ className, children, ...props }: ComboboxPrimitive.Trigger.Props) => {
+const ComboboxTrigger = ({
+  className,
+  children,
+  ...props
+}: ComboboxPrimitive.Trigger.Props) => {
   return (
     <ComboboxPrimitive.Trigger
       data-slot="combobox-trigger"
@@ -37,7 +45,10 @@ const ComboboxTrigger = ({ className, children, ...props }: ComboboxPrimitive.Tr
   );
 };
 
-const ComboboxClear = ({ className, ...props }: ComboboxPrimitive.Clear.Props) => {
+const ComboboxClear = ({
+  className,
+  ...props
+}: ComboboxPrimitive.Clear.Props) => {
   return (
     <ComboboxPrimitive.Clear
       data-slot="combobox-clear"
@@ -45,7 +56,11 @@ const ComboboxClear = ({ className, ...props }: ComboboxPrimitive.Clear.Props) =
       className={cn(className)}
       {...props}
     >
-      <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} className="pointer-events-none" />
+      <HugeiconsIcon
+        icon={Cancel01Icon}
+        strokeWidth={2}
+        className="pointer-events-none"
+      />
     </ComboboxPrimitive.Clear>
   );
 };
@@ -63,7 +78,10 @@ const ComboboxInput = ({
 }) => {
   return (
     <InputGroup className={cn("w-auto", className)}>
-      <ComboboxPrimitive.Input render={<InputGroupInput disabled={disabled} />} {...props} />
+      <ComboboxPrimitive.Input
+        render={<InputGroupInput disabled={disabled} />}
+        {...props}
+      />
       <InputGroupAddon align="inline-end">
         {showTrigger && (
           <InputGroupButton
@@ -119,7 +137,10 @@ const ComboboxContent = ({
   );
 };
 
-const ComboboxList = ({ className, ...props }: ComboboxPrimitive.List.Props) => {
+const ComboboxList = ({
+  className,
+  ...props
+}: ComboboxPrimitive.List.Props) => {
   return (
     <ComboboxPrimitive.List
       data-slot="combobox-list"
@@ -132,7 +153,11 @@ const ComboboxList = ({ className, ...props }: ComboboxPrimitive.List.Props) => 
   );
 };
 
-const ComboboxItem = ({ className, children, ...props }: ComboboxPrimitive.Item.Props) => {
+const ComboboxItem = ({
+  className,
+  children,
+  ...props
+}: ComboboxPrimitive.Item.Props) => {
   return (
     <ComboboxPrimitive.Item
       data-slot="combobox-item"
@@ -148,19 +173,33 @@ const ComboboxItem = ({ className, children, ...props }: ComboboxPrimitive.Item.
           <span className="pointer-events-none absolute right-2 flex size-4 items-center justify-center" />
         }
       >
-        <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} className="pointer-events-none" />
+        <HugeiconsIcon
+          icon={Tick02Icon}
+          strokeWidth={2}
+          className="pointer-events-none"
+        />
       </ComboboxPrimitive.ItemIndicator>
     </ComboboxPrimitive.Item>
   );
 };
 
-const ComboboxGroup = ({ className, ...props }: ComboboxPrimitive.Group.Props) => {
+const ComboboxGroup = ({
+  className,
+  ...props
+}: ComboboxPrimitive.Group.Props) => {
   return (
-    <ComboboxPrimitive.Group data-slot="combobox-group" className={cn(className)} {...props} />
+    <ComboboxPrimitive.Group
+      data-slot="combobox-group"
+      className={cn(className)}
+      {...props}
+    />
   );
 };
 
-const ComboboxLabel = ({ className, ...props }: ComboboxPrimitive.GroupLabel.Props) => {
+const ComboboxLabel = ({
+  className,
+  ...props
+}: ComboboxPrimitive.GroupLabel.Props) => {
   return (
     <ComboboxPrimitive.GroupLabel
       data-slot="combobox-label"
@@ -170,11 +209,18 @@ const ComboboxLabel = ({ className, ...props }: ComboboxPrimitive.GroupLabel.Pro
   );
 };
 
-const ComboboxCollection = ({ ...props }: ComboboxPrimitive.Collection.Props) => {
-  return <ComboboxPrimitive.Collection data-slot="combobox-collection" {...props} />;
+const ComboboxCollection = ({
+  ...props
+}: ComboboxPrimitive.Collection.Props) => {
+  return (
+    <ComboboxPrimitive.Collection data-slot="combobox-collection" {...props} />
+  );
 };
 
-const ComboboxEmpty = ({ className, ...props }: ComboboxPrimitive.Empty.Props) => {
+const ComboboxEmpty = ({
+  className,
+  ...props
+}: ComboboxPrimitive.Empty.Props) => {
   return (
     <ComboboxPrimitive.Empty
       data-slot="combobox-empty"
@@ -187,7 +233,10 @@ const ComboboxEmpty = ({ className, ...props }: ComboboxPrimitive.Empty.Props) =
   );
 };
 
-const ComboboxSeparator = ({ className, ...props }: ComboboxPrimitive.Separator.Props) => {
+const ComboboxSeparator = ({
+  className,
+  ...props
+}: ComboboxPrimitive.Separator.Props) => {
   return (
     <ComboboxPrimitive.Separator
       data-slot="combobox-separator"
@@ -200,7 +249,8 @@ const ComboboxSeparator = ({ className, ...props }: ComboboxPrimitive.Separator.
 const ComboboxChips = ({
   className,
   ...props
-}: React.ComponentPropsWithRef<typeof ComboboxPrimitive.Chips> & ComboboxPrimitive.Chips.Props) => {
+}: React.ComponentPropsWithRef<typeof ComboboxPrimitive.Chips> &
+  ComboboxPrimitive.Chips.Props) => {
   return (
     <ComboboxPrimitive.Chips
       data-slot="combobox-chips"
@@ -237,14 +287,21 @@ function ComboboxChip({
           className="-ml-1 opacity-50 hover:opacity-100"
           data-slot="combobox-chip-remove"
         >
-          <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} className="pointer-events-none" />
+          <HugeiconsIcon
+            icon={Cancel01Icon}
+            strokeWidth={2}
+            className="pointer-events-none"
+          />
         </ComboboxPrimitive.ChipRemove>
       )}
     </ComboboxPrimitive.Chip>
   );
 }
 
-const ComboboxChipsInput = ({ className, ...props }: ComboboxPrimitive.Input.Props) => {
+const ComboboxChipsInput = ({
+  className,
+  ...props
+}: ComboboxPrimitive.Input.Props) => {
   return (
     <ComboboxPrimitive.Input
       data-slot="combobox-chip-input"

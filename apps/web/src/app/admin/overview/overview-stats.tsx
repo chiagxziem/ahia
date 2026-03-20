@@ -37,43 +37,67 @@ export const OverviewStats = () => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-          <HugeiconsIcon icon={Dollar02Icon} className="size-5 text-muted-foreground" />
+          <HugeiconsIcon
+            icon={Dollar02Icon}
+            className="size-5 text-muted-foreground"
+          />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{formatCurrency(revenue)}</div>
-          <p className="text-xs text-muted-foreground">{formatPct(revenuePct)} from last month</p>
+          <p className="text-xs text-muted-foreground">
+            {formatPct(revenuePct)} from last month
+          </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Orders</CardTitle>
-          <HugeiconsIcon icon={ShoppingCart01Icon} className="size-5 text-muted-foreground" />
+          <HugeiconsIcon
+            icon={ShoppingCart01Icon}
+            className="size-5 text-muted-foreground"
+          />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{orders.toLocaleString("en-US")}</div>
-          <p className="text-xs text-muted-foreground">{formatPct(ordersPct)} from last month</p>
+          <div className="text-2xl font-bold">
+            {orders.toLocaleString("en-US")}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {formatPct(ordersPct)} from last month
+          </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Products</CardTitle>
-          <HugeiconsIcon icon={ShoppingBag01Icon} className="size-5 text-muted-foreground" />
+          <HugeiconsIcon
+            icon={ShoppingBag01Icon}
+            className="size-5 text-muted-foreground"
+          />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{products.toLocaleString("en-US")}</div>
-          <p className="text-xs text-muted-foreground">{formatPct(productsPct)} from last month</p>
+          <div className="text-2xl font-bold">
+            {products.toLocaleString("en-US")}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {formatPct(productsPct)} from last month
+          </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Users</CardTitle>
-          <HugeiconsIcon icon={UserMultipleIcon} className="size-5 text-muted-foreground" />
+          <HugeiconsIcon
+            icon={UserMultipleIcon}
+            className="size-5 text-muted-foreground"
+          />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{users.toLocaleString("en-US")}</div>
+          <div className="text-2xl font-bold">
+            {users.toLocaleString("en-US")}
+          </div>
           <p className="text-xs text-muted-foreground">
             {usersDelta24h} active in the last 24 hours
           </p>

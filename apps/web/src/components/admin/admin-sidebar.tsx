@@ -18,6 +18,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 
+import { authClient } from "@repo/auth/client";
+
 import { ThemeSubMenu } from "@/components/theme-sub-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -42,9 +44,12 @@ import { cancelToastEl } from "@/components/ui/sonner";
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { getInitials, truncateEmail } from "@/lib/utils";
-import { authClient } from "@repo/auth/client";
 
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 const navItems = [
   {
@@ -109,9 +114,16 @@ export const AdminSidebar = () => {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="" size={"lg"} render={<Link href="/admin" />}>
+            <SidebarMenuButton
+              className=""
+              size={"lg"}
+              render={<Link href="/admin" />}
+            >
               <div className="rounded-lg bg-foreground p-1.5 text-background">
-                <HugeiconsIcon icon={ShoppingBasketSecure01Icon} className="size-5!" />
+                <HugeiconsIcon
+                  icon={ShoppingBasketSecure01Icon}
+                  className="size-5!"
+                />
               </div>
               <span className="text-base font-semibold">Ahia Admin</span>
             </SidebarMenuButton>
@@ -165,8 +177,15 @@ export const AdminSidebar = () => {
                       className="shrink-0 rounded-lg border bg-muted text-muted-foreground"
                     />
                   ) : (
-                    <Avatar size="sm" className={"shrink-0 rounded-lg after:rounded-lg"}>
-                      <AvatarImage src={user.image} alt={user.name} className={"rounded-lg"} />
+                    <Avatar
+                      size="sm"
+                      className={"shrink-0 rounded-lg after:rounded-lg"}
+                    >
+                      <AvatarImage
+                        src={user.image}
+                        alt={user.name}
+                        className={"rounded-lg"}
+                      />
                       <AvatarFallback className="rounded-lg text-[10px] font-semibold">
                         {getInitials(user.name)}
                       </AvatarFallback>
@@ -199,7 +218,10 @@ export const AdminSidebar = () => {
                           className="shrink-0 rounded-lg border bg-muted text-muted-foreground"
                         />
                       ) : (
-                        <Avatar size="lg" className={"shrink-0 rounded-lg after:rounded-lg"}>
+                        <Avatar
+                          size="lg"
+                          className={"shrink-0 rounded-lg after:rounded-lg"}
+                        >
                           {user.image && (
                             <AvatarImage
                               src={user.image}
@@ -233,7 +255,10 @@ export const AdminSidebar = () => {
                     </DropdownMenuItem>
                     <ThemeSubMenu />
                     <DropdownMenuItem render={<Link href="/settings" />}>
-                      <HugeiconsIcon icon={AccountSetting01Icon} className="size-4" />
+                      <HugeiconsIcon
+                        icon={AccountSetting01Icon}
+                        className="size-4"
+                      />
                       Settings
                     </DropdownMenuItem>
                   </DropdownMenuGroup>

@@ -59,13 +59,15 @@ export const truncateEmail = (email: string) => {
  * Formats a number as a signed percentage string, e.g. `+3.5%` or `-1.2%`.
  * @param value - The numeric value to format.
  */
-export const formatPct = (value: number) => `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
+export const formatPct = (value: number) =>
+  `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`;
 
 /**
  * Formats a number as a signed integer string, e.g. `+5` or `-3`.
  * @param value - The numeric value to format.
  */
-export const formatSigned = (value: number) => `${value >= 0 ? "+" : ""}${value}`;
+export const formatSigned = (value: number) =>
+  `${value >= 0 ? "+" : ""}${value}`;
 
 /**
  * Formats a number as a USD currency string, e.g. `$1,234.56`.

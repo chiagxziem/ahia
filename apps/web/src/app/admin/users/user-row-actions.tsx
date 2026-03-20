@@ -1,6 +1,10 @@
 "use client";
 
-import { MoreVerticalCircle01Icon, ViewIcon, ViewOffIcon } from "@hugeicons/core-free-icons";
+import {
+  MoreVerticalCircle01Icon,
+  ViewIcon,
+  ViewOffIcon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,6 +12,9 @@ import { Facehash } from "facehash";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
+
+import { authClient } from "@repo/auth/client";
+import type { User } from "@repo/db/schemas/auth.schema";
 
 import {
   AlertDialog,
@@ -37,7 +44,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
   InputGroup,
@@ -49,8 +61,6 @@ import { cancelToastEl } from "@/components/ui/sonner";
 import type { AdminUserRow } from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { getInitials, roles } from "@/lib/utils";
-import { authClient } from "@repo/auth/client";
-import type { User } from "@repo/db/schemas/auth.schema";
 
 interface UserRowActionsProps {
   user: AdminUserRow;
@@ -78,7 +88,8 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
     currentUser.role === roles.SUPERADMIN ||
     (currentUser.role === roles.ADMIN && user.role === roles.USER);
 
-  const canChangeRole = user.role !== roles.SUPERADMIN && currentUser.role === roles.SUPERADMIN;
+  const canChangeRole =
+    user.role !== roles.SUPERADMIN && currentUser.role === roles.SUPERADMIN;
 
   const handleSetRole = async (newRole: "admin" | "user") => {
     await authClient.admin.setRole(
@@ -162,7 +173,8 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
   });
 
   const newRole = user.role === roles.ADMIN ? roles.USER : roles.ADMIN;
-  const actionLabel = user.role === roles.ADMIN ? "Set as user" : "Set as admin";
+  const actionLabel =
+    user.role === roles.ADMIN ? "Set as user" : "Set as admin";
   const canRevokeSessions = canModify && user.id !== currentUser.id;
   const canBan = canModify && user.id !== currentUser.id;
   const canRemove =
@@ -368,8 +380,15 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button aria-label={`Open options for ${user.name}`} size="icon" variant="ghost">
-                <HugeiconsIcon icon={MoreVerticalCircle01Icon} className="size-4" />
+              <Button
+                aria-label={`Open options for ${user.name}`}
+                size="icon"
+                variant="ghost"
+              >
+                <HugeiconsIcon
+                  icon={MoreVerticalCircle01Icon}
+                  className="size-4"
+                />
               </Button>
             }
           />
@@ -460,10 +479,18 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
               <AlertDialogTitle>Change User Role</AlertDialogTitle>
               <AlertDialogDescription>
                 Are you sure you want to change{" "}
-                <span className="font-semibold text-secondary-foreground">{user.name}</span>'s role
-                from <span className="font-semibold text-secondary-foreground">{user.role}</span> to{" "}
-                <span className="font-semibold text-secondary-foreground">{newRole}</span>? This
-                action cannot be undone immediately.
+                <span className="font-semibold text-secondary-foreground">
+                  {user.name}
+                </span>
+                's role from{" "}
+                <span className="font-semibold text-secondary-foreground">
+                  {user.role}
+                </span>{" "}
+                to{" "}
+                <span className="font-semibold text-secondary-foreground">
+                  {newRole}
+                </span>
+                ? This action cannot be undone immediately.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -487,19 +514,25 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
         <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>{user.banned ? "Unban User" : "Ban User"}</AlertDialogTitle>
+              <AlertDialogTitle>
+                {user.banned ? "Unban User" : "Ban User"}
+              </AlertDialogTitle>
               <AlertDialogDescription>
                 {user.banned ? (
                   <>
                     Are you sure you want to unban{" "}
-                    <span className="font-semibold text-secondary-foreground">{user.name}</span>?
-                    They will be able to sign in again.
+                    <span className="font-semibold text-secondary-foreground">
+                      {user.name}
+                    </span>
+                    ? They will be able to sign in again.
                   </>
                 ) : (
                   <>
                     Are you sure you want to ban{" "}
-                    <span className="font-semibold text-secondary-foreground">{user.name}</span>?
-                    They will be immediately signed out and unable to sign in.
+                    <span className="font-semibold text-secondary-foreground">
+                      {user.name}
+                    </span>
+                    ? They will be immediately signed out and unable to sign in.
                   </>
                 )}
               </AlertDialogDescription>
@@ -535,8 +568,10 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
               <AlertDialogTitle>Revoke User Sessions</AlertDialogTitle>
               <AlertDialogDescription>
                 Are you sure you want to revoke all sessions for{" "}
-                <span className="font-semibold text-secondary-foreground">{user.name}</span>? They
-                will be signed out of all devices immediately.
+                <span className="font-semibold text-secondary-foreground">
+                  {user.name}
+                </span>
+                ? They will be signed out of all devices immediately.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -564,8 +599,10 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
               <AlertDialogTitle>Remove User</AlertDialogTitle>
               <AlertDialogDescription>
                 Are you sure you want to permanently remove{" "}
-                <span className="font-semibold text-secondary-foreground">{user.name}</span>? This
-                will hard-delete their account and cannot be undone.
+                <span className="font-semibold text-secondary-foreground">
+                  {user.name}
+                </span>
+                ? This will hard-delete their account and cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -592,7 +629,8 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
             <DialogHeader>
               <DialogTitle>Set Password for {user.name}</DialogTitle>
               <DialogDescription>
-                Enter a new password for this user. The password must be at least 8 characters.
+                Enter a new password for this user. The password must be at
+                least 8 characters.
               </DialogDescription>
             </DialogHeader>
 
@@ -611,14 +649,22 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
                   validators={{
                     onChange: ({ value }) => {
                       if (!value) return "Password is required";
-                      if (value.length < 8) return "Password must be at least 8 characters";
+                      if (value.length < 8)
+                        return "Password must be at least 8 characters";
                       return undefined;
                     },
                   }}
                 >
                   {(field) => (
-                    <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
-                      <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+                    <Field
+                      data-invalid={
+                        field.state.meta.errors.length > 0 ? true : undefined
+                      }
+                    >
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="text-sm font-medium"
+                      >
                         New Password
                       </FieldLabel>
                       <InputGroup>
@@ -637,7 +683,9 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
                           <InputGroupButton
                             onClick={() => setShowPassword(!showPassword)}
                             disabled={isLoading}
-                            aria-label={showPassword ? "Hide password" : "Show password"}
+                            aria-label={
+                              showPassword ? "Hide password" : "Show password"
+                            }
                           >
                             <HugeiconsIcon
                               icon={showPassword ? ViewOffIcon : ViewIcon}
@@ -647,7 +695,9 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
                         </InputGroupAddon>
                       </InputGroup>
                       {field.state.meta.errors.length > 0 && (
-                        <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                        <FieldError>
+                          {field.state.meta.errors.join(", ")}
+                        </FieldError>
                       )}
                     </Field>
                   )}
@@ -667,8 +717,15 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
                   }}
                 >
                   {(field) => (
-                    <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
-                      <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+                    <Field
+                      data-invalid={
+                        field.state.meta.errors.length > 0 ? true : undefined
+                      }
+                    >
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="text-sm font-medium"
+                      >
                         Confirm Password
                       </FieldLabel>
                       <InputGroup>
@@ -685,19 +742,29 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
                         />
                         <InputGroupAddon align="inline-end">
                           <InputGroupButton
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            onClick={() =>
+                              setShowConfirmPassword(!showConfirmPassword)
+                            }
                             disabled={isLoading}
-                            aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                            aria-label={
+                              showConfirmPassword
+                                ? "Hide password"
+                                : "Show password"
+                            }
                           >
                             <HugeiconsIcon
-                              icon={showConfirmPassword ? ViewOffIcon : ViewIcon}
+                              icon={
+                                showConfirmPassword ? ViewOffIcon : ViewIcon
+                              }
                               className="size-4"
                             />
                           </InputGroupButton>
                         </InputGroupAddon>
                       </InputGroup>
                       {field.state.meta.errors.length > 0 && (
-                        <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                        <FieldError>
+                          {field.state.meta.errors.join(", ")}
+                        </FieldError>
                       )}
                     </Field>
                   )}
@@ -705,7 +772,11 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
               </FieldGroup>
 
               <DialogFooter>
-                <Button disabled={isLoading} variant="outline" onClick={() => setOpenDialog(false)}>
+                <Button
+                  disabled={isLoading}
+                  variant="outline"
+                  onClick={() => setOpenDialog(false)}
+                >
                   Cancel
                 </Button>
                 <Button disabled={isLoading} type="submit">
@@ -750,7 +821,11 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
                 ) : (
                   <Avatar size="xl" className={"rounded-xl after:rounded-xl"}>
                     {user.image && (
-                      <AvatarImage src={user.image} alt={user.name} className={"rounded-xl"} />
+                      <AvatarImage
+                        src={user.image}
+                        alt={user.name}
+                        className={"rounded-xl"}
+                      />
                     )}
                     <AvatarFallback className="rounded-xl text-[10px] font-semibold">
                       {getInitials(user.name)}
@@ -772,8 +847,15 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
                   }}
                 >
                   {(field) => (
-                    <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
-                      <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+                    <Field
+                      data-invalid={
+                        field.state.meta.errors.length > 0 ? true : undefined
+                      }
+                    >
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="text-sm font-medium"
+                      >
                         Image URL
                       </FieldLabel>
                       <InputGroup>
@@ -801,7 +883,9 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
                         </InputGroupAddon>
                       </InputGroup>
                       {field.state.meta.errors.length > 0 && (
-                        <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                        <FieldError>
+                          {field.state.meta.errors.join(", ")}
+                        </FieldError>
                       )}
                     </Field>
                   )}
@@ -813,14 +897,22 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
                   validators={{
                     onChange: ({ value }) => {
                       if (!value) return "Name is required";
-                      if (value.length < 2) return "Name must be at least 2 characters";
+                      if (value.length < 2)
+                        return "Name must be at least 2 characters";
                       return undefined;
                     },
                   }}
                 >
                   {(field) => (
-                    <Field data-invalid={field.state.meta.errors.length > 0 ? true : undefined}>
-                      <FieldLabel htmlFor={field.name} className="text-sm font-medium">
+                    <Field
+                      data-invalid={
+                        field.state.meta.errors.length > 0 ? true : undefined
+                      }
+                    >
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="text-sm font-medium"
+                      >
                         Name
                       </FieldLabel>
                       <Input
@@ -834,7 +926,9 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
                         aria-invalid={field.state.meta.errors.length > 0}
                       />
                       {field.state.meta.errors.length > 0 && (
-                        <FieldError>{field.state.meta.errors.join(", ")}</FieldError>
+                        <FieldError>
+                          {field.state.meta.errors.join(", ")}
+                        </FieldError>
                       )}
                     </Field>
                   )}
@@ -856,7 +950,9 @@ export function UserRowActions({ user, currentUser }: UserRowActionsProps) {
                   {([canSubmit, isSubmitting]) => (
                     <Button
                       type="submit"
-                      disabled={!canSubmit || isSubmitting || isLoading || isClearing}
+                      disabled={
+                        !canSubmit || isSubmitting || isLoading || isClearing
+                      }
                     >
                       {isSubmitting || isLoading ? "Saving..." : "Save changes"}
                     </Button>

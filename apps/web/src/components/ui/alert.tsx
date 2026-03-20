@@ -47,7 +47,10 @@ const AlertTitle = ({ className, ...props }: React.ComponentProps<"div">) => {
   );
 };
 
-const AlertDescription = ({ className, ...props }: React.ComponentProps<"div">) => {
+const AlertDescription = ({
+  className,
+  ...props
+}: React.ComponentProps<"div">) => {
   return (
     <div
       data-slot="alert-description"
@@ -62,7 +65,11 @@ const AlertDescription = ({ className, ...props }: React.ComponentProps<"div">) 
 
 const AlertAction = ({ className, ...props }: React.ComponentProps<"div">) => {
   return (
-    <div data-slot="alert-action" className={cn("absolute top-2 right-2", className)} {...props} />
+    <div
+      data-slot="alert-action"
+      className={cn("absolute top-2 right-2", className)}
+      {...props}
+    />
   );
 };
 

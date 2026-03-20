@@ -58,11 +58,18 @@ export const ProductRowActions = ({ product }: ProductRowActionsProps) => {
     onSuccess: async () => {
       toast.success("Product deleted successfully", cancelToastEl);
       closeDialog();
-      await queryClient.invalidateQueries({ queryKey: queryKeys.adminProducts() });
-      await queryClient.invalidateQueries({ queryKey: queryKeys.adminCategories() });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.adminProducts(),
+      });
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.adminCategories(),
+      });
     },
     onError: (err) => {
-      toast.error(getApiError(err) || "Failed to delete product.", cancelToastEl);
+      toast.error(
+        getApiError(err) || "Failed to delete product.",
+        cancelToastEl,
+      );
     },
   });
 
@@ -77,21 +84,33 @@ export const ProductRowActions = ({ product }: ProductRowActionsProps) => {
               className="size-8"
               aria-label={`Options for ${product.name}`}
             >
-              <HugeiconsIcon icon={MoreVerticalCircle01Icon} className="size-4" />
+              <HugeiconsIcon
+                icon={MoreVerticalCircle01Icon}
+                className="size-4"
+              />
             </Button>
           }
         />
         <DropdownMenuContent align="end" className="min-w-56">
           <DropdownMenuItem
             render={
-              <Link href={`/products/${product.id}`} target="_blank" rel="noopener noreferrer" />
+              <Link
+                href={`/products/${product.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              />
             }
           >
             Visit product page
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => openAction("update")}>Update product</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => openAction("update")}>
+            Update product
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => openAction("delete")} variant="destructive">
+          <DropdownMenuItem
+            onClick={() => openAction("delete")}
+            variant="destructive"
+          >
             Delete product
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -118,13 +137,17 @@ export const ProductRowActions = ({ product }: ProductRowActionsProps) => {
             <AlertDialogTitle>Delete product</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete{" "}
-              <span className="font-semibold text-secondary-foreground">{product.name}</span>? This
-              action cannot be undone. Products with existing cart items or orders cannot be
-              deleted.
+              <span className="font-semibold text-secondary-foreground">
+                {product.name}
+              </span>
+              ? This action cannot be undone. Products with existing cart items
+              or orders cannot be deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleteMutation.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleteMutation.isPending}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               disabled={deleteMutation.isPending}
               variant="destructive"

@@ -25,13 +25,16 @@ export const TrendingProducts = () => {
             <h2 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">
               Trending Now
             </h2>
-            <p className="text-muted-foreground">Our most popular picks right now.</p>
+            <p className="text-muted-foreground">
+              Our most popular picks right now.
+            </p>
           </div>
           <Link
             href="/shop"
             className="hidden items-center gap-1 text-sm font-medium transition-colors hover:text-primary sm:flex"
           >
-            Shop all <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
+            Shop all{" "}
+            <HugeiconsIcon icon={ArrowRight02Icon} className="size-4" />
           </Link>
         </div>
 

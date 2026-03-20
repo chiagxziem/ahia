@@ -1,11 +1,12 @@
-import env from "@/lib/env";
-import { generatePassword } from "@/lib/utils";
-import { getUserByEmail } from "@/queries/user-queries";
-import type { Role } from "@/types";
 import { auth } from "@repo/auth/server";
 import { sendAccountCreatedEmail } from "@repo/auth/utils/email";
 import { db } from "@repo/db";
 import type { User } from "@repo/db/validators/user.validator";
+
+import env from "@/lib/env";
+import { generatePassword } from "@/lib/utils";
+import { getUserByEmail } from "@/queries/user-queries";
+import type { Role } from "@/types";
 
 /** Creates an admin-managed user account when it does not already exist */
 export const createUser = async (user: {

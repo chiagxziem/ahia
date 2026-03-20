@@ -1,8 +1,9 @@
-import { pctChange, round, toNumber } from "@/lib/utils";
 import { and, count, countDistinct, db, eq, gte, lt, sql } from "@repo/db";
 import { session, user } from "@repo/db/schemas/auth.schema";
 import { order } from "@repo/db/schemas/order.schema";
 import { product } from "@repo/db/schemas/product.schema";
+
+import { pctChange, round, toNumber } from "@/lib/utils";
 
 type WindowKey = "24h" | "7d" | "1m";
 
@@ -22,7 +23,10 @@ const WINDOWS: Window[] = [
   { key: "1m", ms: 30 * 24 * 60 * 60 * 1000 },
 ];
 
-const getWindowBoundaries = (now: Date, durationMs: number): WindowBoundaries => ({
+const getWindowBoundaries = (
+  now: Date,
+  durationMs: number,
+): WindowBoundaries => ({
   currentStart: new Date(now.getTime() - durationMs),
   previousStart: new Date(now.getTime() - 2 * durationMs),
 });
@@ -37,7 +41,11 @@ const getPaidRevenueBetween = async (start: Date, end: Date) => {
     })
     .from(order)
     .where(
-      and(eq(order.paymentStatus, "paid"), gte(order.createdAt, start), lt(order.createdAt, end)),
+      and(
+        eq(order.paymentStatus, "paid"),
+        gte(order.createdAt, start),
+        lt(order.createdAt, end),
+      ),
     );
 
   return round(toNumber(result?.amount));
@@ -135,7 +143,10 @@ export const getAdminOverviewStats = async () => {
 
   const windowResults = await Promise.all(
     WINDOWS.map(async (window) => {
-      const { currentStart, previousStart } = getWindowBoundaries(now, window.ms);
+      const { currentStart, previousStart } = getWindowBoundaries(
+        now,
+        window.ms,
+      );
 
       const [
         currentRevenue,
@@ -184,7 +195,10 @@ export const getAdminOverviewStats = async () => {
     usersChange[result.key] = result.users.change;
   }
 
-  const [productsTotal, usersTotal] = await Promise.all([getProductsTotal(), getUsersTotal()]);
+  const [productsTotal, usersTotal] = await Promise.all([
+    getProductsTotal(),
+    getUsersTotal(),
+  ]);
 
   return {
     revenue: {

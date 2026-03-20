@@ -20,7 +20,10 @@ const ItemGroup = ({ className, ...props }: React.ComponentProps<"div">) => {
   );
 };
 
-const ItemSeparator = ({ className, ...props }: React.ComponentProps<typeof Separator>) => {
+const ItemSeparator = ({
+  className,
+  ...props
+}: React.ComponentProps<typeof Separator>) => {
   return (
     <Separator
       data-slot="item-separator"
@@ -135,7 +138,10 @@ const ItemTitle = ({ className, ...props }: React.ComponentProps<"div">) => {
   );
 };
 
-const ItemDescription = ({ className, ...props }: React.ComponentProps<"p">) => {
+const ItemDescription = ({
+  className,
+  ...props
+}: React.ComponentProps<"p">) => {
   return (
     <p
       data-slot="item-description"
@@ -150,7 +156,11 @@ const ItemDescription = ({ className, ...props }: React.ComponentProps<"p">) => 
 
 const ItemActions = ({ className, ...props }: React.ComponentProps<"div">) => {
   return (
-    <div data-slot="item-actions" className={cn("flex items-center gap-2", className)} {...props} />
+    <div
+      data-slot="item-actions"
+      className={cn("flex items-center gap-2", className)}
+      {...props}
+    />
   );
 };
 
@@ -158,7 +168,10 @@ const ItemHeader = ({ className, ...props }: React.ComponentProps<"div">) => {
   return (
     <div
       data-slot="item-header"
-      className={cn("flex basis-full items-center justify-between gap-2", className)}
+      className={cn(
+        "flex basis-full items-center justify-between gap-2",
+        className,
+      )}
       {...props}
     />
   );
@@ -168,7 +181,10 @@ const ItemFooter = ({ className, ...props }: React.ComponentProps<"div">) => {
   return (
     <div
       data-slot="item-footer"
-      className={cn("flex basis-full items-center justify-between gap-2", className)}
+      className={cn(
+        "flex basis-full items-center justify-between gap-2",
+        className,
+      )}
       {...props}
     />
   );

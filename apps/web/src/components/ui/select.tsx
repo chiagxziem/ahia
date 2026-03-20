@@ -108,7 +108,10 @@ const SelectContent = ({
   );
 };
 
-const SelectLabel = ({ className, ...props }: SelectPrimitive.GroupLabel.Props) => {
+const SelectLabel = ({
+  className,
+  ...props
+}: SelectPrimitive.GroupLabel.Props) => {
   return (
     <SelectPrimitive.GroupLabel
       data-slot="select-label"
@@ -118,7 +121,11 @@ const SelectLabel = ({ className, ...props }: SelectPrimitive.GroupLabel.Props) 
   );
 };
 
-const SelectItem = ({ className, children, ...props }: SelectPrimitive.Item.Props) => {
+const SelectItem = ({
+  className,
+  children,
+  ...props
+}: SelectPrimitive.Item.Props) => {
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
@@ -136,13 +143,20 @@ const SelectItem = ({ className, children, ...props }: SelectPrimitive.Item.Prop
           <span className="pointer-events-none absolute right-2 flex size-4 items-center justify-center" />
         }
       >
-        <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} className="pointer-events-none" />
+        <HugeiconsIcon
+          icon={Tick02Icon}
+          strokeWidth={2}
+          className="pointer-events-none"
+        />
       </SelectPrimitive.ItemIndicator>
     </SelectPrimitive.Item>
   );
 };
 
-const SelectSeparator = ({ className, ...props }: SelectPrimitive.Separator.Props) => {
+const SelectSeparator = ({
+  className,
+  ...props
+}: SelectPrimitive.Separator.Props) => {
   return (
     <SelectPrimitive.Separator
       data-slot="select-separator"

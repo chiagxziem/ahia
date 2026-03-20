@@ -19,7 +19,12 @@ import {
   type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { type Dispatch, type ReactNode, type SetStateAction, useState } from "react";
+import {
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+  useState,
+} from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -92,14 +97,23 @@ interface SearchFilter {
   searchColumns: string[];
 }
 
-export type FilterConfig = SingleDropdownFilter | MultiDropdownFilter | SearchFilter;
+export type FilterConfig =
+  | SingleDropdownFilter
+  | MultiDropdownFilter
+  | SearchFilter;
 
 // Action button configuration
 export interface ActionButton {
   label: string;
   icon: ReactNode;
   onClick: () => void;
-  variant?: "link" | "outline" | "ghost" | "default" | "secondary" | "destructive";
+  variant?:
+    | "link"
+    | "outline"
+    | "ghost"
+    | "default"
+    | "secondary"
+    | "destructive";
   size?: "default" | "sm" | "lg" | "icon";
   hideOnMobile?: boolean;
   hideLabelOnMobile?: boolean;
@@ -149,14 +163,17 @@ export const DataTable = <TData, TValue>({
   const [sorting, setSorting] = useState<SortingState>(defaultSorting);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState<string>("");
-  const [internalPagination, setInternalPagination] = useState<PaginationState>(defaultPagination);
+  const [internalPagination, setInternalPagination] =
+    useState<PaginationState>(defaultPagination);
 
   const pagination = isServerSide
     ? (controlledPagination ?? defaultPagination)
     : internalPagination;
 
   // For tracking active filters for all dropdown types
-  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(
+    {},
+  );
 
   const table = useReactTable({
     columns,
@@ -171,7 +188,9 @@ export const DataTable = <TData, TValue>({
     getPaginationRowModel: isServerSide ? undefined : getPaginationRowModel(),
     manualPagination: isServerSide,
     rowCount: isServerSide ? rowCount : undefined,
-    onPaginationChange: isServerSide ? setControlledPagination : setInternalPagination,
+    onPaginationChange: isServerSide
+      ? setControlledPagination
+      : setInternalPagination,
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: (row, _columnId, filterValue) => {
       const searchFilter = filters.find((f) => f.type === "search");
@@ -231,13 +250,19 @@ export const DataTable = <TData, TValue>({
   };
 
   const searchFilter = filters.find((f) => f.type === "search");
-  const singleDropdownFilters = filters.filter((f) => f.type === "single-dropdown");
-  const multiDropdownFilters = filters.filter((f) => f.type === "multi-dropdown");
+  const singleDropdownFilters = filters.filter(
+    (f) => f.type === "single-dropdown",
+  );
+  const multiDropdownFilters = filters.filter(
+    (f) => f.type === "multi-dropdown",
+  );
 
   const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
     currentPage:
-      (isServerSide ? (controlledPagination ?? defaultPagination) : internalPagination).pageIndex +
-      1,
+      (isServerSide
+        ? (controlledPagination ?? defaultPagination)
+        : internalPagination
+      ).pageIndex + 1,
     totalPages: table.getPageCount(),
     paginationItemsToDisplay,
   });
@@ -246,7 +271,8 @@ export const DataTable = <TData, TValue>({
 
   // Determine if page size selector should be shown
   const shouldShowPageSizeSelector =
-    showPageSizeSelector && DEFAULT_PAGE_SIZE_OPTIONS.includes(currentPagination.pageSize);
+    showPageSizeSelector &&
+    DEFAULT_PAGE_SIZE_OPTIONS.includes(currentPagination.pageSize);
 
   return (
     <section className={cn("flex flex-col gap-3", className)}>
@@ -273,7 +299,9 @@ export const DataTable = <TData, TValue>({
                 render={
                   <Button size="sm" variant="outline">
                     <HugeiconsIcon icon={FilterIcon} className="size-4" />
-                    <span className="hidden md:inline-block">{filter.label}</span>
+                    <span className="hidden md:inline-block">
+                      {filter.label}
+                    </span>
                     {(activeFilters[filter.columnId]?.length ?? 0) > 0 && (
                       <span className="border-primary-600/50 bg-primary-600/20 text-primary-600 rounded border px-1 text-xs transition-all duration-300 md:ml-2">
                         {activeFilters[filter.columnId]?.length}
@@ -283,18 +311,30 @@ export const DataTable = <TData, TValue>({
                 }
               />
 
-              <DropdownMenuContent align="start" className="min-w-36" side="bottom">
+              <DropdownMenuContent
+                align="start"
+                className="min-w-36"
+                side="bottom"
+              >
                 <DropdownMenuGroup>
-                  <DropdownMenuLabel>Filter by {filter.label}</DropdownMenuLabel>
+                  <DropdownMenuLabel>
+                    Filter by {filter.label}
+                  </DropdownMenuLabel>
                   {filter.options.map((option) => (
                     <DropdownMenuCheckboxItem
-                      checked={(activeFilters[filter.columnId] ?? []).includes(option.value)}
+                      checked={(activeFilters[filter.columnId] ?? []).includes(
+                        option.value,
+                      )}
                       className="group"
                       closeOnClick={false}
                       disabled={option.count === 0}
                       key={`${filter.columnId}-${option.value}`}
                       onCheckedChange={() =>
-                        handleFilterToggle(filter.columnId, option.value, filter.transformValue)
+                        handleFilterToggle(
+                          filter.columnId,
+                          option.value,
+                          filter.transformValue,
+                        )
                       }
                     >
                       <span>{option.label}</span>
@@ -322,7 +362,9 @@ export const DataTable = <TData, TValue>({
                   render={
                     <Button size="sm" variant="outline">
                       <HugeiconsIcon icon={FilterIcon} className="size-4" />
-                      <span className="hidden md:inline-block">{filter.label}</span>
+                      <span className="hidden md:inline-block">
+                        {filter.label}
+                      </span>
                       {activeCount > 0 && (
                         <span className="border-primary-600/50 bg-primary-600/20 text-primary-600 rounded border px-1 text-xs transition-all duration-300 md:ml-2">
                           {activeCount}
@@ -332,7 +374,11 @@ export const DataTable = <TData, TValue>({
                   }
                 />
 
-                <DropdownMenuContent align="start" className="min-w-48" side="bottom">
+                <DropdownMenuContent
+                  align="start"
+                  className="min-w-48"
+                  side="bottom"
+                >
                   {filter.subMenus ? (
                     // Sub-menu mode: each group is a nested sub-menu
                     <DropdownMenuGroup>
@@ -342,16 +388,17 @@ export const DataTable = <TData, TValue>({
                         <DropdownMenuSub key={`group-${group.columnId}`}>
                           <DropdownMenuSubTrigger className="flex items-center justify-between">
                             <span>{group.label}</span>
-                            {(activeFilters[group.columnId]?.length ?? 0) > 0 && (
+                            {(activeFilters[group.columnId]?.length ?? 0) >
+                              0 && (
                               <span className="bg-primary-600/20 text-primary-600 h-1.5 w-1.5 rounded-full" />
                             )}
                           </DropdownMenuSubTrigger>
                           <DropdownMenuSubContent>
                             {group.options.map((option) => (
                               <DropdownMenuCheckboxItem
-                                checked={(activeFilters[group.columnId] ?? []).includes(
-                                  option.value,
-                                )}
+                                checked={(
+                                  activeFilters[group.columnId] ?? []
+                                ).includes(option.value)}
                                 className="group"
                                 closeOnClick={false}
                                 disabled={option.count === 0}
@@ -384,13 +431,19 @@ export const DataTable = <TData, TValue>({
                         <DropdownMenuLabel>{group.label}</DropdownMenuLabel>
                         {group.options.map((option) => (
                           <DropdownMenuCheckboxItem
-                            checked={(activeFilters[group.columnId] ?? []).includes(option.value)}
+                            checked={(
+                              activeFilters[group.columnId] ?? []
+                            ).includes(option.value)}
                             className="group"
                             closeOnClick={false}
                             disabled={option.count === 0}
                             key={`${group.columnId}-${option.value}`}
                             onCheckedChange={() =>
-                              handleFilterToggle(group.columnId, option.value, group.transformValue)
+                              handleFilterToggle(
+                                group.columnId,
+                                option.value,
+                                group.transformValue,
+                              )
                             }
                           >
                             <span>{option.label}</span>
@@ -422,7 +475,11 @@ export const DataTable = <TData, TValue>({
               variant={button.variant || "default"}
             >
               {button.icon}
-              <span className={cn(button.hideLabelOnMobile && "hidden sm:inline-block")}>
+              <span
+                className={cn(
+                  button.hideLabelOnMobile && "hidden sm:inline-block",
+                )}
+              >
                 {button.label}
               </span>
             </Button>
@@ -447,18 +504,25 @@ export const DataTable = <TData, TValue>({
                         onClick={header.column.getToggleSortingHandler()}
                         onKeyUp={header.column.getToggleSortingHandler()}
                       >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                         <HugeiconsIcon
                           icon={ArrowDown01Icon}
                           className={cn(
                             "size-3.5 shrink-0 opacity-0 transition-all duration-200 group-hover:opacity-60",
                             header.column.getIsSorted() && "opacity-100",
-                            header.column.getIsSorted() === "asc" && "rotate-180",
+                            header.column.getIsSorted() === "asc" &&
+                              "rotate-180",
                           )}
                         />
                       </div>
                     ) : (
-                      flexRender(header.column.columnDef.header, header.getContext())
+                      flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )
                     )}
                   </TableHead>
                 ))}
@@ -493,7 +557,10 @@ export const DataTable = <TData, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -516,9 +583,15 @@ export const DataTable = <TData, TValue>({
       {table.getPageCount() > 1 && (
         <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
           {/* Page number information */}
-          <p aria-live="polite" className="flex-1 text-sm whitespace-nowrap text-muted-foreground">
-            Page <span className="text-foreground">{currentPagination.pageIndex + 1}</span> of{" "}
-            <span className="text-foreground">{table.getPageCount()}</span>
+          <p
+            aria-live="polite"
+            className="flex-1 text-sm whitespace-nowrap text-muted-foreground"
+          >
+            Page{" "}
+            <span className="text-foreground">
+              {currentPagination.pageIndex + 1}
+            </span>{" "}
+            of <span className="text-foreground">{table.getPageCount()}</span>
           </p>
 
           {/* Pagination buttons */}
@@ -597,7 +670,10 @@ export const DataTable = <TData, TValue>({
                 }}
                 value={currentPagination.pageSize.toString()}
               >
-                <SelectTrigger className="w-fit whitespace-nowrap" id="results-per-page">
+                <SelectTrigger
+                  className="w-fit whitespace-nowrap"
+                  id="results-per-page"
+                >
                   <SelectValue placeholder="Select number of results" />
                 </SelectTrigger>
                 <SelectContent>
