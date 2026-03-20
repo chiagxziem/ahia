@@ -20,7 +20,7 @@ export const createCartForUser = async (userId: string) => {
  */
 export const getUserCartWithItems = async (userId: string) => {
   const userCart = await db.query.cart.findFirst({
-    where: (cart, { eq }) => eq(cart.userId, userId),
+    where: (c, { eq }) => eq(c.userId, userId),
     with: {
       cartItems: {
         with: {
@@ -55,12 +55,12 @@ export const getOrCreateUserCart = async (userId: string) => {
  * Gets a specific cart item for a product in a cart
  */
 export const getCartItem = async (cartId: string, productId: string) => {
-  const cartItem = await db.query.cartItem.findFirst({
-    where: (cartItem, { eq, and }) =>
-      and(eq(cartItem.cartId, cartId), eq(cartItem.productId, productId)),
+  const singleCartItem = await db.query.cartItem.findFirst({
+    where: (cI, { eq, and }) =>
+      and(eq(cI.cartId, cartId), eq(cI.productId, productId)),
   });
 
-  return cartItem;
+  return singleCartItem;
 };
 
 /**
@@ -144,7 +144,7 @@ export const clearCartItems = async (cartId: string) => {
 export const clearCartItemsByUserId = async (userId: string) => {
   // First get the user's cart
   const userCart = await db.query.cart.findFirst({
-    where: (cart, { eq }) => eq(cart.userId, userId),
+    where: (c, { eq }) => eq(c.userId, userId),
   });
 
   if (!userCart) {

@@ -13,10 +13,10 @@ import { validationHook } from "@/middleware/validation-hook";
 
 import { getUserDoc, updateUserDoc } from "./user.docs";
 
-const user = createRouter().use(authed);
+const userRouter = createRouter().use(authed);
 
 // Get user
-user.get("/me", getUserDoc, (c) => {
+userRouter.get("/me", getUserDoc, (c) => {
   try {
     const user = c.get("user");
 
@@ -39,7 +39,7 @@ user.get("/me", getUserDoc, (c) => {
 });
 
 // Update user
-user.patch(
+userRouter.patch(
   "/me",
   updateUserDoc,
   validator("json", UserUpdateSchema, validationHook),
@@ -71,4 +71,4 @@ user.patch(
   },
 );
 
-export default user;
+export default userRouter;

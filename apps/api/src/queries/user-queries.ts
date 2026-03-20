@@ -3,7 +3,7 @@ import { db } from "@repo/db";
 /** Fetches a user record by id */
 export const getUserById = async (userId: string) => {
   const user = await db.query.user.findFirst({
-    where: (user, { eq }) => eq(user.id, userId),
+    where: (u, { eq }) => eq(u.id, userId),
   });
 
   return user || null;
@@ -12,7 +12,7 @@ export const getUserById = async (userId: string) => {
 /** Fetches a user record by email address */
 export const getUserByEmail = async (email: string) => {
   const user = await db.query.user.findFirst({
-    where: (user, { eq }) => eq(user.email, email),
+    where: (u, { eq }) => eq(u.email, email),
   });
 
   return user || null;
@@ -21,7 +21,7 @@ export const getUserByEmail = async (email: string) => {
 /** Fetches a session record by session token */
 export const getSessionByToken = async (sessionToken: string) => {
   const session = await db.query.session.findFirst({
-    where: (session, { eq }) => eq(session.token, sessionToken),
+    where: (ss, { eq }) => eq(ss.token, sessionToken),
   });
 
   return session || null;

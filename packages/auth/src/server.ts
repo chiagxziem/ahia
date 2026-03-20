@@ -6,7 +6,7 @@ import { db } from "@repo/db";
 
 import { createCartForUser } from "./lib/actions";
 import { sendResetPasswordEmail, sendVerificationEmail } from "./lib/email";
-import { ac, admin, superadmin, user } from "./lib/permissions";
+import { ac, admin, superadmin, user as userRole } from "./lib/permissions";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -96,7 +96,7 @@ export const auth = betterAuth({
     adminPlugin({
       ac,
       roles: {
-        user,
+        userRole,
         admin,
         superadmin,
       },

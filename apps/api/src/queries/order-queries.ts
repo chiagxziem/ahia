@@ -48,7 +48,7 @@ export const getAllOrders = async (page: number = 1, limit?: number) => {
  */
 export const getAdminOrderById = async (orderId: string) => {
   const orderWithItems = await db.query.order.findFirst({
-    where: (order, { eq }) => eq(order.id, orderId),
+    where: (o, { eq }) => eq(o.id, orderId),
     with: {
       orderItems: {
         with: {
@@ -73,7 +73,7 @@ export const getUserOrders = async (
   let userOrders;
   if (limit) {
     userOrders = await db.query.order.findMany({
-      where: (order, { eq }) => eq(order.userId, userId),
+      where: (o, { eq }) => eq(o.userId, userId),
       with: {
         orderItems: {
           with: {
@@ -87,7 +87,7 @@ export const getUserOrders = async (
     });
   } else {
     userOrders = await db.query.order.findMany({
-      where: (order, { eq }) => eq(order.userId, userId),
+      where: (o, { eq }) => eq(o.userId, userId),
       with: {
         orderItems: {
           with: {
@@ -182,7 +182,7 @@ export const createOrderItems = async (
  */
 export const getOrderById = async (orderId: string) => {
   const orderWithItems = await db.query.order.findFirst({
-    where: (order, { eq }) => eq(order.id, orderId),
+    where: (o, { eq }) => eq(o.id, orderId),
     with: {
       orderItems: {
         with: {
@@ -200,7 +200,7 @@ export const getOrderById = async (orderId: string) => {
  */
 export const getOrderByStripeSessionId = async (sessionId: string) => {
   const orderWithItems = await db.query.order.findFirst({
-    where: (order, { eq }) => eq(order.stripeCheckoutSessionId, sessionId),
+    where: (o, { eq }) => eq(o.stripeCheckoutSessionId, sessionId),
     with: {
       orderItems: {
         with: {
@@ -247,7 +247,7 @@ export const updateOrderStatus = async (
  */
 export const getUserCartId = async (userId: string) => {
   const userCart = await db.query.cart.findFirst({
-    where: (cart, { eq }) => eq(cart.userId, userId),
+    where: (c, { eq }) => eq(c.userId, userId),
   });
 
   return userCart;

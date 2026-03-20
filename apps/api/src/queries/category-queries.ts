@@ -29,7 +29,7 @@ export const getCategories = async (page: number = 1, limit?: number) => {
 /** Fetches a single category with its related products */
 export const getCategoryById = async (id: string) => {
   const result = await db.query.category.findFirst({
-    where: (category, { eq }) => eq(category.id, id),
+    where: (cat, { eq }) => eq(cat.id, id),
     with: {
       productCategories: {
         with: {
@@ -41,10 +41,10 @@ export const getCategoryById = async (id: string) => {
 
   if (!result) return null;
 
-  const { productCategories, ...category } = result;
+  const { productCategories, ...cat } = result;
   const products = productCategories.map((pc) => pc.product);
 
-  return { ...category, products };
+  return { ...cat, products };
 };
 
 /** Fetches the top N categories sorted by product count (descending) */

@@ -200,8 +200,8 @@ export const DataTable = <TData, TValue>({
       const searchValue = (filterValue as string).toLowerCase();
 
       return searchFilter.searchColumns.some((column) => {
-        const value = row.getValue(column) as string;
-        return value?.toLowerCase().includes(searchValue);
+        const value = row.getValue(column);
+        return (value as string)?.toLowerCase().includes(searchValue);
       });
     },
     state: {
@@ -497,6 +497,7 @@ export const DataTable = <TData, TValue>({
                   <TableHead colSpan={header.colSpan} key={header.id}>
                     {header.isPlaceholder ? null : header.column.getCanSort() ? (
                       <div
+                        role="columnheader"
                         className={cn(
                           header.column.getCanSort() &&
                             "group flex h-full cursor-pointer items-center justify-start gap-1 select-none",

@@ -48,7 +48,7 @@ export const getProducts = async (page: number = 1, limit?: number) => {
 /** Fetches a single product with creator and categories */
 export const getProductById = async (id: string) => {
   const result = await db.query.product.findFirst({
-    where: (product, { eq }) => eq(product.id, id),
+    where: (p, { eq }) => eq(p.id, id),
     with: {
       creator: true,
       productCategories: {
@@ -61,10 +61,10 @@ export const getProductById = async (id: string) => {
 
   if (!result) return null;
 
-  const { productCategories, ...product } = result;
+  const { productCategories, ...p } = result;
   const categories = productCategories.map((pc) => pc.category);
 
-  return { ...product, categories };
+  return { ...p, categories };
 };
 
 /** Fetches a deterministic "featured" product that changes daily */
@@ -88,7 +88,7 @@ export const getFeaturedProduct = async () => {
         with: { category: true },
       },
     },
-    orderBy: (product) => product.createdAt,
+    orderBy: (p) => p.createdAt,
     limit: 1,
     offset,
   });
@@ -111,7 +111,7 @@ export const getLatestProducts = async (limit: number = 4) => {
         with: { category: true },
       },
     },
-    orderBy: (product) => desc(product.createdAt),
+    orderBy: (p) => desc(p.createdAt),
     limit,
   });
 
@@ -151,7 +151,7 @@ export const getTrendingProducts = async (limit: number = 4) => {
   if (topIds.length === 0) return [];
 
   const result = await db.query.product.findMany({
-    where: (product, { inArray }) => inArray(product.id, topIds),
+    where: (p, { inArray }) => inArray(p.id, topIds),
     with: {
       creator: true,
       productCategories: {
