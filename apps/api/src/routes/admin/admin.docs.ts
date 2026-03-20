@@ -14,9 +14,60 @@ import {
   createSuccessResponse,
   getErrDetailsFromErrFields,
 } from "@/lib/openapi";
-import { authExamples } from "@/lib/openapi-examples";
+import {
+  adminExamples,
+  authExamples,
+  miscExamples,
+} from "@/lib/openapi-examples";
 
 const tags = ["Admin"];
+
+export const getAdminStatsDoc = describeRoute({
+  description: "Get admin overview stats",
+  tags,
+  security: [
+    {
+      Bearer: [],
+    },
+  ],
+  responses: {
+    [HttpStatusCodes.OK]: createSuccessResponse("Admin stats retrieved", {
+      details: "Admin stats retrieved successfully",
+      dataSchema: z.object({
+        revenue: z.object({
+          value: WindowNumberSchema,
+          changePct: WindowNumberSchema,
+        }),
+        orders: z.object({
+          value: WindowNumberSchema,
+          changePct: WindowNumberSchema,
+        }),
+        products: z.object({
+          value: z.object({
+            total: z.number().int().nonnegative(),
+          }),
+          changePct: WindowNumberSchema,
+        }),
+        users: z.object({
+          value: z.object({
+            total: z.number().int().nonnegative(),
+          }),
+          change: WindowNumberSchema,
+        }),
+      }),
+    }),
+    [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
+      code: "UNAUTHORIZED",
+      details: "No session found",
+    }),
+    [HttpStatusCodes.FORBIDDEN]: createGenericErrorResponse("Forbidden", {
+      code: "FORBIDDEN",
+      details: "User does not have the required permission",
+    }),
+    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
+  },
+});
 
 export const getAllUsersDoc = describeRoute({
   description: "Get all users (admin only)",
@@ -40,10 +91,8 @@ export const getAllUsersDoc = describeRoute({
       validationError: {
         summary: "Invalid request data",
         code: "INVALID_DATA",
-        details: "limit: Too small: expected number to be >0",
-        fields: {
-          limit: "Too small: expected number to be >0",
-        },
+        details: getErrDetailsFromErrFields(adminExamples.getUsersValErrs),
+        fields: adminExamples.getUsersValErrs,
       },
     }),
     [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
@@ -97,94 +146,6 @@ export const getUserDoc = describeRoute({
   },
 });
 
-export const createUserDoc = describeRoute({
-  description: "Create a new user account (admin only)",
-  tags,
-  security: [
-    {
-      Bearer: [],
-    },
-  ],
-  responses: {
-    [HttpStatusCodes.CREATED]: createSuccessResponse("User created", {
-      details: "User created successfully",
-      dataSchema: UserSelectSchema,
-    }),
-    [HttpStatusCodes.BAD_REQUEST]: createErrorResponse("Invalid request data", {
-      validationError: {
-        summary: "Invalid request data",
-        code: "INVALID_DATA",
-        details: getErrDetailsFromErrFields(authExamples.uuidValErr),
-        fields: authExamples.uuidValErr,
-      },
-    }),
-    [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
-      code: "UNAUTHORIZED",
-      details: "No session found",
-    }),
-    [HttpStatusCodes.FORBIDDEN]: createGenericErrorResponse("Forbidden", {
-      code: "FORBIDDEN",
-      details: "User does not have the required permission",
-    }),
-    [HttpStatusCodes.CONFLICT]: createGenericErrorResponse(
-      "User already exists",
-      {
-        code: "CONFLICT",
-        details: "A user with this email already exists",
-      },
-    ),
-    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
-    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
-  },
-});
-
-export const getAdminStatsDoc = describeRoute({
-  description: "Get admin overview stats",
-  tags,
-  security: [
-    {
-      Bearer: [],
-    },
-  ],
-  responses: {
-    [HttpStatusCodes.OK]: createSuccessResponse("Admin stats retrieved", {
-      details: "Admin stats retrieved successfully",
-      dataSchema: z.object({
-        revenue: z.object({
-          value: WindowNumberSchema,
-          changePct: WindowNumberSchema,
-        }),
-        orders: z.object({
-          value: WindowNumberSchema,
-          changePct: WindowNumberSchema,
-        }),
-        products: z.object({
-          value: z.object({
-            total: z.number().int().nonnegative(),
-          }),
-          changePct: WindowNumberSchema,
-        }),
-        users: z.object({
-          value: z.object({
-            total: z.number().int().nonnegative(),
-          }),
-          change: WindowNumberSchema,
-        }),
-      }),
-    }),
-    [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
-      code: "UNAUTHORIZED",
-      details: "No session found",
-    }),
-    [HttpStatusCodes.FORBIDDEN]: createGenericErrorResponse("Forbidden", {
-      code: "FORBIDDEN",
-      details: "User does not have the required permission",
-    }),
-    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
-    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
-  },
-});
-
 export const getAdminOrdersDoc = describeRoute({
   description: "Get all orders (admin only)",
   tags,
@@ -202,6 +163,14 @@ export const getAdminOrdersDoc = describeRoute({
       },
       true,
     ),
+    [HttpStatusCodes.BAD_REQUEST]: createErrorResponse("Invalid request data", {
+      validationError: {
+        summary: "Invalid request data",
+        code: "INVALID_DATA",
+        details: getErrDetailsFromErrFields(miscExamples.paginationValErrs),
+        fields: miscExamples.paginationValErrs,
+      },
+    }),
     [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
       code: "UNAUTHORIZED",
       details: "No session found",
@@ -248,6 +217,47 @@ export const getAdminOrderDoc = describeRoute({
       code: "NOT_FOUND",
       details: "Order not found",
     }),
+    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
+  },
+});
+
+export const createUserDoc = describeRoute({
+  description: "Create a new user account (admin only)",
+  tags,
+  security: [
+    {
+      Bearer: [],
+    },
+  ],
+  responses: {
+    [HttpStatusCodes.CREATED]: createSuccessResponse("User created", {
+      details: "User created successfully",
+      dataSchema: UserSelectSchema,
+    }),
+    [HttpStatusCodes.BAD_REQUEST]: createErrorResponse("Invalid request data", {
+      validationError: {
+        summary: "Invalid request data",
+        code: "INVALID_DATA",
+        details: getErrDetailsFromErrFields(adminExamples.createUserValErrs),
+        fields: adminExamples.createUserValErrs,
+      },
+    }),
+    [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
+      code: "UNAUTHORIZED",
+      details: "No session found",
+    }),
+    [HttpStatusCodes.FORBIDDEN]: createGenericErrorResponse("Forbidden", {
+      code: "FORBIDDEN",
+      details: "User does not have the required permission",
+    }),
+    [HttpStatusCodes.CONFLICT]: createGenericErrorResponse(
+      "User already exists",
+      {
+        code: "CONFLICT",
+        details: "A user with this email already exists",
+      },
+    ),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },

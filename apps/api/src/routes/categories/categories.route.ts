@@ -81,7 +81,7 @@ categories.get(
   getTopCategoriesDoc,
   validator(
     "query",
-    z.object({ limit: z.number().optional() }),
+    z.object({ limit: z.coerce.number().int().positive().optional() }),
     validationHook,
   ),
   async (c) => {

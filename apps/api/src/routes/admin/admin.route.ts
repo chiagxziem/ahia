@@ -31,6 +31,7 @@ const admin = createRouter()
   .use(authed)
   .use(permit({ user: ["list"], order: ["view-user", "view-all"] }));
 
+// Get platform stats for admin dashboard
 admin.get("/stats", getAdminStatsDoc, async (c) => {
   const stats = await getAdminOverviewStats();
 

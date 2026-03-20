@@ -23,12 +23,16 @@ export const createUser = async (user: {
 
   // If the user does not exist, create a new one
   const password = generatePassword();
-
   const { user: newUser } = await auth.api.createUser({
     body: {
       email: user.email,
       name: user.name,
-      role: user.role,
+      role: user.role as
+        | "admin"
+        | "superadmin"
+        | "userRole"
+        | ("admin" | "superadmin" | "userRole")[]
+        | undefined,
       password,
     },
   });
@@ -50,7 +54,7 @@ export const createUser = async (user: {
   return newUser as User;
 };
 
-/** Ensures a superadmin account exists for platform administration */
+/** Ensures a superadmin account exists on app startup */
 export const createSuperadmin = async () => {
   const superadmin = await db.query.user.findFirst({
     where: (user, { eq }) => eq(user.role, "superadmin"),

@@ -15,42 +15,9 @@ import {
   createSuccessResponse,
   getErrDetailsFromErrFields,
 } from "@/lib/openapi";
-import { authExamples } from "@/lib/openapi-examples";
+import { authExamples, miscExamples } from "@/lib/openapi-examples";
 
 const tags = ["Orders"];
-
-export const verifySessionDoc = describeRoute({
-  description: "Verify a Stripe checkout session and update order status",
-  tags,
-  security: [
-    {
-      Bearer: [],
-    },
-  ],
-  responses: {
-    [HttpStatusCodes.OK]: createSuccessResponse("Session verified", {
-      details: "Session verified successfully",
-      dataSchema: OrderSelectSchema,
-    }),
-    [HttpStatusCodes.BAD_REQUEST]: createErrorResponse("Invalid request data", {
-      invalidSessionId: {
-        summary: "Invalid session ID",
-        code: "INVALID_DATA",
-        details: "sessionId: Required",
-      },
-    }),
-    [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
-      code: "UNAUTHORIZED",
-      details: "No session found",
-    }),
-    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse("Not found", {
-      code: "NOT_FOUND",
-      details: "Order not found for this session",
-    }),
-    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
-    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
-  },
-});
 
 export const getUserOrdersDoc = describeRoute({
   description: "Get user's order history",
@@ -67,8 +34,16 @@ export const getUserOrdersDoc = describeRoute({
         details: "User orders retrieved successfully",
         dataSchema: z.array(OrderSelectSchema),
       },
-      true, // isPaginated
+      true,
     ),
+    [HttpStatusCodes.BAD_REQUEST]: createErrorResponse("Invalid request data", {
+      validationError: {
+        summary: "Invalid request data",
+        code: "INVALID_DATA",
+        details: getErrDetailsFromErrFields(miscExamples.paginationValErrs),
+        fields: miscExamples.paginationValErrs,
+      },
+    }),
     [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
       code: "UNAUTHORIZED",
       details: "No session found",
@@ -106,6 +81,44 @@ export const getUserOrderDoc = describeRoute({
     [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse("Order not found", {
       code: "NOT_FOUND",
       details: "Order not found",
+    }),
+    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
+  },
+});
+
+export const verifySessionDoc = describeRoute({
+  description: "Verify a Stripe checkout session and update order status",
+  tags,
+  security: [
+    {
+      Bearer: [],
+    },
+  ],
+  responses: {
+    [HttpStatusCodes.OK]: createSuccessResponse("Session verified", {
+      details: "Session verified successfully",
+      dataSchema: OrderSelectSchema,
+    }),
+    [HttpStatusCodes.BAD_REQUEST]: createErrorResponse("Invalid request data", {
+      invalidSessionId: {
+        summary: "Invalid session ID",
+        code: "INVALID_DATA",
+        details: getErrDetailsFromErrFields({
+          sessionId: authExamples.uuidValErr.id,
+        }),
+        fields: {
+          sessionId: authExamples.uuidValErr.id,
+        },
+      },
+    }),
+    [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
+      code: "UNAUTHORIZED",
+      details: "No session found",
+    }),
+    [HttpStatusCodes.NOT_FOUND]: createGenericErrorResponse("Not found", {
+      code: "NOT_FOUND",
+      details: "Order not found for this session",
     }),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),

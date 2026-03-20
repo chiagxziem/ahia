@@ -16,7 +16,11 @@ import {
   createSuccessResponse,
   getErrDetailsFromErrFields,
 } from "@/lib/openapi";
-import { authExamples, categoriesExamples } from "@/lib/openapi-examples";
+import {
+  authExamples,
+  categoriesExamples,
+  miscExamples,
+} from "@/lib/openapi-examples";
 
 const tags = ["Categories"];
 
@@ -32,6 +36,14 @@ export const getAllCategoriesDoc = describeRoute({
       },
       true,
     ),
+    [HttpStatusCodes.BAD_REQUEST]: createErrorResponse("Invalid request data", {
+      validationError: {
+        summary: "Invalid request data",
+        code: "INVALID_DATA",
+        details: getErrDetailsFromErrFields(miscExamples.paginationValErrs),
+        fields: miscExamples.paginationValErrs,
+      },
+    }),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },
@@ -49,7 +61,18 @@ export const getTopCategoriesDoc = describeRoute({
       },
       true,
     ),
-    //! Still need to add doc for the limit query param and its validation error
+    [HttpStatusCodes.BAD_REQUEST]: createErrorResponse("Invalid request data", {
+      validationError: {
+        summary: "Invalid request data",
+        code: "INVALID_DATA",
+        details: getErrDetailsFromErrFields({
+          limit: miscExamples.paginationValErrs.limit,
+        }),
+        fields: {
+          limit: miscExamples.paginationValErrs.limit,
+        },
+      },
+    }),
     [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
   },

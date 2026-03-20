@@ -145,7 +145,7 @@ stripeWebhook.post("/", async (c) => {
           await clearCartItemsByUserId(order.userId);
         }
 
-        // Send receipt email (fire and forget — don't block webhook response)
+        // Send receipt email (fire and forget so the webhook response isnt blocked)
         const updatedOrder = await getOrderById(orderId);
         if (updatedOrder) {
           sendOrderReceiptEmail(

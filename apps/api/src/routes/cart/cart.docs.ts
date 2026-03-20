@@ -11,7 +11,7 @@ import {
   createSuccessResponse,
   getErrDetailsFromErrFields,
 } from "@/lib/openapi";
-import { cartExamples } from "@/lib/openapi-examples";
+import { authExamples, cartExamples } from "@/lib/openapi-examples";
 
 const tags = ["Cart"];
 
@@ -119,7 +119,8 @@ export const updateCartItemDoc = describeRoute({
       invalidUUID: {
         summary: "Invalid cart item ID",
         code: "INVALID_DATA",
-        details: "Cart item ID must be a valid UUID",
+        details: getErrDetailsFromErrFields(authExamples.uuidValErr),
+        fields: authExamples.uuidValErr,
       },
     }),
     [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
@@ -175,7 +176,8 @@ export const deleteCartItemDoc = describeRoute({
       invalidUUID: {
         summary: "Invalid cart item ID",
         code: "INVALID_DATA",
-        details: "Cart item ID must be a valid UUID",
+        details: getErrDetailsFromErrFields(authExamples.uuidValErr),
+        fields: authExamples.uuidValErr,
       },
     }),
     [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {

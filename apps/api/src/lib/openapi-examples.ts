@@ -34,6 +34,24 @@ export const userExamples = {
   },
 };
 
+export const adminExamples = {
+  getUsersValErrs: {
+    searchField: 'Invalid option: expected one of "email"|"name"',
+    searchOperator:
+      'Invalid option: expected one of "contains"|"starts_with"|"ends_with"',
+    limit: "Too small: expected number to be >0",
+    offset: "Invalid input: expected number, received NaN",
+    sortDirection: 'Invalid option: expected one of "asc"|"desc"',
+    filterOperator:
+      'Invalid option: expected one of "eq"|"ne"|"lt"|"lte"|"gt"|"gte"|"contains"',
+  },
+  createUserValErrs: {
+    name: "Too small: expected string to have >=1 characters",
+    email: "Invalid email address",
+    role: 'Invalid option: expected one of "user"|"admin"',
+  },
+};
+
 export const categoriesExamples = {
   createCategoryValErrs: {
     name: "Too small: expected string to have >=1 characters",
@@ -51,6 +69,14 @@ export const productsExamples = {
     categoryIds: "Category IDs must be valid JSON",
     createdBy: "Too small: expected string to have >=1 characters",
   },
+  getShopValErrs: {
+    page: "Too small: expected number to be >0",
+    limit: "Too small: expected number to be >0",
+    minPrice: "Too small: expected number to be >=0",
+    maxPrice: "Too small: expected number to be >0",
+    sort: 'Invalid option: expected one of "newest"|"price-asc"|"price-desc"',
+    new: 'Invalid option: expected one of "true"|"false"',
+  },
 };
 
 export const cartExamples = {
@@ -60,5 +86,12 @@ export const cartExamples = {
   },
   updateCartItemValErrs: {
     quantity: "Too small: expected number to be >=1",
+  },
+};
+
+export const miscExamples = {
+  paginationValErrs: {
+    page: "Too small: expected number to be >0",
+    limit: "Too small: expected number to be >0",
   },
 };

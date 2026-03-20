@@ -100,7 +100,7 @@ products.get(
   getLatestProductsDoc,
   validator(
     "query",
-    z.object({ limit: z.number().optional() }),
+    z.object({ limit: z.coerce.number().int().positive().optional() }),
     validationHook,
   ),
   async (c) => {
@@ -120,7 +120,7 @@ products.get(
   getTrendingProductsDoc,
   validator(
     "query",
-    z.object({ limit: z.number().optional() }),
+    z.object({ limit: z.coerce.number().int().positive().optional() }),
     validationHook,
   ),
   async (c) => {
