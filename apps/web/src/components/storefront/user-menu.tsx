@@ -15,7 +15,7 @@ import { toast } from "sonner";
 
 import { authClient } from "@repo/auth/client";
 
-import { ThemeSubMenu } from "@/components/theme-sub-menu";
+import { ThemeSubMenu } from "@/components/theme/theme-sub-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {

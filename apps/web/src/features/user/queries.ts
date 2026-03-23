@@ -5,8 +5,8 @@ import { successResSchema } from "@/lib/schemas";
 
 export const getUser = async (cookie?: string) => {
   const { data, error } = await $fetch("/user/me", {
-    output: successResSchema(UserSelectSchema),
     headers: cookie ? { cookie } : undefined,
+    output: successResSchema(UserSelectSchema),
   });
 
   if (error) {

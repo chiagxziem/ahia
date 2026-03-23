@@ -40,10 +40,8 @@ import { ImagePicker } from "@/components/ui/image-picker";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  createAdminProduct,
-  getAdminCategories,
-} from "@/features/admin/queries";
+import { createAdminProduct } from "@/features/admin/actions";
+import { getAdminCategories } from "@/features/admin/queries";
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { getApiError } from "@/lib/utils";

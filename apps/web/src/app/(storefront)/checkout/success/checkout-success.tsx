@@ -5,7 +5,8 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { z } from "zod";
+
+import { OrderSelectSchema } from "@repo/db/validators/order.validator";
 
 import { Button } from "@/components/ui/button";
 import { $fetchAndThrow } from "@/lib/fetch";
@@ -16,7 +17,7 @@ const verifySession = async (sessionId: string) => {
   return await $fetchAndThrow("/orders/verify-session", {
     method: "POST",
     body: { sessionId },
-    output: successResSchema(z.any()),
+    output: successResSchema(OrderSelectSchema),
   });
 };
 

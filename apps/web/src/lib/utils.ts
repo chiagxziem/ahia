@@ -27,9 +27,7 @@ export const getInitials = (name: string) => {
     .slice(0, 2);
 };
 
-/**
- * Roles enum
- */
+/** Roles Object */
 export const roles = {
   ADMIN: "admin",
   SUPERADMIN: "superadmin",

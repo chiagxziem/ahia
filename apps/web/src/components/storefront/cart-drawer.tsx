@@ -26,10 +26,10 @@ import { cancelToastEl } from "@/components/ui/sonner";
 import {
   clearCart,
   createCheckout,
-  getCart,
   removeCartItem,
   updateCartItemQuantity,
-} from "@/features/cart/queries";
+} from "@/features/cart/actions";
+import { getCart } from "@/features/cart/queries";
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { getApiError } from "@/lib/utils";
@@ -140,7 +140,7 @@ export const CartDrawer = () => {
           </DrawerTrigger>
 
           <DrawerContent className="h-full w-[90vw] rounded-none border-l-0 sm:w-100">
-            {/* Header — title left, item count + close right */}
+            {/* Header */}
             <DrawerHeader className="flex flex-row items-center justify-between gap-4 border-b border-border/30 px-6 py-5">
               <div className="flex items-center gap-3">
                 <DrawerTitle className="text-lg font-semibold tracking-tight">
@@ -284,7 +284,7 @@ export const CartDrawer = () => {
                 <div className="flex flex-col gap-2">
                   <Button
                     size="lg"
-                    className="h-12 w-full rounded-full text-sm font-semibold"
+                    className="h-12 w-full rounded-full text-sm"
                     onClick={() => checkoutMutation.mutate()}
                     disabled={checkoutMutation.isPending}
                   >
@@ -297,7 +297,7 @@ export const CartDrawer = () => {
                     size="sm"
                     onClick={() => clearCartMutation.mutate()}
                     disabled={clearCartMutation.isPending}
-                    className="h-12 w-full rounded-full text-sm font-semibold"
+                    className="h-12 w-full rounded-full text-sm"
                   >
                     Clear cart
                   </Button>

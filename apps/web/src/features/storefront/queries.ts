@@ -5,15 +5,15 @@ import {
   ProductExtendedSchema,
 } from "@repo/db/validators/product.validator";
 
-import { $fetch, $fetchAndThrow } from "@/lib/fetch";
+import { $fetch } from "@/lib/fetch";
 import { successResSchema } from "@/lib/schemas";
 
 // ── Single Product ───────────────────────────────────────────
 
 export const getProductById = async (id: string, cookie?: string) => {
   const { data, error } = await $fetch(`/products/${id}`, {
-    output: successResSchema(ProductExtendedSchema),
     headers: cookie ? { cookie } : undefined,
+    output: successResSchema(ProductExtendedSchema),
   });
 
   if (error) {
@@ -33,9 +33,9 @@ export const getRelatedProducts = async (
 ) => {
   // Try same category first
   const { data } = await $fetch("/products/shop", {
-    output: successResSchema(z.array(ProductExtendedSchema)),
-    headers: cookie ? { cookie } : undefined,
     query: { ...(categorySlug ? { cat: categorySlug } : {}), limit: 5 },
+    headers: cookie ? { cookie } : undefined,
+    output: successResSchema(z.array(ProductExtendedSchema)),
   });
 
   let products = (data?.data ?? []).filter((p) => p.id !== productId);
@@ -43,9 +43,9 @@ export const getRelatedProducts = async (
   // If not enough from same category, fetch random products
   if (products.length < 4) {
     const { data: fallback } = await $fetch("/products/shop", {
-      output: successResSchema(z.array(ProductExtendedSchema)),
-      headers: cookie ? { cookie } : undefined,
       query: { limit: 8 },
+      headers: cookie ? { cookie } : undefined,
+      output: successResSchema(z.array(ProductExtendedSchema)),
     });
 
     const existing = new Set(products.map((p) => p.id));
@@ -57,28 +57,12 @@ export const getRelatedProducts = async (
   return products.slice(0, 4);
 };
 
-// ── Add To Cart ──────────────────────────────────────────────
-
-export const addToCart = async ({
-  productId,
-  quantity,
-}: {
-  productId: string;
-  quantity: number;
-}) => {
-  return await $fetchAndThrow("/cart/items", {
-    method: "POST",
-    body: { productId, quantity },
-    output: successResSchema(z.any()),
-  });
-};
-
 // ── Featured Product ──────────────────────────────────────────
 
 export const getFeaturedProduct = async (cookie?: string) => {
   const { data, error } = await $fetch("/products/featured", {
-    output: successResSchema(ProductExtendedSchema),
     headers: cookie ? { cookie } : undefined,
+    output: successResSchema(ProductExtendedSchema),
   });
 
   if (error) {
@@ -93,8 +77,8 @@ export const getFeaturedProduct = async (cookie?: string) => {
 
 export const getLatestProducts = async (cookie?: string) => {
   const { data, error } = await $fetch("/products/latest", {
-    output: successResSchema(z.array(ProductExtendedSchema)),
     headers: cookie ? { cookie } : undefined,
+    output: successResSchema(z.array(ProductExtendedSchema)),
   });
 
   if (error) {
@@ -109,8 +93,8 @@ export const getLatestProducts = async (cookie?: string) => {
 
 export const getTrendingProducts = async (cookie?: string) => {
   const { data, error } = await $fetch("/products/trending", {
-    output: successResSchema(z.array(ProductExtendedSchema)),
     headers: cookie ? { cookie } : undefined,
+    output: successResSchema(z.array(ProductExtendedSchema)),
   });
 
   if (error) {
@@ -125,8 +109,8 @@ export const getTrendingProducts = async (cookie?: string) => {
 
 export const getTopCategories = async (cookie?: string) => {
   const { data, error } = await $fetch("/categories/top", {
-    output: successResSchema(z.array(CategoryWithCountSchema)),
     headers: cookie ? { cookie } : undefined,
+    output: successResSchema(z.array(CategoryWithCountSchema)),
   });
 
   if (error) {
@@ -141,8 +125,8 @@ export const getTopCategories = async (cookie?: string) => {
 
 export const getAllCategories = async (cookie?: string) => {
   const { data, error } = await $fetch("/categories", {
-    output: successResSchema(z.array(CategoryWithCountSchema)),
     headers: cookie ? { cookie } : undefined,
+    output: successResSchema(z.array(CategoryWithCountSchema)),
   });
 
   if (error) {
@@ -183,9 +167,9 @@ export const getShopProducts = async (
   if (params.new) query.new = "true";
 
   const { data, error } = await $fetch("/products/shop", {
-    output: ShopProductsResponseSchema,
-    headers: cookie ? { cookie } : undefined,
     query,
+    headers: cookie ? { cookie } : undefined,
+    output: ShopProductsResponseSchema,
   });
 
   if (error) {

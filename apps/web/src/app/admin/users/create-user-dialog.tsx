@@ -32,7 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cancelToastEl } from "@/components/ui/sonner";
-import { createAdminUser } from "@/features/admin/queries";
+import { createAdminUser } from "@/features/admin/actions";
 import { queryKeys } from "@/lib/query-keys";
 import { getApiError, roles } from "@/lib/utils";
 

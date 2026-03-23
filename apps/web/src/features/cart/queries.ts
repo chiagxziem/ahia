@@ -1,15 +1,11 @@
-import { z } from "zod";
-
 import { CartSelectSchema } from "@repo/db/validators/cart.validator";
 
-import { $fetch, $fetchAndThrow } from "@/lib/fetch";
+import { $fetch } from "@/lib/fetch";
 import { successResSchema } from "@/lib/schemas";
-
-const cartOutputSchema = successResSchema(CartSelectSchema);
 
 export const getCart = async () => {
   const { data, error } = await $fetch("/cart", {
-    output: cartOutputSchema,
+    output: successResSchema(CartSelectSchema),
   });
 
   if (error) {
@@ -18,44 +14,4 @@ export const getCart = async () => {
   }
 
   return data?.data ?? null;
-};
-
-export const updateCartItemQuantity = async ({
-  itemId,
-  quantity,
-}: {
-  itemId: string;
-  quantity: number;
-}) => {
-  return await $fetchAndThrow(`/cart/items/${itemId}`, {
-    method: "PUT",
-    body: { quantity },
-    output: cartOutputSchema,
-  });
-};
-
-export const removeCartItem = async (itemId: string) => {
-  return await $fetchAndThrow(`/cart/items/${itemId}`, {
-    method: "DELETE",
-    output: cartOutputSchema,
-  });
-};
-
-export const clearCart = async () => {
-  return await $fetchAndThrow("/cart", {
-    method: "DELETE",
-    output: cartOutputSchema,
-  });
-};
-
-export const createCheckout = async () => {
-  return await $fetchAndThrow("/orders/create-checkout", {
-    method: "POST",
-    output: successResSchema(
-      z.object({
-        checkoutUrl: z.url(),
-        checkoutSessionId: z.string(),
-      }),
-    ),
-  });
 };

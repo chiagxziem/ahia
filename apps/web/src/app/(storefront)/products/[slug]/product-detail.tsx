@@ -21,8 +21,8 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cancelToastEl } from "@/components/ui/sonner";
+import { addToCart } from "@/features/storefront/actions";
 import {
-  addToCart,
   getProductById,
   getRelatedProducts,
 } from "@/features/storefront/queries";

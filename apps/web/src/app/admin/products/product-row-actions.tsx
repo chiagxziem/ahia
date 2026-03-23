@@ -26,7 +26,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cancelToastEl } from "@/components/ui/sonner";
-import { deleteProduct, type AdminProductRow } from "@/features/admin/queries";
+import { deleteProduct } from "@/features/admin/actions";
+import { type AdminProductRow } from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { getApiError } from "@/lib/utils";
 

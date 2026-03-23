@@ -96,10 +96,10 @@ const PrivacyPage = () => {
               If you have any questions about this Privacy Policy, please
               contact us at{" "}
               <Link
-                href="mailto:privacy@ahia.store"
+                href="/privacy"
                 className="text-foreground underline underline-offset-4 transition-colors hover:text-primary"
               >
-                privacy@ahia.store
+                privacy@ahia.gozman.xyz
               </Link>
               .
             </p>

@@ -1,9 +1,8 @@
-// In Next.js, this file would be called: app/providers.tsx
 "use client";
 
 // Since QueryClientProvider relies on useContext under the hood, we have to put 'use client' on top
 import {
-  isServer,
+  environmentManager,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
@@ -23,7 +22,7 @@ const makeQueryClient = () => {
 let browserQueryClient: QueryClient | undefined = undefined;
 
 const getQueryClient = () => {
-  if (isServer) {
+  if (environmentManager.isServer()) {
     // Server: always make a new query client
     return makeQueryClient();
   } else {

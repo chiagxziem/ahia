@@ -96,10 +96,10 @@ const TermsPage = () => {
             <p className="text-sm leading-relaxed text-muted-foreground">
               If you have any questions about these Terms, please contact us at{" "}
               <Link
-                href="mailto:support@ahia.store"
+                href="/terms"
                 className="text-foreground underline underline-offset-4 transition-colors hover:text-primary"
               >
-                support@ahia.store
+                support@ahia.gozman.xyz
               </Link>
               .
             </p>

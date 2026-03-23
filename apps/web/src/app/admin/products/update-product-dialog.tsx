@@ -40,9 +40,9 @@ import { UpdateImagePicker } from "@/components/ui/image-picker";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
 import { Textarea } from "@/components/ui/textarea";
+import { updateAdminProduct } from "@/features/admin/actions";
 import {
   getAdminCategories,
-  updateAdminProduct,
   type AdminProductRow,
 } from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";

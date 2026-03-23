@@ -9,7 +9,6 @@ import {
   Logout01Icon,
   Menu01Icon,
   ShoppingBag01Icon,
-  StarIcon,
   UserCircleIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -22,7 +21,7 @@ import { toast } from "sonner";
 
 import { authClient } from "@repo/auth/client";
 
-import { ThemeInlineSwitcher } from "@/components/theme-inline-switcher";
+import { ThemeInlineSwitcher } from "@/components/theme/theme-inline-switcher";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -35,7 +34,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
-import { getInitials, roles, truncateEmail } from "@/lib/utils";
+import { cn, getInitials, roles, truncateEmail } from "@/lib/utils";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { cancelToastEl } from "../ui/sonner";
@@ -43,7 +42,6 @@ import { cancelToastEl } from "../ui/sonner";
 const NAV_LINKS = [
   { href: "/", label: "Home", icon: Home01Icon },
   { href: "/shop", label: "Shop", icon: ShoppingBag01Icon },
-  { href: "/shop?c=new", label: "New Arrivals", icon: StarIcon },
 ];
 
 export const MobileNav = ({ children }: { children?: ReactNode }) => {
@@ -87,7 +85,10 @@ export const MobileNav = ({ children }: { children?: ReactNode }) => {
             <Link
               key={link.href}
               href={link.href}
-              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted/60 hover:text-foreground"
+              className={cn(
+                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted/60 hover:text-foreground",
+                pathname === link.href && "bg-muted/60 text-foreground",
+              )}
             >
               <HugeiconsIcon
                 icon={link.icon}

@@ -40,11 +40,8 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
-import {
-  deleteCategory,
-  updateCategory,
-  type AdminCategoryRow,
-} from "@/features/admin/queries";
+import { deleteCategory, updateCategory } from "@/features/admin/actions";
+import { type AdminCategoryRow } from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { getApiError } from "@/lib/utils";
 

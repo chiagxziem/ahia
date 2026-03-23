@@ -115,8 +115,8 @@ const columns = (currentUser: User): ColumnDef<UserRow>[] => [
       return filterValue.includes(status);
     },
     sortingFn: (rowA, rowB) => {
-      const statusA = rowA.getValue("status");
-      const statusB = rowB.getValue("status");
+      const statusA = rowA.getValue("status") as string;
+      const statusB = rowB.getValue("status") as string;
 
       const leftRank = statusSortRank[statusA] ?? Number.MAX_SAFE_INTEGER;
       const rightRank = statusSortRank[statusB] ?? Number.MAX_SAFE_INTEGER;
@@ -128,7 +128,8 @@ const columns = (currentUser: User): ColumnDef<UserRow>[] => [
       return byName(rowA.original.name, rowB.original.name);
     },
     cell: ({ row }) => {
-      const status = row.getValue("status");
+      const status = row.getValue("status") as string;
+
       return (
         <Badge
           variant={
