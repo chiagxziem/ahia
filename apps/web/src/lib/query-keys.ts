@@ -13,6 +13,7 @@ export const queryKeys = {
   searchProducts: (query: string) => ["search-products", query] as const,
   allCategories: () => ["all-categories"] as const,
   adminStats: () => ["admin", "stats"] as const,
+  adminMonthlyStats: () => ["admin", "stats", "monthly"] as const,
   adminUsers: (
     params: Record<string, string | number | boolean | undefined> = {},
   ) => ["admin", "users", params] as const,

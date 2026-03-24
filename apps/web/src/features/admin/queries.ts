@@ -71,6 +71,34 @@ export const getAdminStats = async (cookie?: string) => {
   return data?.data ?? null;
 };
 
+// ── Monthly Stats (charts) ──────────────────────────────────
+
+const MonthlyStatsEntrySchema = z.object({
+  month: z.string(),
+  revenue: z.number(),
+  orders: z.number(),
+  products: z.number(),
+  users: z.number(),
+});
+
+const MonthlyStatsSchema = z.array(MonthlyStatsEntrySchema);
+
+export type MonthlyStatsEntry = z.infer<typeof MonthlyStatsEntrySchema>;
+
+export const getAdminMonthlyStats = async (cookie?: string) => {
+  const { data, error } = await $fetch("/admin/stats/monthly", {
+    headers: cookie ? { cookie } : undefined,
+    output: successResSchema(MonthlyStatsSchema),
+  });
+
+  if (error) {
+    console.error(error);
+    return null;
+  }
+
+  return data?.data ?? null;
+};
+
 export const getAdminUsers = async (
   queryParams: AdminUsersListParams = {},
   cookie?: string,

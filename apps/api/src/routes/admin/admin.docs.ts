@@ -69,6 +69,40 @@ export const getAdminStatsDoc = describeRoute({
   },
 });
 
+const MonthlyStatsEntrySchema = z.object({
+  month: z.string(),
+  revenue: z.number(),
+  orders: z.number(),
+  products: z.number(),
+  users: z.number(),
+});
+
+export const getAdminMonthlyStatsDoc = describeRoute({
+  description: "Get monthly aggregated stats for the last 12 months",
+  tags,
+  security: [
+    {
+      Bearer: [],
+    },
+  ],
+  responses: {
+    [HttpStatusCodes.OK]: createSuccessResponse("Monthly stats retrieved", {
+      details: "Monthly stats retrieved successfully",
+      dataSchema: z.array(MonthlyStatsEntrySchema),
+    }),
+    [HttpStatusCodes.UNAUTHORIZED]: createGenericErrorResponse("Unauthorized", {
+      code: "UNAUTHORIZED",
+      details: "No session found",
+    }),
+    [HttpStatusCodes.FORBIDDEN]: createGenericErrorResponse("Forbidden", {
+      code: "FORBIDDEN",
+      details: "User does not have the required permission",
+    }),
+    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
+  },
+});
+
 export const getAllUsersDoc = describeRoute({
   description: "Get all users (admin only)",
   tags,

@@ -15,11 +15,15 @@ import { permit } from "@/middleware/permit";
 import { validationHook } from "@/middleware/validation-hook";
 import { createUser } from "@/queries/admin-queries";
 import { getAdminOrderById, getAllOrders } from "@/queries/order-queries";
-import { getAdminOverviewStats } from "@/queries/stats-queries";
+import {
+  getAdminOverviewStats,
+  getMonthlyStats,
+} from "@/queries/stats-queries";
 import { getUserById } from "@/queries/user-queries";
 
 import {
   createUserDoc,
+  getAdminMonthlyStatsDoc,
   getAdminOrderDoc,
   getAdminOrdersDoc,
   getAdminStatsDoc,
@@ -37,6 +41,16 @@ admin.get("/stats", getAdminStatsDoc, async (c) => {
 
   return c.json(
     successResponse(stats, "Admin stats retrieved successfully"),
+    HttpStatusCodes.OK,
+  );
+});
+
+// Get monthly stats for charts (last 12 months)
+admin.get("/stats/monthly", getAdminMonthlyStatsDoc, async (c) => {
+  const monthly = await getMonthlyStats();
+
+  return c.json(
+    successResponse(monthly, "Monthly stats retrieved successfully"),
     HttpStatusCodes.OK,
   );
 });

@@ -5,19 +5,27 @@ import {
 } from "@tanstack/react-query";
 import { headers } from "next/headers";
 
-import { getAdminStats } from "@/features/admin/queries";
+import { getAdminMonthlyStats, getAdminStats } from "@/features/admin/queries";
 import { queryKeys } from "@/lib/query-keys";
 
+import { OverviewCharts } from "./overview-charts";
 import { OverviewStats } from "./overview-stats";
 
 const AdminOverviewPage = async () => {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: queryKeys.adminStats(),
-    queryFn: async () =>
-      getAdminStats((await headers()).get("cookie") ?? undefined),
-  });
+  const cookie = (await headers()).get("cookie") ?? undefined;
+
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.adminStats(),
+      queryFn: async () => getAdminStats(cookie),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.adminMonthlyStats(),
+      queryFn: async () => getAdminMonthlyStats(cookie),
+    }),
+  ]);
 
   return (
     <div className="flex w-full flex-col gap-6">
@@ -32,6 +40,7 @@ const AdminOverviewPage = async () => {
 
       <HydrationBoundary state={dehydrate(queryClient)}>
         <OverviewStats />
+        <OverviewCharts />
       </HydrationBoundary>
     </div>
   );

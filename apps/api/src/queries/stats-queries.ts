@@ -58,7 +58,13 @@ const getOrdersCountBetween = async (start: Date, end: Date) => {
   const [result] = await db
     .select({ total: count() })
     .from(order)
-    .where(and(gte(order.createdAt, start), lt(order.createdAt, end)));
+    .where(
+      and(
+        gte(order.createdAt, start),
+        lt(order.createdAt, end),
+        eq(order.paymentStatus, "paid"),
+      ),
+    );
 
   return toNumber(result?.total);
 };
@@ -83,6 +89,18 @@ const getActiveUsersBetween = async (start: Date, end: Date) => {
     .select({ total: countDistinct(session.userId) })
     .from(session)
     .where(and(gte(session.updatedAt, start), lt(session.updatedAt, end)));
+
+  return toNumber(result?.total);
+};
+
+/**
+ * Gets the count of users registered between two dates
+ */
+const getUsersRegisteredBetween = async (start: Date, end: Date) => {
+  const [result] = await db
+    .select({ total: count() })
+    .from(user)
+    .where(and(gte(user.createdAt, start), lt(user.createdAt, end)));
 
   return toNumber(result?.total);
 };
@@ -222,4 +240,35 @@ export const getAdminOverviewStats = async () => {
       change: usersChange,
     },
   };
+};
+
+/**
+ * Returns monthly aggregated stats for the last 12 months.
+ * Each entry has { month: "YYYY-MM", revenue, orders, products, users }.
+ */
+export const getMonthlyStats = async () => {
+  const now = new Date();
+  const months: { start: Date; end: Date; label: string }[] = [];
+
+  for (let i = 11; i >= 0; i--) {
+    const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const end = new Date(start.getFullYear(), start.getMonth() + 1, 1);
+    const label = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}`;
+    months.push({ start, end, label });
+  }
+
+  const results = await Promise.all(
+    months.map(async ({ start, end, label }) => {
+      const [revenue, orders, products, users] = await Promise.all([
+        getPaidRevenueBetween(start, end),
+        getOrdersCountBetween(start, end),
+        getProductsCreatedBetween(start, end),
+        getUsersRegisteredBetween(start, end),
+      ]);
+
+      return { month: label, revenue, orders, products, users };
+    }),
+  );
+
+  return results;
 };
