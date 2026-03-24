@@ -154,6 +154,29 @@ export const getShopProductsDoc = describeRoute({
   },
 });
 
+export const searchProductsDoc = describeRoute({
+  description: "Search products by name",
+  tags,
+  responses: {
+    [HttpStatusCodes.OK]: createSuccessResponse("Search results retrieved", {
+      details: "Search results retrieved successfully",
+      dataSchema: z.array(ProductExtendedSchema),
+    }),
+    [HttpStatusCodes.BAD_REQUEST]: createErrorResponse("Invalid request data", {
+      validationError: {
+        summary: "Invalid request data",
+        code: "INVALID_DATA",
+        details: getErrDetailsFromErrFields(
+          productsExamples.searchProductValErrs,
+        ),
+        fields: productsExamples.searchProductValErrs,
+      },
+    }),
+    [HttpStatusCodes.TOO_MANY_REQUESTS]: createRateLimitErrorResponse(),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: createServerErrorResponse(),
+  },
+});
+
 export const getProductDoc = describeRoute({
   description: "Get a product",
   tags,

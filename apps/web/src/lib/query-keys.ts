@@ -10,6 +10,7 @@ export const queryKeys = {
   shopProducts: (
     params: Record<string, string | number | boolean | undefined> = {},
   ) => ["shop-products", params] as const,
+  searchProducts: (query: string) => ["search-products", query] as const,
   allCategories: () => ["all-categories"] as const,
   adminStats: () => ["admin", "stats"] as const,
   adminUsers: (

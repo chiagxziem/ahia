@@ -100,3 +100,8 @@ export const InStockSchema = z.object({
   name: z.string().min(1, { error: "Name is required" }),
   inStock: z.boolean(),
 });
+
+export const SearchQuerySchema = z.object({
+  q: z.string().min(1),
+  limit: z.coerce.number().int().positive().optional(),
+});

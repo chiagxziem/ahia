@@ -14,6 +14,7 @@ import {
   CreateProductSchema,
   InStockSchema,
   PaginationQuerySchema,
+  SearchQuerySchema,
   ShopQuerySchema,
   UpdateProductSchema,
 } from "@/lib/schemas";
@@ -28,12 +29,14 @@ import {
   getProducts,
   getShopProducts,
   getTrendingProducts,
+  searchProducts,
 } from "@/queries/product-queries";
 import {
   getFeaturedProductDoc,
   getLatestProductsDoc,
   getShopProductsDoc,
   getTrendingProductsDoc,
+  searchProductsDoc,
 } from "@/routes/products/products.docs";
 
 import {
@@ -165,6 +168,22 @@ products.get(
         "Shop products retrieved successfully",
         pagination,
       ),
+      HttpStatusCodes.OK,
+    );
+  },
+);
+
+// Search products by name
+products.get(
+  "/search",
+  searchProductsDoc,
+  validator("query", SearchQuerySchema, validationHook),
+  async (c) => {
+    const { q, limit } = c.req.valid("query");
+    const results = await searchProducts(q, limit ?? 30);
+
+    return c.json(
+      successResponse(results, "Search results retrieved successfully"),
       HttpStatusCodes.OK,
     );
   },

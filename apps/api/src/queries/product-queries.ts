@@ -1,4 +1,4 @@
-import { count, db, desc, sql, sum } from "@repo/db";
+import { count, db, desc, ilike, sql, sum } from "@repo/db";
 import { orderItem } from "@repo/db/schemas/order.schema";
 import { product } from "@repo/db/schemas/product.schema";
 
@@ -251,4 +251,46 @@ export const getShopProducts = async (params: {
   const paginated = products.slice((page - 1) * limit, page * limit);
 
   return { products: paginated, total };
+};
+
+/** Searches products by name and description, with name matches ranked first */
+export const searchProducts = async (query: string, limit: number = 30) => {
+  const withRelations = {
+    creator: true,
+    productCategories: {
+      with: { category: true },
+    },
+  } as const;
+
+  // First: products whose name matches (higher relevance)
+  const nameMatches = await db.query.product.findMany({
+    where: (p) => ilike(p.name, `%${query}%`),
+    with: withRelations,
+    limit,
+  });
+
+  const nameMatchIds = new Set(nameMatches.map((p) => p.id));
+
+  // Second: products whose description matches but name does not
+  const descMatches = await db.query.product.findMany({
+    where: (p, { and, not }) =>
+      and(ilike(p.description, `%${query}%`), not(ilike(p.name, `%${query}%`))),
+    with: withRelations,
+    limit: limit - nameMatches.length,
+  });
+
+  return [
+    ...nameMatches.map(({ productCategories, ...p }) =>
+      Object.assign(p, {
+        categories: productCategories?.map((pc) => pc.category) ?? [],
+      }),
+    ),
+    ...descMatches
+      .filter((p) => !nameMatchIds.has(p.id))
+      .map(({ productCategories, ...p }) =>
+        Object.assign(p, {
+          categories: productCategories?.map((pc) => pc.category) ?? [],
+        }),
+      ),
+  ];
 };

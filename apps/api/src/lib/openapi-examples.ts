@@ -77,6 +77,10 @@ export const productsExamples = {
     sort: 'Invalid option: expected one of "newest"|"price-asc"|"price-desc"',
     new: 'Invalid option: expected one of "true"|"false"',
   },
+  searchProductValErrs: {
+    q: "Invalid input: expected string, received undefined",
+    limit: "Too small: expected number to be >0",
+  },
 };
 
 export const cartExamples = {

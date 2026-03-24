@@ -5,7 +5,7 @@ import {
   ProductExtendedSchema,
 } from "@repo/db/validators/product.validator";
 
-import { $fetch } from "@/lib/fetch";
+import { $fetch, $fetchAndThrow } from "@/lib/fetch";
 import { successResSchema } from "@/lib/schemas";
 
 // ── Single Product ───────────────────────────────────────────
@@ -181,4 +181,18 @@ export const getShopProducts = async (
     products: data?.data ?? [],
     pagination: data?.pagination,
   };
+};
+
+// ── Search Products ─────────────────────────────────────────
+
+export const searchProducts = async (query: string, limit?: number) => {
+  const params: Record<string, string | number> = { q: query };
+  if (limit) params.limit = limit;
+
+  const { data } = await $fetchAndThrow("/products/search", {
+    query: params,
+    output: successResSchema(z.array(ProductExtendedSchema)),
+  });
+
+  return data ?? [];
 };
