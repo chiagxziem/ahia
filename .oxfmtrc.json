@@ -8,8 +8,8 @@
     "customGroups": [
       {
         "groupName": "repo",
-        "elementNamePattern": ["@repo/**"],
-      },
+        "elementNamePattern": ["@repo/**"]
+      }
     ],
     "groups": [
       ["value-builtin", "type-builtin"],
@@ -22,24 +22,24 @@
         "value-sibling",
         "type-sibling",
         "value-index",
-        "type-index",
+        "type-index"
       ],
       "style",
-      "unknown",
-    ],
+      "unknown"
+    ]
   },
   "sortTailwindcss": {
     "stylesheet": "./apps/web/src/styles/globals.css",
     "functions": ["clsx", "cn", "twMerge"],
-    "attributes": ["class", "className"],
+    "attributes": ["class", "className"]
   },
   "sortPackageJson": {
-    "sortScripts": true,
+    "sortScripts": true
   },
   "ignorePatterns": [
     "**/generated/**",
     "**/migrations/**",
     "**/*.gen.*",
-    "**/worker-configuration.d.ts",
-  ],
+    "**/worker-configuration.d.ts"
+  ]
 }
