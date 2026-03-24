@@ -4,7 +4,7 @@ import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -69,10 +69,7 @@ export function CreateProductDialog({
     enabled: open,
   });
 
-  const categories = useMemo(
-    () => categoriesData?.categories ?? [],
-    [categoriesData?.categories],
-  );
+  const categories = categoriesData?.categories ?? ([] as const);
 
   const getSelectedCategories = (categoryIds: string[]) => {
     return categories.filter((c) => categoryIds.includes(c.id));

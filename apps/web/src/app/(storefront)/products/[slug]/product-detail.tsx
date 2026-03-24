@@ -11,7 +11,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { parseAsString, useQueryState } from "nuqs";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { ProductCard } from "@/components/storefront/product-card";
@@ -68,34 +68,27 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
     },
   });
 
-  const handleAddToCart = useCallback(() => {
+  const handleAddToCart = () => {
     if (!product) return;
     addToCartMutation.mutate({ productId: product.id, quantity });
-  }, [product, quantity, addToCartMutation]);
+  };
 
-  const handleQuantityInput = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const val = parseInt(e.target.value, 10);
-      if (Number.isNaN(val) || val < 1) {
-        setQuantity(1);
-      } else if (product && val > (product.stockQuantity ?? 0)) {
-        setQuantity(product.stockQuantity ?? 1);
-      } else {
-        setQuantity(val);
-      }
-    },
-    [product],
-  );
+  const handleQuantityInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseInt(e.target.value, 10);
+    if (Number.isNaN(val) || val < 1) {
+      setQuantity(1);
+    } else if (product && val > (product.stockQuantity ?? 0)) {
+      setQuantity(product.stockQuantity ?? 1);
+    } else {
+      setQuantity(val);
+    }
+  };
 
-  const selectedImage = useMemo(
-    () => product?.images?.[selectedImageIndex],
-    [product, selectedImageIndex],
-  );
+  const selectedImage = product?.images?.[selectedImageIndex];
 
-  const isOnlyInCategory = useMemo(() => {
-    if (!relatedProducts) return false;
-    return relatedProducts.length === 0;
-  }, [relatedProducts]);
+  const isOnlyInCategory = !relatedProducts
+    ? false
+    : relatedProducts.length === 0;
 
   if (isLoading) {
     return <ProductSkeleton />;

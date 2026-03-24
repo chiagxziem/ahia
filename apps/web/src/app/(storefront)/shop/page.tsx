@@ -7,7 +7,6 @@ import {
   parseAsStringLiteral,
   useQueryState,
 } from "nuqs";
-import { useMemo } from "react";
 
 import { ProductCard } from "@/components/storefront/product-card";
 import {
@@ -67,24 +66,14 @@ export const useShopFilters = () => {
 const ShopPage = () => {
   const filters = useShopFilters();
 
-  const params = useMemo(
-    () => ({
-      page: filters.page,
-      cat: filters.cat ?? undefined,
-      new: filters.isNew || undefined,
-      sort: filters.sort ?? undefined,
-      minPrice: filters.minPrice ?? undefined,
-      maxPrice: filters.maxPrice ?? undefined,
-    }),
-    [
-      filters.page,
-      filters.cat,
-      filters.isNew,
-      filters.sort,
-      filters.minPrice,
-      filters.maxPrice,
-    ],
-  );
+  const params = {
+    page: filters.page,
+    cat: filters.cat ?? undefined,
+    new: filters.isNew || undefined,
+    sort: filters.sort ?? undefined,
+    minPrice: filters.minPrice ?? undefined,
+    maxPrice: filters.maxPrice ?? undefined,
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.shopProducts(params),
@@ -96,10 +85,7 @@ const ShopPage = () => {
     queryFn: () => getTrendingProducts(),
   });
 
-  const trendingIds = useMemo(
-    () => new Set(trendingProducts?.map((p) => p.id) ?? []),
-    [trendingProducts],
-  );
+  const trendingIds = new Set(trendingProducts?.map((p) => p.id) ?? []);
 
   const products = data?.products ?? [];
   const pagination = data?.pagination;

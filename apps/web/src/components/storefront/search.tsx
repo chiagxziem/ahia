@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import { Button } from "@/components/ui/button";
@@ -37,10 +37,10 @@ export const Search = () => {
     enabled: debouncedQuery.length > 0,
   });
 
-  const handleOpenChange = useCallback((next: boolean) => {
+  const handleOpenChange = (next: boolean) => {
     setOpen(next);
     if (!next) setQuery("");
-  }, []);
+  };
 
   // Keyboard shortcut: Cmd/Ctrl + K
   useHotkeys("mod+k", () => setOpen((prev) => !prev), {

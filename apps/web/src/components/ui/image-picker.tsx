@@ -8,7 +8,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import imageCompression from "browser-image-compression";
 import Image from "next/image";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -28,8 +28,8 @@ const COMPRESSION_OPTIONS = {
   useWebWorker: true,
 };
 
-// Skip compression if already within limit — avoids format re-encoding issues
-// (e.g. AVIF → canvas → PNG blowup since browsers lack native AVIF encoding)
+// Skip compression if already within limit. This avoids format re-encoding issues
+// (eg. AVIF → canvas → PNG blowup since browsers lack native AVIF encoding)
 const compressFile = (f: File) =>
   f.size <= MAX_OPTIMIZED_SIZE
     ? Promise.resolve(f)
@@ -54,75 +54,60 @@ export const ImagePicker = ({
   const [dragActive, setDragActive] = useState(false);
   const [compressing, setCompressing] = useState(false);
 
-  const addFiles = useCallback(
-    async (incoming: FileList | File[]) => {
-      const filtered = Array.from(incoming).filter(
-        (f) => ALLOWED_TYPES.includes(f.type) && f.size <= MAX_SOURCE_SIZE,
-      );
-      if (filtered.length === 0) return;
+  const addFiles = async (incoming: FileList | File[]) => {
+    const filtered = Array.from(incoming).filter(
+      (f) => ALLOWED_TYPES.includes(f.type) && f.size <= MAX_SOURCE_SIZE,
+    );
+    if (filtered.length === 0) return;
 
-      setCompressing(true);
-      try {
-        const compressed = await Promise.all(filtered.map(compressFile));
-        const combined = [...value, ...compressed].slice(0, maxFiles);
-        onChange(combined);
-      } finally {
-        setCompressing(false);
-      }
-    },
-    [value, onChange, maxFiles],
-  );
+    setCompressing(true);
+    try {
+      const compressed = await Promise.all(filtered.map(compressFile));
+      const combined = [...value, ...compressed].slice(0, maxFiles);
+      onChange(combined);
+    } finally {
+      setCompressing(false);
+    }
+  };
 
-  const removeFile = useCallback(
-    (index: number) => {
-      onChange(value.filter((_, i) => i !== index));
-    },
-    [value, onChange],
-  );
+  const removeFile = (index: number) => {
+    onChange(value.filter((_, i) => i !== index));
+  };
 
-  const handleDrag = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (disabled) return;
-      if (e.type === "dragenter" || e.type === "dragover") {
-        setDragActive(true);
-      } else if (e.type === "dragleave") {
-        setDragActive(false);
-      }
-    },
-    [disabled],
-  );
-
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (disabled) return;
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
       setDragActive(false);
-      if (disabled || compressing) return;
-      if (e.dataTransfer.files?.length) {
-        void addFiles(e.dataTransfer.files);
-      }
-    },
-    [addFiles, disabled, compressing],
-  );
+    }
+  };
 
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files?.length) {
-        void addFiles(e.target.files);
-        // Reset so the same file can be re-selected
-        e.target.value = "";
-      }
-    },
-    [addFiles],
-  );
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (disabled || compressing) return;
+    if (e.dataTransfer.files?.length) {
+      void addFiles(e.dataTransfer.files);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.length) {
+      void addFiles(e.target.files);
+      // reset so the same file can be re-selected
+      e.target.value = "";
+    }
+  };
 
   const canAddMore = value.length < maxFiles;
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Drop zone (shown when no images selected, or when can add more) */}
+      {/* drop zone (shown when no images selected or when can add more) */}
       {canAddMore && (
         <div
           // oxlint-disable-next-line jsx_a11y/prefer-tag-over-role
@@ -305,69 +290,54 @@ export function UpdateImagePicker({
   const totalCount = existingImages.length + newFiles.length;
   const canAddMore = totalCount < maxFiles;
 
-  const addFiles = useCallback(
-    async (incoming: FileList | File[]) => {
-      const filtered = Array.from(incoming).filter(
-        (f) => ALLOWED_TYPES.includes(f.type) && f.size <= MAX_SOURCE_SIZE,
-      );
-      const slotsLeft = maxFiles - existingImages.length - newFiles.length;
-      const toCompress = filtered.slice(0, Math.max(0, slotsLeft));
-      if (toCompress.length === 0) return;
+  const addFiles = async (incoming: FileList | File[]) => {
+    const filtered = Array.from(incoming).filter(
+      (f) => ALLOWED_TYPES.includes(f.type) && f.size <= MAX_SOURCE_SIZE,
+    );
+    const slotsLeft = maxFiles - existingImages.length - newFiles.length;
+    const toCompress = filtered.slice(0, Math.max(0, slotsLeft));
+    if (toCompress.length === 0) return;
 
-      setCompressing(true);
-      try {
-        const compressed = await Promise.all(toCompress.map(compressFile));
-        onNewFilesChange([...newFiles, ...compressed]);
-      } finally {
-        setCompressing(false);
-      }
-    },
-    [existingImages.length, newFiles, onNewFilesChange, maxFiles],
-  );
+    setCompressing(true);
+    try {
+      const compressed = await Promise.all(toCompress.map(compressFile));
+      onNewFilesChange([...newFiles, ...compressed]);
+    } finally {
+      setCompressing(false);
+    }
+  };
 
-  const removeNewFile = useCallback(
-    (index: number) => {
-      onNewFilesChange(newFiles.filter((_, i) => i !== index));
-    },
-    [newFiles, onNewFilesChange],
-  );
+  const removeNewFile = (index: number) => {
+    onNewFilesChange(newFiles.filter((_, i) => i !== index));
+  };
 
-  const handleDrag = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (disabled) return;
-      if (e.type === "dragenter" || e.type === "dragover") {
-        setDragActive(true);
-      } else if (e.type === "dragleave") {
-        setDragActive(false);
-      }
-    },
-    [disabled],
-  );
-
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (disabled) return;
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
       setDragActive(false);
-      if (disabled || compressing) return;
-      if (e.dataTransfer.files?.length) {
-        void addFiles(e.dataTransfer.files);
-      }
-    },
-    [addFiles, disabled, compressing],
-  );
+    }
+  };
 
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files?.length) {
-        void addFiles(e.target.files);
-        e.target.value = "";
-      }
-    },
-    [addFiles],
-  );
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (disabled || compressing) return;
+    if (e.dataTransfer.files?.length) {
+      void addFiles(e.dataTransfer.files);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.length) {
+      void addFiles(e.target.files);
+      e.target.value = "";
+    }
+  };
 
   return (
     <div className="flex flex-col gap-3">

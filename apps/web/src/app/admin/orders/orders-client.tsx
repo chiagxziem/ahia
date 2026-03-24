@@ -5,7 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -191,9 +191,9 @@ export const OrdersClient = () => {
     placeholderData: keepPreviousData,
   });
 
-  const tableData = useMemo(() => data?.orders ?? [], [data?.orders]);
+  const tableData = data?.orders ?? ([] as const);
 
-  const handleExport = useCallback(() => {
+  const handleExport = () => {
     if (tableData.length === 0) return;
 
     const csvHeaders = [
@@ -234,19 +234,16 @@ export const OrdersClient = () => {
     link.download = `orders-${format(new Date(), "yyyy-MM-dd")}.csv`;
     link.click();
     URL.revokeObjectURL(url);
-  }, [tableData]);
+  };
 
-  const actionButtons: ActionButton[] = useMemo(
-    () => [
-      {
-        label: "Export",
-        icon: <HugeiconsIcon icon={Download04Icon} className="size-4" />,
-        onClick: handleExport,
-        variant: "outline" as const,
-      },
-    ],
-    [handleExport],
-  );
+  const actionButtons: ActionButton[] = [
+    {
+      label: "Export",
+      icon: <HugeiconsIcon icon={Download04Icon} className="size-4" />,
+      onClick: handleExport,
+      variant: "outline" as const,
+    },
+  ] as const;
 
   return (
     <>

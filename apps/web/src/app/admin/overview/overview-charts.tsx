@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
@@ -87,14 +86,14 @@ const MonthlyBarChart = ({
   config: ChartConfig;
   valueFormatter?: (value: number) => string;
 }) => {
-  const yAxisWidth = useMemo(() => {
+  const yAxisWidth = (() => {
     if (!data.length) return 30;
     const maxValue = Math.max(...data.map((d) => Number(d[dataKey])));
     const formatted = valueFormatter
       ? valueFormatter(maxValue)
       : String(Math.round(maxValue));
     return Math.max(30, formatted.length * 7 + 10);
-  }, [data, dataKey, valueFormatter]);
+  })();
 
   return (
     <ChartContainer config={config} className="max-h-[50svh] min-h-75 w-full">
