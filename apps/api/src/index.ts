@@ -40,7 +40,7 @@ if (env.NODE_ENV !== "test") {
 export default {
   port: 8000,
   fetch: (req: Request, server: unknown) => {
-    // Route webhook requests to the bare app
+    // Route webhook requests
     if (new URL(req.url).pathname.startsWith("/api/webhooks/")) {
       return webhookApp.fetch(req);
     }
