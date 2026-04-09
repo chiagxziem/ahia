@@ -20,20 +20,6 @@
   max-width: 50rem;
 }
 
-@utility hide-scrollbar {
-  padding: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-@utility tiny-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #666 transparent;
-}
-
 @theme inline {
   /* fonts */
   --font-sans: var(--font-inter);

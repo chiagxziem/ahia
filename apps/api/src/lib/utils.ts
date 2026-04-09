@@ -4,6 +4,7 @@ import type { z } from "zod";
  * Helper function to create a success response for API routes.
  * @param data - The data to include in the response.
  * @param details - Additional details about the response.
+ * @param pagination - Optional pagination information to include in the response.
  * @returns An object representing the success response.
  */
 export const successResponse = <TData, TDetails extends string>(
