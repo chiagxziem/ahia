@@ -39,9 +39,16 @@ const MONTH_NAMES = [
   "Dec",
 ];
 
-const formatMonthLabel = (month: string) => {
-  const [, m] = month.split("-");
-  return MONTH_NAMES[parseInt(m, 10) - 1];
+const formatMonthLabel = (month: unknown) => {
+  const value = typeof month === "string" ? month : String(month ?? "");
+  const [, m] = value.split("-");
+  const monthIndex = Number.parseInt(m ?? "", 10) - 1;
+
+  if (Number.isNaN(monthIndex) || monthIndex < 0 || monthIndex >= 12) {
+    return value;
+  }
+
+  return MONTH_NAMES[monthIndex];
 };
 
 const revenueConfig = {

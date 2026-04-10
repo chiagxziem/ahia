@@ -1,7 +1,8 @@
 import { createHmac } from "crypto";
 
 import { Hono } from "hono";
-import type { Stripe } from "stripe";
+// oxlint-disable-next-line import/no-named-as-default
+import type Stripe from "stripe";
 
 import { sendOrderReceiptEmail } from "@/lib/email";
 import env from "@/lib/env";
