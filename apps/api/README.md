@@ -5,7 +5,7 @@ Backend API for the Ahia application.
 - Built with Hono.
 - Uses PostgreSQL for data storage.
 - Deployed to Railway. Can also be deployed using the Dockerfile.
-- [OpenAPI Docs with Scalar](https://api.ahia.gozman.xyz/api/reference)
+- [OpenAPI Docs with Scalar](https://ahia-api.goziem.xyz/api/reference)
 
 ## Getting Started
 
@@ -13,4 +13,4 @@ Backend API for the Ahia application.
 2. Run `bun install` to install dependencies.
 3. Run `turbo dev` from the project root to start the API.
 
-See the main project [`README.md`](https://github.com/gozmanthefirst/ahia) for more detailed.
+See the main project [`README.md`](https://github.com/chiagxziem/ahia) for more detailed.

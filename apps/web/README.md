@@ -11,4 +11,4 @@ Storefront and Admin Dash for Ahia eCommerce.
 2. Run `bun install` to install dependencies.
 3. Run `turbo dev` from the project root to start the app.
 
-See the main project [`README.md`](https://github.com/gozmanthefirst/ahia) for more detailed.
+See the main project [`README.md`](https://github.com/chiagxziem/ahia) for more detailed.

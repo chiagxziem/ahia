@@ -99,7 +99,7 @@ const PrivacyPage = () => {
                 href="/privacy"
                 className="text-foreground underline underline-offset-4 transition-colors hover:text-primary"
               >
-                privacy@ahia.gozman.xyz
+                privacy@ahia.goziem.xyz
               </Link>
               .
             </p>

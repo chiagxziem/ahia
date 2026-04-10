@@ -11,13 +11,13 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: `${process.env.API_URL}/api/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
       },
     ];
   },
   images: {
     unoptimized: true,
-    remotePatterns: [new URL("https://ahia-bucket.gozman.xyz/**")],
+    remotePatterns: [new URL("https://ahia-bucket.goziem.xyz/**")],
   },
 };
 

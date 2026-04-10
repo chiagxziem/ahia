@@ -99,7 +99,7 @@ const TermsPage = () => {
                 href="/terms"
                 className="text-foreground underline underline-offset-4 transition-colors hover:text-primary"
               >
-                support@ahia.gozman.xyz
+                support@ahia.goziem.xyz
               </Link>
               .
             </p>
