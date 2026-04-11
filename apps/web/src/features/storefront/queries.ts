@@ -1,3 +1,4 @@
+import { BetterFetchError } from "@better-fetch/fetch";
 import { z } from "zod";
 
 import {
@@ -11,17 +12,20 @@ import { successResSchema } from "@/lib/schemas";
 // ── Single Product ───────────────────────────────────────────
 
 export const getProductById = async (id: string, cookie?: string) => {
-  const { data, error } = await $fetch(`/products/${id}`, {
-    headers: cookie ? { cookie } : undefined,
-    output: successResSchema(ProductExtendedSchema),
-  });
+  try {
+    const { data } = await $fetchAndThrow(`/products/${id}`, {
+      headers: cookie ? { cookie } : undefined,
+      output: successResSchema(ProductExtendedSchema),
+    });
 
-  if (error) {
-    console.error(error);
-    return null;
+    return data ?? null;
+  } catch (error) {
+    if (error instanceof BetterFetchError && error.status === 404) {
+      return null;
+    }
+
+    throw error;
   }
-
-  return data?.data ?? null;
 };
 
 // ── Related Products ─────────────────────────────────────────

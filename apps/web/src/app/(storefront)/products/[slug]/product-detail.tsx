@@ -32,7 +32,12 @@ import { getApiError } from "@/lib/utils";
 export const ProductDetail = ({ productId }: { productId: string }) => {
   const queryClient = useQueryClient();
 
-  const { data: product, isLoading } = useQuery({
+  const {
+    data: product,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: queryKeys.product(productId),
     queryFn: () => getProductById(productId),
   });
@@ -92,6 +97,35 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
 
   if (isLoading) {
     return <ProductSkeleton />;
+  }
+
+  if (isError) {
+    return (
+      <div className="container flex flex-col items-center justify-center gap-4 py-32 text-center">
+        <h1 className="text-2xl font-bold">Couldn&apos;t load product</h1>
+        <p className="text-muted-foreground">
+          A temporary error occurred while loading this product.
+        </p>
+        <div className="flex items-center gap-3">
+          <Button
+            nativeButton={true}
+            variant="outline"
+            className="rounded-full"
+            onClick={() => void refetch()}
+          >
+            Try Again
+          </Button>
+          <Button
+            nativeButton={false}
+            variant="outline"
+            className="rounded-full"
+            render={<Link href="/shop" />}
+          >
+            Back to Shop
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   if (!product) {
