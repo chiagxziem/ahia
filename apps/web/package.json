@@ -15,6 +15,7 @@
     "@tanstack/react-query": "^5.97.0",
     "@tanstack/react-table": "^8.21.3",
     "@uidotdev/usehooks": "^2.4.1",
+    "better-auth": "^1.6.2",
     "better-themes": "^1.1.0",
     "browser-image-compression": "^2.0.2",
     "class-variance-authority": "^0.7.1",
@@ -36,8 +37,8 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@repo/auth": "workspace:*",
     "@repo/db": "workspace:*",
+    "@repo/permissions": "workspace:*",
     "@tailwindcss/postcss": "^4.2.2",
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",

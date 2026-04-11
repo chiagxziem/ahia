@@ -18,8 +18,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import { authClient } from "@repo/auth/client";
-
 import { ThemeSubMenu } from "@/components/theme/theme-sub-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -42,6 +40,7 @@ import {
 } from "@/components/ui/sidebar";
 import { cancelToastEl } from "@/components/ui/sonner";
 import { getUser } from "@/features/user/queries";
+import { authClient } from "@/lib/auth-client";
 import { queryKeys } from "@/lib/query-keys";
 import { getInitials, truncateEmail } from "@/lib/utils";
 

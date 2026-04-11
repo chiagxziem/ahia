@@ -13,7 +13,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { authClient } from "@repo/auth/client";
 import type { User } from "@repo/db/schemas/auth.schema";
 
 import {
@@ -59,6 +58,7 @@ import {
 } from "@/components/ui/input-group";
 import { cancelToastEl } from "@/components/ui/sonner";
 import type { AdminUserRow } from "@/features/admin/queries";
+import { authClient } from "@/lib/auth-client";
 import { queryKeys } from "@/lib/query-keys";
 import { getInitials, roles } from "@/lib/utils";
 

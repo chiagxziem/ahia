@@ -10,8 +10,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { authClient } from "@repo/auth/client";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
 import { updateUser } from "@/features/user/actions";
 import { getUser } from "@/features/user/queries";
+import { authClient } from "@/lib/auth-client";
 import { queryKeys } from "@/lib/query-keys";
 import { getApiError, getInitials } from "@/lib/utils";
 

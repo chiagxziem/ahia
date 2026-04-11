@@ -3,10 +3,12 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin as adminPlugin, bearer, openAPI } from "better-auth/plugins";
 
 import { db } from "@repo/db";
+import { ac, admin, superadmin, user as userRole } from "@repo/permissions";
 
-import { createCartForUser } from "./lib/actions";
-import { sendResetPasswordEmail, sendVerificationEmail } from "./lib/email";
-import { ac, admin, superadmin, user as userRole } from "./lib/permissions";
+import { createCartForUser } from "@/queries/cart-queries";
+
+import { sendResetPasswordEmail, sendVerificationEmail } from "./email";
+import env from "./env";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -38,8 +40,8 @@ export const auth = betterAuth({
 
   socialProviders: {
     google: {
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: env.GOOGLE_CLIENT_ID!,
+      clientSecret: env.GOOGLE_CLIENT_SECRET!,
     },
   },
 
@@ -59,8 +61,8 @@ export const auth = betterAuth({
     },
   },
 
-  baseURL: process.env.API_URL,
-  trustedOrigins: [process.env.WEB_URL!, process.env.API_URL!],
+  baseURL: env.API_URL,
+  trustedOrigins: [env.WEB_URL!, env.API_URL!],
 
   session: {
     expiresIn: 60 * 60 * 24 * 30,
@@ -74,12 +76,9 @@ export const auth = betterAuth({
         attributes: {
           path: "/",
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
+          secure: env.NODE_ENV === "production",
           sameSite: "lax",
-          domain:
-            process.env.NODE_ENV === "production"
-              ? process.env.DOMAIN
-              : undefined,
+          domain: env.NODE_ENV === "production" ? env.DOMAIN : undefined,
           expires: new Date(Date.now() + 60 * 60 * 24 * 30 * 1000),
         },
       },

@@ -7,8 +7,6 @@ import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { authClient } from "@repo/auth/client";
-
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -18,6 +16,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
+import { authClient } from "@/lib/auth-client";
 
 export const ResetPasswordForm = () => {
   const router = useRouter();

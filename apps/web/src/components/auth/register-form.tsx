@@ -4,10 +4,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { authClient } from "@repo/auth/client";
-
 import { Button } from "@/components/ui/button";
 import { cancelToastEl } from "@/components/ui/sonner";
+import { authClient } from "@/lib/auth-client";
 import env from "@/lib/env";
 
 export const RegisterForm = () => {

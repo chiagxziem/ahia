@@ -34,6 +34,7 @@
       "devDependencies": {
         "@repo/auth": "workspace:*",
         "@repo/db": "workspace:*",
+        "@repo/permissions": "workspace:*",
         "@types/bun": "^1.3.11",
       },
     },
@@ -49,6 +50,7 @@
         "@tanstack/react-query": "^5.97.0",
         "@tanstack/react-table": "^8.21.3",
         "@uidotdev/usehooks": "^2.4.1",
+        "better-auth": "^1.6.2",
         "better-themes": "^1.1.0",
         "browser-image-compression": "^2.0.2",
         "class-variance-authority": "^0.7.1",
@@ -72,6 +74,7 @@
       "devDependencies": {
         "@repo/auth": "workspace:*",
         "@repo/db": "workspace:*",
+        "@repo/permissions": "workspace:*",
         "@tailwindcss/postcss": "^4.2.2",
         "@types/node": "^25.6.0",
         "@types/react": "^19.2.14",
@@ -107,6 +110,15 @@
         "@types/bun": "^1.3.11",
         "@types/pg": "^8.20.0",
         "drizzle-kit": "^0.31.10",
+      },
+    },
+    "packages/permissions": {
+      "name": "@repo/permissions",
+      "dependencies": {
+        "better-auth": "^1.6.2",
+      },
+      "devDependencies": {
+        "@types/bun": "^1.3.11",
       },
     },
   },
@@ -643,6 +655,8 @@
     "@repo/auth": ["@repo/auth@workspace:packages/auth"],
 
     "@repo/db": ["@repo/db@workspace:packages/db"],
+
+    "@repo/permissions": ["@repo/permissions@workspace:packages/permissions"],
 
     "@repo/web": ["@repo/web@workspace:apps/web"],
 

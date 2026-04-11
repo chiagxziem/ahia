@@ -1,7 +1,6 @@
 import { createMiddleware } from "hono/factory";
 
-import { auth } from "@repo/auth/server";
-
+import { auth } from "@/lib/auth";
 import HttpStatusCodes from "@/lib/http-status-codes";
 import { errorResponse } from "@/lib/utils";
 import type { AppEnv } from "@/types";

@@ -9,8 +9,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { authClient } from "@repo/auth/client";
-
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -21,6 +19,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
+import { authClient } from "@/lib/auth-client";
 import env from "@/lib/env";
 
 import {

@@ -1,7 +1,7 @@
 import { adminClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
-import { ac, admin, superadmin, user } from "./lib/permissions";
+import { ac, admin, superadmin, user } from "@repo/permissions";
 
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_API_URL,

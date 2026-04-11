@@ -5,7 +5,7 @@ import { useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { authClient } from "@repo/auth/client";
+import { authClient } from "@/lib/auth-client";
 
 import { cancelToastEl } from "../ui/sonner";
 

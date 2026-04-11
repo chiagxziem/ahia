@@ -3,10 +3,10 @@ import { validator } from "hono-openapi";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { z } from "zod";
 
-import { auth } from "@repo/auth/server";
 import { ListUsersQuerySchema } from "@repo/db/validators/admin.validator";
 
 import { createRouter } from "@/app";
+import { auth } from "@/lib/auth";
 import HttpStatusCodes from "@/lib/http-status-codes";
 import { PaginationQuerySchema } from "@/lib/schemas";
 import { errorResponse, successResponse } from "@/lib/utils";

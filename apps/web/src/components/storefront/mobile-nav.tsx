@@ -19,8 +19,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { authClient } from "@repo/auth/client";
-
 import { ThemeInlineSwitcher } from "@/components/theme/theme-inline-switcher";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,6 +31,7 @@ import {
 } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getUser } from "@/features/user/queries";
+import { authClient } from "@/lib/auth-client";
 import { queryKeys } from "@/lib/query-keys";
 import { cn, getInitials, roles, truncateEmail } from "@/lib/utils";
 
