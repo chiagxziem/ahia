@@ -38,8 +38,7 @@ export const sendVerificationEmail = async ({
   name,
   url,
 }: SendEmail) => {
-  const verificationUrl =
-    url ?? `${process.env.WEB_URL}/verify-email?token=${token}`;
+  const verificationUrl = url ?? `${env.WEB_URL}/verify-email?token=${token}`;
 
   await resend.emails.send({
     from,
@@ -61,7 +60,7 @@ export const sendResetPasswordEmail = async ({
   url,
 }: SendEmail) => {
   const resetPasswordUrl =
-    url ?? `${process.env.WEB_URL}/reset-password?token=${token}`;
+    url ?? `${env.WEB_URL}/reset-password?token=${token}`;
 
   await resend.emails.send({
     from,

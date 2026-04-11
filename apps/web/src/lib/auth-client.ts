@@ -3,8 +3,10 @@ import { createAuthClient } from "better-auth/react";
 
 import { ac, admin, superadmin, user } from "@repo/permissions";
 
+import env from "./env";
+
 export const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: env.NEXT_PUBLIC_API_URL,
   plugins: [
     adminClient({
       ac,

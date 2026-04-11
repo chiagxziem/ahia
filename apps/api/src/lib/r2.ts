@@ -31,7 +31,7 @@ export const uploadImageToR2 = async (file: File, folder = "products") => {
   await r2Client.send(command);
 
   return {
-    url: `${process.env.CLOUDFLARE_R2_PUBLIC_URL}/${fileName}`,
+    url: `${env.CLOUDFLARE_R2_PUBLIC_URL}/${fileName}`,
     key: fileName,
   };
 };

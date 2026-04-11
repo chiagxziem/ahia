@@ -4,8 +4,10 @@ import { errorResSchema } from "@/lib/schemas";
 
 import env from "./env";
 
-// When using the baseURL on the server, the full URL is used to avoid CORS issues. On the client, a relative URL is used
-const baseURL = typeof window === "undefined" ? `${env.API_URL}/api` : "/api";
+const baseURL =
+  typeof window === "undefined"
+    ? `${env.API_URL}/api`
+    : `${env.NEXT_PUBLIC_API_URL}/api`;
 
 export const $fetch = createFetch({
   baseURL,
