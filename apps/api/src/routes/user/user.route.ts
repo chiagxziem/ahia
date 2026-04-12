@@ -2,7 +2,10 @@ import { APIError } from "better-auth";
 import { validator } from "hono-openapi";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 
-import { UserUpdateSchema } from "@repo/db/validators/user.validator";
+import {
+  ChangePasswordSchema,
+  UserUpdateSchema,
+} from "@repo/db/validators/user.validator";
 
 import { createRouter } from "@/app";
 import { auth } from "@/lib/auth";
@@ -11,7 +14,7 @@ import { errorResponse, successResponse } from "@/lib/utils";
 import { authed } from "@/middleware/authed";
 import { validationHook } from "@/middleware/validation-hook";
 
-import { getUserDoc, updateUserDoc } from "./user.docs";
+import { changePasswordDoc, getUserDoc, updateUserDoc } from "./user.docs";
 
 const userRouter = createRouter().use(authed);
 
@@ -54,6 +57,47 @@ userRouter.patch(
 
       return c.json(
         successResponse(response, "User updated successfully"),
+        HttpStatusCodes.OK,
+      );
+    } catch (error) {
+      if (error instanceof APIError) {
+        return c.json(
+          errorResponse(
+            error.body?.code ?? "AUTH_ERROR",
+            error.body?.message ?? error.message,
+          ),
+          error.statusCode as ContentfulStatusCode,
+        );
+      }
+      throw error;
+    }
+  },
+);
+
+// Change password
+userRouter.post(
+  "/me/password",
+  changePasswordDoc,
+  validator("json", ChangePasswordSchema, validationHook),
+  async (c) => {
+    try {
+      const data = c.req.valid("json");
+
+      const sessionToken = c.get("sessionToken");
+
+      await auth.api.changePassword({
+        body: {
+          currentPassword: data.currentPassword,
+          newPassword: data.newPassword,
+          revokeOtherSessions: data.revokeOtherSessions,
+        },
+        headers: new Headers({
+          Authorization: `Bearer ${sessionToken}`,
+        }),
+      });
+
+      return c.json(
+        successResponse({ status: true }, "Password changed successfully"),
         HttpStatusCodes.OK,
       );
     } catch (error) {

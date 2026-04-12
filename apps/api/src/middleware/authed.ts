@@ -16,6 +16,7 @@ export const authed = createMiddleware<AppEnv>(async (c, next) => {
   }
 
   c.set("user", session.user);
+  c.set("sessionToken", session.session.token);
 
   return next();
 });

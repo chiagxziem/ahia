@@ -26,6 +26,7 @@ export const HeroFeaturedProduct = () => {
             src={image}
             alt={product?.name ?? "Featured Product"}
             fill
+            loading="eager"
             className="object-cover transition-transform duration-1000 ease-out group-hover:scale-[1.03]"
             sizes="(max-width: 1024px) 100vw, 50vw"
             priority

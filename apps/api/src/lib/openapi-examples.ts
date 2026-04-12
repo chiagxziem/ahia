@@ -32,6 +32,10 @@ export const userExamples = {
     name: "Too small: expected string to have >=1 characters",
     image: "Invalid URL",
   },
+  changePasswordValErrs: {
+    currentPassword: "Too small: expected string to have >=8 characters",
+    newPassword: "Too small: expected string to have >=8 characters",
+  },
 };
 
 export const adminExamples = {

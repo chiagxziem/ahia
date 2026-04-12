@@ -1,18 +1,37 @@
+import { BetterFetchError } from "@better-fetch/fetch";
+
 import { UserSelectSchema } from "@repo/db/validators/user.validator";
 
-import { $fetch } from "@/lib/fetch";
-import { successResSchema } from "@/lib/schemas";
+import { $fetchAndThrow } from "@/lib/fetch";
+import { errorResSchema, successResSchema } from "@/lib/schemas";
 
 export const getUser = async (cookie?: string) => {
-  const { data, error } = await $fetch("/user/me", {
-    headers: cookie ? { cookie } : undefined,
-    output: successResSchema(UserSelectSchema),
-  });
+  try {
+    const { data } = await $fetchAndThrow("/user/me", {
+      headers: cookie ? { cookie } : undefined,
+      output: successResSchema(UserSelectSchema),
+    });
 
-  if (error) {
-    console.error(error);
-    return null;
+    return data ?? null;
+  } catch (error) {
+    if (error instanceof BetterFetchError) {
+      const parsed = errorResSchema.safeParse(error.error);
+
+      if (
+        error.status === 401 ||
+        (parsed.success && parsed.data.error.code === "UNAUTHORIZED")
+      ) {
+        return null;
+      }
+
+      throw new Error(
+        parsed.success
+          ? parsed.data.error.details
+          : "Failed to fetch current user",
+        { cause: error },
+      );
+    }
+
+    throw error;
   }
-
-  return data?.data ?? null;
 };

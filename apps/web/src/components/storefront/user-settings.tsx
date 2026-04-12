@@ -20,9 +20,8 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cancelToastEl } from "@/components/ui/sonner";
-import { updateUser } from "@/features/user/actions";
+import { changePassword, updateUser } from "@/features/user/actions";
 import { getUser } from "@/features/user/queries";
-import { authClient } from "@/lib/auth-client";
 import { queryKeys } from "@/lib/query-keys";
 import { getApiError, getInitials } from "@/lib/utils";
 
@@ -36,7 +35,6 @@ import {
 export const UserSettings = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [isPasswordPending, setIsPasswordPending] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
@@ -57,6 +55,24 @@ export const UserSettings = () => {
     onError: (err) => {
       toast.error(
         getApiError(err) || "Failed to update profile",
+        cancelToastEl,
+      );
+    },
+  });
+
+  const updatePasswordMutation = useMutation({
+    mutationFn: changePassword,
+    onSuccess: async () => {
+      passwordForm.reset();
+      await queryClient.cancelQueries({ queryKey: queryKeys.user() });
+      queryClient.setQueryData(queryKeys.user(), null);
+      toast.success("Password updated. Please sign in again.", cancelToastEl);
+      router.replace("/sign-in");
+      router.refresh();
+    },
+    onError: (err) => {
+      toast.error(
+        getApiError(err) || "Failed to update password",
         cancelToastEl,
       );
     },
@@ -100,33 +116,11 @@ export const UserSettings = () => {
         return;
       }
 
-      await authClient.changePassword(
-        {
-          newPassword: value.newPassword,
-          currentPassword: value.currentPassword,
-          revokeOtherSessions: true,
-        },
-        {
-          onRequest: () => {
-            setIsPasswordPending(true);
-          },
-          onSuccess: () => {
-            toast.success("Password updated successfully", cancelToastEl);
-            passwordForm.reset();
-            setIsPasswordPending(false);
-          },
-          onError: (ctx) => {
-            toast.error(
-              ctx.error.message || "Failed to update password",
-              cancelToastEl,
-            );
-            setIsPasswordPending(false);
-          },
-          onSettled: () => {
-            setIsPasswordPending(false);
-          },
-        },
-      );
+      await updatePasswordMutation.mutateAsync({
+        newPassword: value.newPassword,
+        currentPassword: value.currentPassword,
+        revokeOtherSessions: true,
+      });
     },
   });
 
@@ -386,7 +380,7 @@ export const UserSettings = () => {
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={field.state.meta.errors.length > 0}
-                      disabled={isPasswordPending}
+                      disabled={updatePasswordMutation.isPending}
                     />
                     <InputGroupAddon align="inline-end">
                       <InputGroupButton
@@ -441,7 +435,7 @@ export const UserSettings = () => {
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={field.state.meta.errors.length > 0}
-                      disabled={isPasswordPending}
+                      disabled={updatePasswordMutation.isPending}
                     />
                     <InputGroupAddon align="inline-end">
                       <InputGroupButton
@@ -499,7 +493,7 @@ export const UserSettings = () => {
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                       aria-invalid={field.state.meta.errors.length > 0}
-                      disabled={isPasswordPending}
+                      disabled={updatePasswordMutation.isPending}
                     />
                     <InputGroupAddon align="inline-end">
                       <InputGroupButton
@@ -533,10 +527,14 @@ export const UserSettings = () => {
               {([canSubmit, isSubmitting]) => (
                 <Button
                   type="submit"
-                  disabled={!canSubmit || isSubmitting || isPasswordPending}
+                  disabled={
+                    !canSubmit ||
+                    isSubmitting ||
+                    updatePasswordMutation.isPending
+                  }
                   className="rounded-full px-6 text-xs font-semibold"
                 >
-                  {isSubmitting || isPasswordPending
+                  {isSubmitting || updatePasswordMutation.isPending
                     ? "Updating..."
                     : "Update password"}
                 </Button>
