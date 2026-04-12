@@ -40,6 +40,8 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
   } = useQuery({
     queryKey: queryKeys.product(productId),
     queryFn: () => getProductById(productId),
+    retry: 1,
+    retryDelay: 300,
   });
 
   const categorySlug = product?.categories?.[0]?.slug;
