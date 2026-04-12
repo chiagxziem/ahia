@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { z } from "zod";
 
 import { CartSelectSchema } from "@repo/db/validators/cart.validator";
+import { OrderSelectSchema } from "@repo/db/validators/order.validator";
 
 import { $fetch, $fetchAndThrow } from "@/lib/fetch";
 import { successResSchema } from "@/lib/schemas";
@@ -87,5 +88,18 @@ export const createCheckout = async () => {
         checkoutSessionId: z.string(),
       }),
     ),
+  });
+};
+
+export const verifyCheckoutSession = async (sessionId: string) => {
+  const headersList = await headers();
+
+  return await $fetchAndThrow("/orders/verify-session", {
+    method: "POST",
+    headers: {
+      cookie: headersList.get("cookie") ?? "",
+    },
+    body: { sessionId },
+    output: successResSchema(OrderSelectSchema),
   });
 };

@@ -6,27 +6,16 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
-import { OrderSelectSchema } from "@repo/db/validators/order.validator";
-
 import { Button } from "@/components/ui/button";
-import { $fetchAndThrow } from "@/lib/fetch";
+import { verifyCheckoutSession } from "@/features/cart/actions";
 import { queryKeys } from "@/lib/query-keys";
-import { successResSchema } from "@/lib/schemas";
-
-const verifySession = async (sessionId: string) => {
-  return await $fetchAndThrow("/orders/verify-session", {
-    method: "POST",
-    body: { sessionId },
-    output: successResSchema(OrderSelectSchema),
-  });
-};
 
 export const CheckoutSuccess = ({ sessionId }: { sessionId: string }) => {
   const queryClient = useQueryClient();
   const verifiedRef = useRef(false);
 
   const { mutate, isPending, isSuccess, isError } = useMutation({
-    mutationFn: verifySession,
+    mutationFn: verifyCheckoutSession,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.cart() });
     },
