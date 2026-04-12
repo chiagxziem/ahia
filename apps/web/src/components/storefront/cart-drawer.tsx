@@ -26,10 +26,10 @@ import { cancelToastEl } from "@/components/ui/sonner";
 import {
   clearCart,
   createCheckout,
+  getCart,
   removeCartItem,
   updateCartItemQuantity,
 } from "@/features/cart/actions";
-import { getCart } from "@/features/cart/queries";
 import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { getApiError } from "@/lib/utils";

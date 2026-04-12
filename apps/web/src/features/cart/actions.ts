@@ -5,10 +5,30 @@ import { z } from "zod";
 
 import { CartSelectSchema } from "@repo/db/validators/cart.validator";
 
-import { $fetchAndThrow } from "@/lib/fetch";
+import { $fetch, $fetchAndThrow } from "@/lib/fetch";
 import { successResSchema } from "@/lib/schemas";
 
 const cartOutputSchema = successResSchema(CartSelectSchema);
+
+type CartResponse = z.infer<typeof CartSelectSchema>;
+
+export const getCart = async (): Promise<CartResponse | null> => {
+  const headersList = await headers();
+
+  const { data, error } = await $fetch("/cart", {
+    headers: {
+      cookie: headersList.get("cookie") ?? "",
+    },
+    output: cartOutputSchema,
+  });
+
+  if (error) {
+    console.error(error);
+    return null;
+  }
+
+  return data?.data ?? null;
+};
 
 export const updateCartItemQuantity = async ({
   itemId,
