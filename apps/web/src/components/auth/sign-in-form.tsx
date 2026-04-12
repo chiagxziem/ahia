@@ -4,7 +4,7 @@ import { ViewIcon, ViewOffIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -31,9 +31,19 @@ import {
 
 export const SignInForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isPending, setIsPending] = useState(false);
   const [isGooglePending, setIsGooglePending] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const redirectParam = searchParams.get("redirect");
+  const redirectPath =
+    redirectParam &&
+    redirectParam.startsWith("/") &&
+    !redirectParam.startsWith("//")
+      ? redirectParam
+      : "/";
+  const callbackURL = `${env.NEXT_PUBLIC_WEB_URL}${redirectPath}`;
 
   const form = useForm({
     defaultValues: {
@@ -45,7 +55,7 @@ export const SignInForm = () => {
         {
           email: value.email,
           password: value.password,
-          callbackURL: env.NEXT_PUBLIC_WEB_URL,
+          callbackURL,
         },
         {
           onRequest() {
@@ -55,7 +65,7 @@ export const SignInForm = () => {
             setIsPending(false);
             toast.success("Signed in successfully", cancelToastEl);
             form.reset();
-            router.push("/");
+            router.push(redirectPath);
             router.refresh();
           },
           onError(ctx) {
@@ -232,7 +242,7 @@ export const SignInForm = () => {
           authClient.signIn.social(
             {
               provider: "google",
-              callbackURL: env.NEXT_PUBLIC_WEB_URL,
+              callbackURL,
             },
             {
               onRequest() {

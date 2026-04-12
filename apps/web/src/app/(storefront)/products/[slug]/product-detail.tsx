@@ -10,6 +10,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { parseAsString, useQueryState } from "nuqs";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -26,10 +27,14 @@ import {
   getProductById,
   getRelatedProducts,
 } from "@/features/storefront/queries";
+import { getUser } from "@/features/user/queries";
 import { queryKeys } from "@/lib/query-keys";
 import { getApiError } from "@/lib/utils";
 
 export const ProductDetail = ({ productId }: { productId: string }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
 
   const {
@@ -42,6 +47,11 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
     queryFn: () => getProductById(productId),
     retry: 1,
     retryDelay: 300,
+  });
+
+  const { data: user } = useQuery({
+    queryKey: queryKeys.user(),
+    queryFn: () => getUser(),
   });
 
   const categorySlug = product?.categories?.[0]?.slug;
@@ -60,13 +70,21 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
     "size",
     parseAsString.withOptions({ shallow: false }),
   );
+  const requiresColorSelection =
+    (product?.colors?.filter((color) => color.inStock).length ?? 0) > 0;
+  const requiresSizeSelection =
+    (product?.sizes?.filter((size) => size.inStock).length ?? 0) > 0;
+  const isVariantSelectionMissing =
+    (requiresColorSelection && !selectedColor) ||
+    (requiresSizeSelection && !selectedSize);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
   const addToCartMutation = useMutation({
     mutationFn: addToCart,
-    onSuccess: async () => {
+    onSuccess: async ({ data }) => {
+      queryClient.setQueryData(queryKeys.cart(), data ?? null);
       await queryClient.invalidateQueries({ queryKey: queryKeys.cart() });
       toast.success("Added to cart!", cancelToastEl);
     },
@@ -77,6 +95,22 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
 
   const handleAddToCart = () => {
     if (!product) return;
+
+    if (!user) {
+      const query = searchParams.toString();
+      const redirectTo = `${pathname}${query ? `?${query}` : ""}`;
+      router.push(`/sign-in?redirect=${encodeURIComponent(redirectTo)}`);
+      return;
+    }
+
+    if (isVariantSelectionMissing) {
+      toast.error(
+        "Please choose all required options before adding to cart.",
+        cancelToastEl,
+      );
+      return;
+    }
+
     addToCartMutation.mutate({ productId: product.id, quantity });
   };
 
@@ -180,6 +214,7 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
                 src={selectedImage.url}
                 alt={product.name}
                 fill
+                loading="eager"
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 priority
@@ -378,15 +413,23 @@ export const ProductDetail = ({ productId }: { productId: string }) => {
               <Button
                 size="lg"
                 className="h-12 flex-1 gap-2 rounded-full text-base font-semibold shadow-lg shadow-primary/10"
-                disabled={stockQty === 0 || addToCartMutation.isPending}
+                disabled={
+                  stockQty === 0 ||
+                  addToCartMutation.isPending ||
+                  (!!user && isVariantSelectionMissing)
+                }
                 onClick={handleAddToCart}
               >
                 <HugeiconsIcon icon={ShoppingCart01Icon} className="size-5" />
                 {stockQty === 0
                   ? "Out of Stock"
-                  : addToCartMutation.isPending
-                    ? "Adding…"
-                    : "Add to Cart"}
+                  : !user
+                    ? "Sign in to add"
+                    : addToCartMutation.isPending
+                      ? "Adding…"
+                      : isVariantSelectionMissing
+                        ? "Choose options"
+                        : "Add to Cart"}
               </Button>
             </div>
           </div>

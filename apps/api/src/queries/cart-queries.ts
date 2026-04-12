@@ -1,6 +1,17 @@
 import { db, eq } from "@repo/db";
 import { cart, cartItem } from "@repo/db/schemas/cart.schema";
 
+const pickPreferredCart = <T extends { cartItems: unknown[] }>(carts: T[]) => {
+  if (carts.length === 0) return null;
+
+  const nonEmpty = carts.filter((c) => c.cartItems.length > 0);
+  if (nonEmpty.length > 0) {
+    return nonEmpty[0];
+  }
+
+  return carts[0];
+};
+
 /**
  * Creates a new cart for the specified user
  */
@@ -19,7 +30,7 @@ export const createCartForUser = async (userId: string) => {
  * Gets a user's cart with all cart items and products
  */
 export const getUserCartWithItems = async (userId: string) => {
-  const userCart = await db.query.cart.findFirst({
+  const userCarts = await db.query.cart.findMany({
     where: (cart, { eq }) => eq(cart.userId, userId),
     with: {
       cartItems: {
@@ -28,9 +39,10 @@ export const getUserCartWithItems = async (userId: string) => {
         },
       },
     },
+    orderBy: (cart, { asc }) => [asc(cart.createdAt)],
   });
 
-  return userCart;
+  return pickPreferredCart(userCarts);
 };
 
 /**
