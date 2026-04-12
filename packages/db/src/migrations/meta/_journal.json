@@ -8,6 +8,13 @@
       "when": 1768145143103,
       "tag": "0000_gifted_kingpin",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1775960567070,
+      "tag": "0001_uneven_inertia",
+      "breakpoints": true
     }
   ]
 }

@@ -9,6 +9,7 @@ import { product } from "./product.schema";
 export const cart = pgTable("cart", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id")
+    .unique()
     .notNull()
     .references(() => user.id, {
       onDelete: "cascade",
