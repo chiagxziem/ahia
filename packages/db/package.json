@@ -9,7 +9,7 @@
   "scripts": {
     "db:delete": "docker compose down -v",
     "db:down": "docker compose down",
-    "db:generate": "drizzle-kit generate --config=drizzle.config.mts",
+    "db:generate": "drizzle-kit generate --config=drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate",
     "db:psql": "docker exec -it ahia-pg psql -U user -d ahia",
     "db:push": "drizzle-kit push",
