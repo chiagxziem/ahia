@@ -1,18 +1,18 @@
-// import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { ReactNode, Suspense } from "react";
 
-// import { getUser } from "@/features/user/queries";
-// import { getCookie } from "@/lib/auth";
+import { getUser } from "@/features/user/queries";
+import { getCookie } from "@/lib/auth";
 
-// const AuthGuard = async ({ children }: { children: ReactNode }) => {
-//   const user = await getUser(await getCookie());
+const AuthGuard = async ({ children }: { children: ReactNode }) => {
+  const user = await getUser(await getCookie());
 
-//   if (user) {
-//     redirect("/");
-//   }
+  if (user) {
+    redirect("/");
+  }
 
-//   return <>{children}</>;
-// };
+  return <>{children}</>;
+};
 
 const AuthLayout = ({ children }: { children: ReactNode }) => {
   return (
@@ -30,9 +30,7 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
 
       <div className="z-10 flex w-full max-w-sm flex-col gap-6 sm:max-w-md">
         <Suspense fallback={null}>
-          {/* <AuthGuard> */}
-          {children}
-          {/* </AuthGuard> */}
+          <AuthGuard>{children}</AuthGuard>
         </Suspense>
       </div>
     </div>
